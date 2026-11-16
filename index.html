@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <title>RailSpring: Sistem Informasi Data Pegas Sarana Kereta Api</title>
+    <link rel="icon" href="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f3f4f6;
+            height: 100dvh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overscroll-behavior-y: none;
+        }
+        .smooth-scroll {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        .swipe-scroll-x {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            scrollbar-width: thin;
+        }
+        .swipe-item { scroll-snap-align: start; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .dark-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .dark-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .dark-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        .dark-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .ai-markdown h1, .ai-markdown h2, .ai-markdown h3 { font-weight: bold; color: #1e293b; margin-top: 1em; margin-bottom: 0.5em; }
+        .ai-markdown h1 { font-size: 1.3em; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; }
+        .ai-markdown h2 { font-size: 1.15em; }
+        .ai-markdown p { margin-bottom: 0.8em; line-height: 1.6; }
+        .ai-markdown ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 0.8em; }
+        .ai-markdown ol { list-style-type: decimal; margin-left: 1.5em; margin-bottom: 0.8em; }
+        .ai-markdown strong { font-weight: 600; color: #0f172a; }
+
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #1e40af; font-weight: 700; background-color: #eff6ff; }
+        .mobile-nav-btn.active { color: #2563eb; }
+        .mobile-nav-btn.active .nav-pill { background-color: #dbeafe; color: #1d4ed8; transform: translateY(-2px); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* Mobile Drawer Transition */
+        #mobile-sidebar-drawer { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+        #mobile-sidebar-backdrop { transition: opacity 0.3s ease; }
+
+        #print-area { display: none; }
+        @media print {
+            @page { size: A4 landscape; margin: 10mm; }
+            html, body { background: #fff !important; overflow: visible !important; height: auto !important; width: 100% !important; display: block !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body > *:not(#print-area) { display: none !important; }
+            #print-area { display: block !important; width: 100% !important; font-family: Arial, sans-serif; font-size: 11px; color: #1f2937; }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 16px; }
+            .print-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
+            .print-table th, .print-table td { border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; }
+            .print-table th { background-color: #f1f5f9 !important; text-transform: uppercase; font-weight: bold; }
+            .print-table tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col md:flex-row">
+
+    <div id="print-area"></div>
+
+    <!-- LOGIN PAGE (RESPONSIVE FULL VIEWPORT) -->
+    <div id="login-page" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto smooth-scroll transition-opacity duration-500 bg-cover bg-center bg-no-repeat" style="background-image: url('https://wsrv.nl/?url=https://i.pinimg.com/736x/6d/fb/be/6dfbbecb004680cc05fedceabd62962e.jpg');">
+        <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm"></div>
+        <div class="bg-white/95 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-md my-auto relative z-10 backdrop-blur-md animate-fade-in-up border border-white/40">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="flex items-center justify-center mx-auto mb-4 h-14 sm:h-16">
+                    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" alt="Logo PT KAI" class="h-11 sm:h-12 w-auto object-contain">
+                </div>
+                <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">RailSpring</h1>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Sistem Informasi & Pelacakan Pegas Sarana KAI</p>
+            </div>
+            <form id="login-form" onsubmit="event.preventDefault(); window.handleLogin();" class="space-y-4 sm:space-y-5">
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-600">ID Name / Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i class="fa-regular fa-user"></i></div>
+                        <input type="text" id="username" value="RailSpring2026" required class="block w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 text-base sm:text-sm outline-none" placeholder="RailSpring2026">
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-600">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock"></i></div>
+                        <input type="password" id="password" value="Logamjaya2026" required class="block w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 text-base sm:text-sm outline-none" placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" class="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition-all mt-4 cursor-pointer">
+                    <span>Masuk ke Sistem</span><i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+            <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                <p class="text-[11px] text-gray-400">&copy; 2026 Balai Yasa Tegal - Hak Cipta Dilindungi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP LAYOUT -->
+    <div id="app-layout" class="hidden w-full h-full flex flex-col md:flex-row opacity-0 transition-opacity duration-500 bg-gray-50">
+
+        <!-- MOBILE SLIDE-OVER DRAWER BACKDROP -->
+        <div id="mobile-sidebar-backdrop" onclick="window.toggleMobileDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 md:hidden opacity-0"></div>
+
+        <!-- SIDEBAR (DESKTOP FIXED + MOBILE SLIDE-OVER DRAWER WITH SWIPE GESTURE) -->
+        <aside id="mobile-sidebar-drawer" class="fixed md:static inset-y-0 left-0 w-72 md:w-64 bg-slate-900 text-white flex flex-col z-50 -translate-x-full md:translate-x-0 shrink-0 shadow-2xl md:shadow-none">
+            <div class="p-4 sm:p-5 flex items-center justify-between border-b border-slate-800 bg-slate-950 h-16 md:h-[72px] shrink-0" style="padding-top: max(1rem, var(--safe-top));">
+                <div class="flex items-center gap-3">
+                    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" alt="Logo KAI" class="h-8 w-auto object-contain bg-white px-2 py-1 rounded">
+                    <div>
+                        <h2 class="font-bold text-lg tracking-wide leading-none">RailSpring</h2>
+                        <span class="text-[10px] text-slate-400 md:hidden">Geser kiri untuk tutup</span>
+                    </div>
+                </div>
+                <button onclick="window.toggleMobileDrawer(false)" class="md:hidden w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto smooth-scroll py-5 px-3 space-y-1.5">
+                <p class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Menu Utama</p>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('dashboard')" id="nav-dashboard" class="nav-item bg-blue-600 text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard & Lacak</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('setsarana')" id="nav-setsarana" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center justify-between px-3.5 py-3 rounded-xl transition-all text-sm font-medium">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-layer-group w-5 text-center"></i> Set Sarana</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">P24/P48</span>
+                </a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('data')" id="nav-data" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-database w-5 text-center"></i> Data Pengujian</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('laporan')" id="nav-laporan" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Laporan AI</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('parameter')" id="nav-parameter" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-sliders w-5 text-center"></i> Parameter Pegas</a>
+
+                <p class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-6 mb-2">Akun & Sistem</p>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('pengaturan')" id="nav-pengaturan" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-user-gear w-5 text-center"></i> Pengaturan & Bio</a>
+                <div class="my-3 border-t border-slate-800 mx-2"></div>
+                <a href="#" onclick="event.preventDefault(); window.handleLogout()" class="text-red-400 hover:bg-red-600 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all cursor-pointer text-sm font-medium"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout</a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800 text-center shrink-0 bg-slate-950/60" style="padding-bottom: max(1rem, var(--safe-bottom));">
+                <p class="text-[10px] text-slate-500 leading-relaxed uppercase tracking-wider">&copy; 2026 Hak Cipta Dilindungi<br><span class="font-bold text-slate-400">Data Logam Jaya Teknik<br>BALAI YASA TEGAL</span></p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
+            <!-- TOP BAR -->
+            <header class="bg-white shadow-xs border-b border-gray-200 px-3.5 sm:px-6 h-16 md:h-[72px] flex justify-between items-center z-30 shrink-0" style="padding-top: var(--safe-top);">
+                <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                    <button class="md:hidden w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center shrink-0 transition" onclick="window.toggleMobileDrawer(true)" aria-label="Buka Menu">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <div class="min-w-0">
+                        <h1 id="header-title" class="text-base sm:text-xl font-bold text-gray-800 truncate">Dashboard & Pelacakan</h1>
+                        <div class="flex items-center gap-1.5 md:hidden">
+                            <span id="mobile-cloud-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-[10px] text-gray-500 font-medium truncate">Cloud Sync Aktif • Geser layar</span>
+                        </div>
+                    </div>
+                    <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Cloud Sync Multi-Perangkat Aktif
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <button onclick="window.syncFromCloudManual()" title="Segarkan Data Cloud" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span class="hidden sm:inline">Sync</span>
+                    </button>
+                    <div class="flex items-center gap-2.5 cursor-pointer hover:bg-gray-100/80 p-1 sm:pl-3 rounded-full transition" onclick="window.switchMenu('pengaturan')">
+                        <div class="hidden sm:block text-right">
+                            <p class="text-sm font-semibold text-gray-800 leading-tight header-user-name">Mario Putra</p>
+                            <p class="text-xs text-gray-500 header-user-role">Administrator</p>
+                        </div>
+                        <div id="header-avatar-container" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm sm:text-base border-2 border-white shadow-sm overflow-hidden">
+                            <span id="header-avatar-initial">M</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE WORKSPACE (PADDING BAWAH EXTRA UNTUK BOTTOM NAV DI HP) -->
+            <div id="main-scroll-container" class="flex-1 overflow-y-auto smooth-scroll p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 bg-gray-50 dark-scrollbar">
+
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-dashboard" class="view-section animate-fade-in-up space-y-5 sm:space-y-6">
+
+                    <!-- SWIPEABLE KPI CARDS DI HP, GRID 4 KOLOM DI DESKTOP -->
+                    <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 swipe-scroll-x no-scrollbar pb-1 -mx-3.5 px-3.5 md:mx-0 md:px-0">
+                        <div onclick="window.switchMenu('data')" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-gray-100 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-database"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total File Excel</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-total">0</h3></div>
+                        </div>
+
+                        <div onclick="if(window.dbData.length>0) window.openExcelViewModal(window.dbData[0].id)" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-emerald-100 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Unit Diuji</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-month">0</h3><p class="text-[10px] text-emerald-600 font-semibold" id="stat-month-sub">Ketuk untuk detail</p></div>
+                        </div>
+
+                        <div onclick="window.switchMenu('setsarana')" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-amber-200/80 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-amber-800 uppercase tracking-wider">Set Sarana (P24/P48)</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-setsarana">0 Set</h3></div>
+                        </div>
+
+                        <div class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 bg-white rounded-2xl shadow-xs border border-gray-100 p-4 sm:p-5 flex items-center gap-3.5">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-train-subway"></i></div>
+                            <div class="min-w-0"><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Sarana Terakhir</p><h3 class="text-sm sm:text-base font-extrabold text-gray-800 mt-0.5 truncate" id="stat-top">-</h3><p class="text-[10px] text-gray-400 truncate" id="stat-top-bogie">Auto-detect aktif</p></div>
+                        </div>
+                    </div>
+
+                    <!-- WELCOME & QUICK ACTION BAR (GESER HORIZONTAL DI HP) -->
+                    <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
+                        <div>
+                            <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
+                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Otomatis memisahkan pergantian bulan & melanjutkan nomor seri terakhir lintas bulan (`OS` / `IS`).</p>
+                        </div>
+                        <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
+                            <button onclick="window.syncFromCloudManual()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Segarkan Cloud</button>
+                            <button onclick="window.switchMenu('setsarana')" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-layer-group"></i> Buat Set Sarana</button>
+                            <button onclick="window.switchMenu('data'); window.openExcelModal();" class="swipe-item shrink-0 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-file-excel"></i> Upload Excel</button>
+                        </div>
+                    </div>
+
+                    <!-- GRAFIK OS & IS (RESPONSIVE STACK ON MOBILE, 2 COL ON XL) -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="bg-white rounded-2xl shadow-xs border border-blue-100 p-4 sm:p-5">
+                            <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                                <div><h3 class="font-bold text-gray-800 text-sm sm:text-base"><i class="fa-solid fa-chart-pie text-blue-600 mr-2"></i>Statistik Pegas Luar (OS)</h3><p class="text-[11px] text-gray-500 mt-0.5">Pengetesan & Reject per Bulan</p></div>
+                                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Total Uji</p><p class="text-lg sm:text-xl font-extrabold text-blue-700" id="os-total-test">0</p></div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                <div class="sm:col-span-4 flex flex-row sm:flex-col items-center justify-around sm:justify-center gap-4">
+                                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0"><canvas id="chart-os-pie"></canvas></div>
+                                    <table class="w-full max-w-[160px] text-xs text-left">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Accept</td><td class="py-1 text-right font-bold text-emerald-600" id="os-val-accept">0</td></tr>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Reject</td><td class="py-1 text-right font-bold text-red-600" id="os-val-reject">0</td></tr>
+                                            <tr><td class="py-1 font-semibold text-gray-600">Persentase</td><td class="py-1 text-right font-bold text-gray-800" id="os-val-persentase">0%</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="sm:col-span-8 w-full h-48 sm:h-52 relative"><canvas id="chart-os-bar"></canvas></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-xs border border-emerald-100 p-4 sm:p-5">
+                            <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                                <div><h3 class="font-bold text-gray-800 text-sm sm:text-base"><i class="fa-solid fa-chart-pie text-emerald-600 mr-2"></i>Statistik Pegas Dalam (IS)</h3><p class="text-[11px] text-gray-500 mt-0.5">Pengetesan & Reject per Bulan</p></div>
+                                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Total Uji</p><p class="text-lg sm:text-xl font-extrabold text-emerald-700" id="is-total-test">0</p></div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                <div class="sm:col-span-4 flex flex-row sm:flex-col items-center justify-around sm:justify-center gap-4">
+                                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0"><canvas id="chart-is-pie"></canvas></div>
+                                    <table class="w-full max-w-[160px] text-xs text-left">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Accept</td><td class="py-1 text-right font-bold text-emerald-600" id="is-val-accept">0</td></tr>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Reject</td><td class="py-1 text-right font-bold text-red-600" id="is-val-reject">0</td></tr>
+                                            <tr><td class="py-1 font-semibold text-gray-600">Persentase</td><td class="py-1 text-right font-bold text-gray-800" id="is-val-persentase">0%</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="sm:col-span-8 w-full h-48 sm:h-52 relative"><canvas id="chart-is-bar"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PELACAKAN SARANA (FLEXIBLE & SWIPEABLE TABLE) -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 sm:px-6 py-4 sm:py-5 text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
+                            <div class="flex items-center gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-lg sm:text-2xl shrink-0"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2"><span class="px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-slate-950 rounded">Mode Investigasi</span><span class="text-xs text-blue-200 font-mono" id="tracker-db-status">Terhubung ke Arsip</span></div>
+                                    <h3 class="text-sm sm:text-lg font-bold mt-1 leading-snug">Pelacakan Sarana, Bulan Pengujian & Nomor Pegas</h3>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <button onclick="window.resetTrackerFilters()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 text-xs font-semibold"><i class="fa-solid fa-rotate-left mr-1"></i>Reset</button>
+                                <button onclick="window.printTrackerResults()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-bold shadow"><i class="fa-solid fa-print mr-1"></i>Cetak</button>
+                            </div>
+                        </div>
+
+                        <!-- SWIPEABLE MONTH CHIPS -->
+                        <div class="px-4 sm:px-6 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2 swipe-scroll-x no-scrollbar">
+                            <span class="text-[11px] font-bold uppercase text-slate-500 shrink-0 mr-1"><i class="fa-solid fa-calendar-days mr-1 text-blue-600"></i>Bulan:</span>
+                            <div id="tracker-sarana-chips" class="flex items-center gap-2"></div>
+                        </div>
+
+                        <div class="p-4 sm:p-6 bg-white border-b border-gray-100">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                                <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                                    <label class="block text-[11px] font-bold uppercase text-blue-900 mb-1.5">1. Pilih Sarana</label>
+                                    <select id="tracker-select-sarana" onchange="window.onTrackerSaranaChange()" class="block w-full py-2 px-3 bg-white border border-blue-300 rounded-lg text-sm sm:text-xs font-semibold outline-none"><option value="ALL">-- Semua Sarana --</option></select>
+                                </div>
+                                <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                                    <label class="block text-[11px] font-bold uppercase text-indigo-900 mb-1.5">2. Jenis BO / Bogie</label>
+                                    <select id="tracker-select-bogie" onchange="window.executeSaranaTracking()" class="block w-full py-2 px-3 bg-white border border-indigo-300 rounded-lg text-sm sm:text-xs font-semibold outline-none"><option value="ALL">-- Semua Bogie --</option></select>
+                                </div>
+                                <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200/80">
+                                    <label class="block text-[11px] font-bold uppercase text-amber-900 mb-1.5">3. Cari No. Seri Pegas</label>
+                                    <input type="text" id="tracker-input-nomor" oninput="window.executeSaranaTracking()" placeholder="Cth: OS.7036..." class="block w-full px-3 py-2 bg-white border border-amber-300 rounded-lg text-sm sm:text-xs font-semibold outline-none">
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                    <label class="block text-[11px] font-bold uppercase text-gray-700 mb-1.5">4. Bulan & Status</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <select id="tracker-select-bulan" onchange="window.executeSaranaTracking()" class="py-2 px-2 bg-white border border-gray-300 rounded-lg text-sm sm:text-xs font-medium outline-none"><option value="ALL">Semua Bulan</option></select>
+                                        <select id="tracker-select-status" onchange="window.executeSaranaTracking()" class="py-2 px-2 bg-white border border-gray-300 rounded-lg text-sm sm:text-xs font-medium outline-none">
+                                            <option value="ALL">Semua</option>
+                                            <option value="LULUS">Siap Pakai</option>
+                                            <option value="AFKIR">Afkir</option>
+                                            <option value="P24">P24</option>
+                                            <option value="P48">P48</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tracker-summary-bar" class="mt-3.5 pt-3 border-t border-gray-100 flex flex-wrap justify-between items-center gap-2 text-xs"></div>
+                        </div>
+
+                        <!-- SWIPE HINT ON MOBILE -->
+                        <div class="md:hidden px-4 py-1.5 bg-blue-50/70 text-blue-700 text-[11px] font-medium flex items-center justify-between border-b border-blue-100">
+                            <span><i class="fa-solid fa-arrows-left-right mr-1.5"></i>Geser tabel ke kiri/kanan untuk melihat semua kolom</span>
+                        </div>
+
+                        <div class="swipe-scroll-x dark-scrollbar max-h-[460px]">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead class="text-[10px] uppercase bg-slate-100 text-slate-600 font-bold sticky top-0 z-10 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-3.5 py-3 text-center w-10">NO</th>
+                                        <th class="px-3.5 py-3">SARANA</th>
+                                        <th class="px-3.5 py-3">JENIS BO / BOGIE</th>
+                                        <th class="px-3.5 py-3">NOMOR PEGAS</th>
+                                        <th class="px-3.5 py-3">PERIODE / WAKTU</th>
+                                        <th class="px-3.5 py-3 text-center">HASIL UJI (P0 - P4)</th>
+                                        <th class="px-3.5 py-3">STATUS</th>
+                                        <th class="px-3.5 py-3 text-center">AKSI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tracker-results-tbody" class="divide-y divide-gray-100 text-gray-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: SET SARANA -->
+                <div id="view-setsarana" class="view-section hidden space-y-5 sm:space-y-6">
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div class="p-3 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xl sm:text-2xl shrink-0"><i class="fa-solid fa-layer-group"></i></div>
+                            <div><h2 class="text-lg sm:text-xl font-bold">Penyimpanan Data Set Sarana</h2><p class="text-xs text-slate-300 mt-0.5">Pasangan <strong>Pegas Luar (OS)</strong> dan <strong>Pegas Dalam (IS)</strong> untuk P24/P48.</p></div>
+                        </div>
+                        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                            <div class="flex-1 sm:flex-initial bg-slate-800/90 border border-slate-700 px-4 py-2 rounded-xl text-center"><p class="text-[10px] text-cyan-300 font-bold uppercase">Total P24</p><p class="text-lg font-bold text-white" id="count-set-p24">0</p></div>
+                            <div class="flex-1 sm:flex-initial bg-slate-800/90 border border-slate-700 px-4 py-2 rounded-xl text-center"><p class="text-[10px] text-amber-300 font-bold uppercase">Total P48</p><p class="text-lg font-bold text-white" id="count-set-p48">0</p></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+                        <div class="lg:col-span-5 bg-white rounded-2xl shadow-xs border border-gray-200 overflow-hidden">
+                            <div class="px-5 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-plus-circle text-blue-600 mr-1.5"></i>Buat & Simpan Set Sarana</h3>
+                                <button type="button" onclick="window.resetSetSaranaForm()" class="text-xs text-gray-500 hover:text-red-600 font-semibold">Reset</button>
+                            </div>
+                            <form id="form-set-sarana" onsubmit="event.preventDefault(); window.saveSetSaranaRecord();" class="p-5 space-y-4">
+                                <input type="hidden" id="edit-setsarana-id" value="">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div><label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">Jenis Sarana *</label><input type="text" id="set-input-sarana" list="list-sarana-presets" required placeholder="Cth: GD 42 TON" class="block w-full py-2.5 px-3 border border-gray-300 rounded-xl text-sm sm:text-xs font-bold uppercase outline-none"><datalist id="list-sarana-presets"><option value="GD 42 TON"><option value="GK 40 TON"><option value="KKW 45 TON"><option value="PPCW"><option value="M1"><option value="K1"><option value="K3"></datalist></div>
+                                    <div><label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">No. Sarana / Kode *</label><input type="text" id="set-input-nosarana" required placeholder="Cth: GD 42 18 01" class="block w-full py-2.5 px-3 border border-gray-300 rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div><label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">Jenis BO/Bogie *</label><input type="text" id="set-input-bogie" required placeholder="Cth: BO GD 42T" class="block w-full py-2.5 px-3 border border-gray-300 rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
+                                    <div><label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">Tanggal *</label><input type="date" id="set-input-tanggal" required class="block w-full py-2.5 px-3 border border-gray-300 rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 uppercase mb-1.5">Jenis Perawatan *</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <label class="cursor-pointer"><input type="radio" name="jenis_perawatan" value="P24" checked class="peer sr-only"><div class="p-3 rounded-xl border-2 border-gray-200 peer-checked:border-cyan-600 peer-checked:bg-cyan-50/70 flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-cyan-600 text-white font-bold text-xs flex items-center justify-center">P24</div><span class="text-xs font-bold">P24</span></div></label>
+                                        <label class="cursor-pointer"><input type="radio" name="jenis_perawatan" value="P48" class="peer sr-only"><div class="p-3 rounded-xl border-2 border-gray-200 peer-checked:border-amber-500 peer-checked:bg-amber-50/70 flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center">P48</div><span class="text-xs font-bold">P48</span></div></label>
+                                    </div>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200 space-y-2">
+                                    <div class="flex justify-between items-center gap-2"><label class="text-[11px] font-bold text-blue-900 uppercase">Pegas Luar (OS) *</label><select id="picker-os-excel" onchange="window.appendSpringFromPicker('OS')" class="py-1.5 px-2 bg-white border border-blue-300 rounded-lg text-xs outline-none max-w-[170px]"><option value="">+ Pilih (OS)</option></select></div>
+                                    <textarea id="set-input-os" rows="2" required oninput="window.previewMatchedSprings()" placeholder="Cth: OS.5514, OS.5515" class="block w-full p-2.5 bg-white border border-blue-300 rounded-xl text-sm sm:text-xs font-mono font-semibold outline-none"></textarea>
+                                    <div id="preview-os-badges" class="flex flex-wrap gap-1 pt-0.5"></div>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+                                    <div class="flex justify-between items-center gap-2"><label class="text-[11px] font-bold text-emerald-900 uppercase">Pegas Dalam (IS) *</label><select id="picker-is-excel" onchange="window.appendSpringFromPicker('IS')" class="py-1.5 px-2 bg-white border border-emerald-300 rounded-lg text-xs outline-none max-w-[170px]"><option value="">+ Pilih (IS)</option></select></div>
+                                    <textarea id="set-input-is" rows="2" required oninput="window.previewMatchedSprings()" placeholder="Cth: IS.1119, IS.1120" class="block w-full p-2.5 bg-white border border-emerald-300 rounded-xl text-sm sm:text-xs font-mono font-semibold outline-none"></textarea>
+                                    <div id="preview-is-badges" class="flex flex-wrap gap-1 pt-0.5"></div>
+                                </div>
+                                <div><label class="block text-[11px] font-bold text-gray-700 uppercase mb-1">Catatan</label><input type="text" id="set-input-catatan" class="block w-full py-2.5 px-3 border border-gray-300 rounded-xl text-sm sm:text-xs outline-none"></div>
+                                <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-xs rounded-xl shadow-md transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i>Simpan Data Set Sarana</button>
+                            </form>
+                        </div>
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="bg-white p-4 rounded-2xl shadow-xs border border-gray-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                                <input type="text" id="search-setsarana" oninput="window.renderSetSaranaList()" placeholder="Cari GD 42 TON / OS / IS..." class="block w-full sm:w-64 px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm sm:text-xs outline-none">
+                                <div class="flex items-center gap-2 swipe-scroll-x no-scrollbar">
+                                    <button onclick="window.setFilterPerawatan('ALL')" id="btn-flt-all" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white">Semua</button>
+                                    <button onclick="window.setFilterPerawatan('P24')" id="btn-flt-p24" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600">P24</button>
+                                    <button onclick="window.setFilterPerawatan('P48')" id="btn-flt-p48" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600">P48</button>
+                                    <button onclick="window.exportSetSaranaExcel()" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-file-excel mr-1"></i>Export</button>
+                                </div>
+                            </div>
+                            <div id="setsarana-list-container" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DATA PENGUJIAN -->
+                <div id="view-data" class="view-section hidden flex flex-col min-h-[450px] space-y-4">
+                    <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+                        <div class="relative w-full lg:w-80">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fa-solid fa-magnifying-glass text-gray-400"></i></div>
+                            <input type="text" id="searchInput" onkeyup="window.handleSearch()" placeholder="Cari Sarana / File..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white shadow-xs outline-none">
+                        </div>
+                        <div class="flex items-center gap-2 swipe-scroll-x no-scrollbar pb-0.5">
+                            <button onclick="window.openExcelModal()" class="swipe-item shrink-0 bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-file-excel mr-1.5"></i>Upload File Baru</button>
+                            <button onclick="window.openLanjutanModal()" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-file-import mr-1.5"></i>Upload Lanjutan</button>
+                            <button onclick="window.clearAllArchives()" class="swipe-item shrink-0 bg-red-600 hover:bg-red-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-broom mr-1"></i>Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 flex-1 overflow-hidden flex flex-col">
+                        <div class="md:hidden px-4 py-2 bg-slate-800 text-slate-300 text-[11px] flex items-center gap-1.5 border-b border-slate-700">
+                            <i class="fa-solid fa-arrows-left-right text-blue-400"></i> Geser tabel ke samping untuk tombol Detail & Hapus
+                        </div>
+                        <div class="swipe-scroll-x dark-scrollbar flex-1">
+                            <table class="w-full text-sm text-left text-slate-300 whitespace-nowrap">
+                                <thead class="text-xs text-slate-400 uppercase bg-slate-800/80 sticky top-0 border-b border-slate-700 z-10">
+                                    <tr>
+                                        <th class="px-4 py-3.5 w-12 text-center">NO</th>
+                                        <th class="px-4 py-3.5">IDENTITAS SARANA</th>
+                                        <th class="px-4 py-3.5">JENIS BO/BOGIE</th>
+                                        <th class="px-4 py-3.5">FILE EXCEL & PERIODE</th>
+                                        <th class="px-4 py-3.5">TOTAL UJI</th>
+                                        <th class="px-4 py-3.5 text-center w-40">AKSI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body" class="divide-y divide-slate-800/50"></tbody>
+                            </table>
+                        </div>
+                        <div class="bg-slate-800/50 px-4 sm:px-6 py-3 border-t border-slate-700 flex flex-wrap justify-between gap-2 text-xs text-slate-400">
+                            <span id="table-info">Menampilkan 0 data</span>
+                            <span class="text-emerald-400"><i class="fa-solid fa-cloud mr-1"></i> Database Cloud Supabase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: AI ANALISIS -->
+                <div id="view-laporan" class="view-section hidden flex flex-col gap-5">
+                    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-md p-5 sm:p-6 text-white flex items-center justify-between">
+                        <div><h2 class="text-lg sm:text-2xl font-bold mb-1"><i class="fa-solid fa-robot mr-2"></i>RailSpring AI Assistant</h2><p class="text-xs text-blue-100">Analisis otomatis tren kelulusan & afkir pegas per bulan.</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 min-h-[450px]">
+                        <div class="bg-white border border-gray-200 rounded-2xl shadow-xs flex flex-col">
+                            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/70 rounded-t-2xl">
+                                <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-file-invoice text-blue-600 mr-1.5"></i>Laporan AI</h3>
+                                <button onclick="window.generateAIReport()" class="bg-blue-600 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl"><i class="fa-solid fa-bolt mr-1"></i>Buat Laporan</button>
+                            </div>
+                            <div class="p-5 flex-1 overflow-y-auto smooth-scroll ai-markdown text-sm max-h-[400px]" id="ai-report-content"><p class="text-gray-400 italic">Ketuk Buat Laporan untuk menyusun analisis otomatis.</p></div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-2xl shadow-xs flex flex-col">
+                            <div class="p-4 border-b border-gray-100 bg-gray-50/70 rounded-t-2xl"><h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-comments text-indigo-600 mr-1.5"></i>Chat AI</h3></div>
+                            <div class="p-4 flex-1 overflow-y-auto smooth-scroll bg-slate-50 space-y-3 text-xs min-h-[240px] max-h-[340px]" id="ai-chat-history"></div>
+                            <div class="p-3.5 border-t border-gray-100">
+                                <form onsubmit="event.preventDefault(); window.handleAskAI();" class="flex gap-2">
+                                    <input type="text" id="ai-chat-input" placeholder="Tanya rekap bulan atau nomor pegas..." class="flex-1 px-3.5 py-2.5 border rounded-xl text-sm sm:text-xs outline-none" required>
+                                    <button type="submit" class="bg-indigo-600 active:scale-95 text-white px-4 py-2.5 rounded-xl w-12"><i class="fa-solid fa-paper-plane"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: PARAMETER PEGAS -->
+                <div id="view-parameter" class="view-section hidden flex flex-col gap-5">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-800">Standar & Dokumen Parameter Pegas</h2>
+                        <button onclick="window.openUploadModal()" class="bg-blue-600 active:scale-95 text-white px-4 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pdf mr-1.5"></i>Unggah PDF</button>
+                    </div>
+                    <div id="pdf-list-container" class="flex-1"></div>
+                </div>
+
+                <!-- VIEW: PENGATURAN -->
+                <div id="view-pengaturan" class="view-section hidden flex flex-col gap-5">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-800">Pengaturan & Biodata</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="bg-white rounded-2xl border p-6 flex flex-col items-center text-center">
+                            <div class="cursor-pointer" onclick="document.getElementById('profile-photo-input').click()">
+                                <div id="card-avatar-display" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-blue-600 text-white text-3xl sm:text-4xl font-bold flex items-center justify-center shadow-lg overflow-hidden"><span id="card-avatar-initial">M</span></div>
+                            </div>
+                            <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="window.handlePhotoUpload(event)">
+                            <h3 class="mt-4 text-lg sm:text-xl font-bold header-user-name">Mario Putra</h3>
+                            <span class="mt-1 px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200" id="card-user-role">Administrator</span>
+                        </div>
+                        <div class="lg:col-span-2 bg-white rounded-2xl border p-5 sm:p-6">
+                            <h3 class="text-base font-bold text-gray-800 mb-4">Edit Biodata</h3>
+                            <form onsubmit="event.preventDefault(); window.saveBiodata();" class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-semibold mb-1">Nama</label><input type="text" id="input-bio-name" required class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
+                                    <div><label class="block text-xs font-semibold mb-1">Email</label><input type="email" id="input-bio-email" required class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
+                                    <div><label class="block text-xs font-semibold mb-1">HP / WA</label><input type="text" id="input-bio-phone" required class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
+                                    <div><label class="block text-xs font-semibold mb-1">Jabatan</label><input type="text" id="input-bio-role" class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
+                                </div>
+                                <div><label class="block text-xs font-semibold mb-1">Unit Kerja</label><input type="text" id="input-bio-unit" class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
+                                <div class="flex justify-end"><button type="submit" class="w-full sm:w-auto py-2.5 px-5 bg-blue-600 text-white rounded-xl text-xs font-bold">Simpan Perubahan</button></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM NAVIGATION BAR (KHUSUS HP / TABLET KECIL - MUDAH DIJANGKAU IBU JARI) -->
+            <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-30 flex justify-around items-center px-1 pt-1.5 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]" style="padding-bottom: max(0.4rem, var(--safe-bottom));">
+                <button onclick="window.switchMenu('dashboard')" id="mnav-dashboard" class="mobile-nav-btn active flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
+                    <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-chart-pie text-sm"></i></div>
+                    <span class="text-[10px] font-bold mt-0.5">Dashboard</span>
+                </button>
+                <button onclick="window.switchMenu('setsarana')" id="mnav-setsarana" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
+                    <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-layer-group text-sm"></i></div>
+                    <span class="text-[10px] font-bold mt-0.5">Set Sarana</span>
+                </button>
+                <button onclick="window.switchMenu('data')" id="mnav-data" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
+                    <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-database text-sm"></i></div>
+                    <span class="text-[10px] font-bold mt-0.5">Data Uji</span>
+                </button>
+                <button onclick="window.switchMenu('laporan')" id="mnav-laporan" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
+                    <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-wand-magic-sparkles text-sm"></i></div>
+                    <span class="text-[10px] font-bold mt-0.5">AI Laporan</span>
+                </button>
+                <button onclick="window.toggleMobileDrawer(true)" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
+                    <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-ellipsis text-sm"></i></div>
+                    <span class="text-[10px] font-bold mt-0.5">Lainnya</span>
+                </button>
+            </nav>
+        </main>
+    </div>
+
+    <!-- MODAL UPLOAD EXCEL BARU (BOTTOM-SHEET DI HP, CENTER MODAL DI DESKTOP) -->
+    <div id="excel-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
+            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
+                <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian Baru</h3>
+                <button onclick="window.closeExcelModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 sm:p-6 space-y-4">
+                <input type="file" id="real-excel-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelSelection(event, 'new')">
+                <div class="flex justify-center px-5 py-6 border-2 border-dashed border-green-300 bg-green-50/30 rounded-2xl cursor-pointer active:scale-[0.99] transition" onclick="document.getElementById('real-excel-input').click()">
+                    <div class="text-center"><i class="fa-solid fa-file-excel text-4xl text-green-600 mb-2"></i><p class="text-sm font-bold text-blue-600">Ketuk untuk pilih file Excel (.xlsx / .xls)</p><p class="text-[11px] text-gray-500 mt-1">Otomatis membaca seluruh sheet bulanan & urutan seri</p></div>
+                </div>
+                <div id="excel-file-display-new" class="hidden p-3.5 border border-green-200 bg-green-50 rounded-xl">
+                    <p id="excel-file-name-new" class="text-xs font-bold text-gray-800 truncate">file.xlsx</p>
+                    <p id="excel-file-preview-info" class="text-[11px] text-green-700 font-medium mt-0.5">Menganalisis isi file...</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-semibold mb-1">Sarana (Otomatis)</label><input type="text" id="input-excel-sarana" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Bogie (Otomatis)</label><input type="text" id="input-excel-bogie" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button onclick="window.closeExcelModal()" class="px-4 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button>
+                    <button onclick="window.processExcelNew()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl">Proses & Simpan Arsip</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL UPLOAD LANJUTAN -->
+    <div id="excel-lanjutan-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
+            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
+                <h3 class="font-bold text-sm sm:text-base">Upload File Excel Lanjutan</h3>
+                <button onclick="window.closeLanjutanModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 sm:p-6 space-y-4">
+                <select id="target-draft-select" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold"></select>
+                <input type="file" id="lanjutan-excel-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelSelection(event, 'lanjutan')">
+                <div class="flex justify-center px-5 py-6 border-2 border-dashed border-amber-300 bg-amber-50/30 rounded-2xl cursor-pointer" onclick="document.getElementById('lanjutan-excel-input').click()">
+                    <div class="text-center"><i class="fa-solid fa-file-import text-4xl text-amber-500 mb-2"></i><p class="text-sm font-bold text-blue-600">Pilih File Excel Lanjutan</p></div>
+                </div>
+                <div id="excel-file-display-lanjutan" class="hidden p-3.5 border border-amber-200 bg-amber-50 rounded-xl">
+                    <p id="excel-file-name-lanjutan" class="text-xs font-bold truncate">file.xlsx</p>
+                    <p id="excel-lanjutan-preview-info" class="text-[11px] text-amber-800 font-medium mt-0.5">Siap disinkronkan</p>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button onclick="window.closeLanjutanModal()" class="px-4 py-2.5 text-xs bg-gray-100 rounded-xl">Batal</button>
+                    <button onclick="window.processExcelLanjutan()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-amber-500 rounded-xl">Sinkronkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EXCEL VIEW (FULLSCREEN DI HP, 96VW DI DESKTOP) -->
+    <div id="excel-view-modal" class="hidden fixed inset-0 z-[65] flex items-center justify-center sm:p-4 bg-slate-900/80 backdrop-blur-xs">
+        <div class="bg-white shadow-2xl w-full h-full md:w-[96vw] md:h-[94dvh] sm:rounded-2xl flex flex-col overflow-hidden" style="padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);">
+            <div class="px-4 sm:px-6 py-3 border-b flex justify-between items-center gap-2 bg-slate-900 text-white shrink-0">
+                <div class="min-w-0">
+                    <h3 class="text-sm sm:text-lg font-bold truncate" id="excel-view-title">Detail Pengujian</h3>
+                    <p class="text-[11px] text-slate-300 truncate" id="excel-view-subtitle">Sub</p>
+                </div>
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <button onclick="window.exportMonthlyExcel()" class="px-2.5 sm:px-3.5 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline ml-1">Export</span></button>
+                    <button onclick="window.printMonthlyReport()" class="px-2.5 sm:px-3.5 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-xl"><i class="fa-solid fa-print"></i><span class="hidden sm:inline ml-1">PDF</span></button>
+                    <button onclick="window.closeExcelViewModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="bg-slate-100 border-b px-4 sm:px-6 pt-2 flex items-center gap-1.5 swipe-scroll-x no-scrollbar shrink-0" id="excel-view-tabs"></div>
+            <div class="px-4 sm:px-6 py-2.5 bg-white shrink-0 border-b grid grid-cols-3 gap-2 sm:gap-3" id="excel-view-rekap"></div>
+            <div class="px-4 sm:px-6 py-2.5 bg-slate-50 border-b flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shrink-0">
+                <div class="flex items-center gap-2">
+                    <input type="text" id="modal-search-input" oninput="window.modalPage=1; window.applyModalFilter()" placeholder="Cari No. Pegas / Waktu..." class="flex-1 sm:w-60 px-3 py-2 bg-white border rounded-xl text-sm sm:text-xs outline-none">
+                    <select id="modal-filter-status" onchange="window.modalPage=1; window.applyModalFilter()" class="py-2 px-2.5 bg-white border rounded-xl text-xs font-semibold outline-none">
+                        <option value="all">Semua</option>
+                        <option value="lulus">Accept</option>
+                        <option value="afkir">Reject</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-between sm:justify-end gap-2 text-xs">
+                    <span id="modal-pagination-info" class="text-gray-600 font-medium">0 data</span>
+                    <div class="flex items-center gap-1.5">
+                        <select id="modal-page-size" onchange="window.modalPage=1; window.applyModalFilter()" class="py-1.5 px-2 bg-white border rounded-lg text-xs font-semibold">
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="999999">Semua</option>
+                        </select>
+                        <button onclick="window.changeModalPage(-1)" id="btn-modal-prev" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-gray-100 font-bold"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="modal-page-indicator" class="px-1.5 font-bold">1 / 1</span>
+                        <button onclick="window.changeModalPage(1)" id="btn-modal-next" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-gray-100 font-bold"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 swipe-scroll-x overflow-y-auto smooth-scroll bg-white relative dark-scrollbar">
+                <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
+                    <thead class="text-[10px] uppercase bg-slate-100 text-slate-700 font-bold sticky top-0 z-10 border-b shadow-xs" id="excel-view-thead"></thead>
+                    <tbody id="excel-view-tbody" class="divide-y divide-gray-100 text-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PDF & KONFIRMASI -->
+    <div id="upload-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold">Unggah PDF</h3><button onclick="window.closeUploadModal()"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="event.preventDefault(); window.handleUpload();" class="space-y-4">
+                <input type="text" id="upload-judul" required placeholder="Judul Dokumen" class="block w-full py-2.5 px-3 border rounded-xl text-sm">
+                <input id="file-upload" type="file" class="hidden" accept=".pdf" onchange="window.handlePdfFileSelect(event)">
+                <div onclick="document.getElementById('file-upload').click()" class="flex justify-center py-6 border-2 border-dashed rounded-xl cursor-pointer"><span id="pdf-selected-name" class="text-sm text-blue-600 font-semibold">Ketuk pilih PDF</span></div>
+                <div class="flex justify-end"><button type="submit" class="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+    <div id="confirm-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl p-6 text-center max-w-sm w-full shadow-2xl">
+            <h3 class="font-bold text-lg mb-2">Hapus Data Arsip?</h3><p class="text-xs text-gray-500 mb-6">Yakin ingin menghapus arsip ini secara permanen?</p>
+            <div class="flex gap-3 justify-center"><button onclick="window.closeConfirmModal()" class="flex-1 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button><button id="btn-confirm-delete" class="flex-1 py-2.5 text-xs font-bold text-white bg-red-600 rounded-xl">Ya, Hapus</button></div>
+        </div>
+    </div>
+    <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto z-[80] transform -translate-y-24 sm:translate-y-0 sm:translate-x-[120%] transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-lg"></i><p id="toast-message" class="text-xs sm:text-sm font-semibold"></p>
+    </div>
+
+    <script>
+        // =========================================================================
+        // KONFIGURASI SUPABASE CLOUD
+        // =========================================================================
+        const SUPABASE_URL = 'https://wndnlltqxijtyhfvnqfs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_x8WqyPktnIiE6o6ijLBqnw_vk8BhAsa';
+        // =========================================================================
+
+        const EXCEL_STORAGE_KEY = 'excel_archives_v7_clean';
+        const SETSARANA_STORAGE_KEY = 'sarana_sets_p24_p48_v1';
+
+        const supabaseClient = (!SUPABASE_URL.includes('TEMPEL_') && window.supabase)
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        // =========================================================================
+        // KONTROL SLIDE-OVER DRAWER & GESTUR GESER (TOUCH SWIPE) UNTUK HP/TABLET
+        // =========================================================================
+        window.toggleMobileDrawer = function(open) {
+            const drawer = document.getElementById('mobile-sidebar-drawer');
+            const backdrop = document.getElementById('mobile-sidebar-backdrop');
+            if (!drawer || !backdrop) return;
+            if (open) {
+                backdrop.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    backdrop.classList.remove('opacity-0');
+                    drawer.classList.remove('-translate-x-full');
+                });
+            } else {
+                backdrop.classList.add('opacity-0');
+                drawer.classList.add('-translate-x-full');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        };
+
+        (function initTouchSwipeGestures() {
+            let touchStartX = 0, touchStartY = 0;
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (e.changedTouches.length !== 1 || window.innerWidth >= 768) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+                if (dy > 60) return; // Abaikan jika sedang scroll vertikal
+
+                // Geser dari tepi kiri layar (< 35px) ke kanan untuk membuka menu
+                if (touchStartX < 35 && dx > 65) {
+                    window.toggleMobileDrawer(true);
+                }
+                // Geser ke kiri saat drawer terbuka untuk menutup menu
+                const drawer = document.getElementById('mobile-sidebar-drawer');
+                if (drawer && !drawer.classList.contains('-translate-x-full') && dx < -65) {
+                    window.toggleMobileDrawer(false);
+                }
+            }, { passive: true });
+        })();
+
+        function updateCloudStatusBadge() {
+            const badge = document.getElementById('cloud-sync-badge');
+            const dot = document.getElementById('mobile-cloud-dot');
+            if (supabaseClient) {
+                if (badge) {
+                    badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Terhubung Cloud Supabase (Multi-Perangkat)';
+                }
+                if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
+            } else {
+                if (badge) {
+                    badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200 shrink-0';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Mode Lokal';
+                }
+                if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500';
+            }
+        }
+
+        async function saveToPermanentDB(key, val) {
+            try { localStorage.setItem('cache_' + key, JSON.stringify(val)); } catch(e) {}
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('railspring_storage')
+                    .upsert({ key: key, payload: val, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+                if (error) throw error;
+            } catch (err) {
+                console.error('Gagal menyimpan ke Supabase:', err);
+                window.showToast('Gagal sinkron ke Cloud Supabase', 'error');
+            }
+        }
+
+        async function loadFromPermanentDB(key) {
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('railspring_storage')
+                        .select('payload')
+                        .eq('key', key)
+                        .maybeSingle();
+                    if (!error && data && data.payload) {
+                        try { localStorage.setItem('cache_' + key, JSON.stringify(data.payload)); } catch(e) {}
+                        return data.payload;
+                    }
+                } catch (err) { console.error('Gagal memuat dari Supabase:', err); }
+            }
+            try {
+                const local = localStorage.getItem('cache_' + key);
+                return local ? JSON.parse(local) : null;
+            } catch (e) { return null; }
+        }
+
+        window.syncFromCloudManual = async function() {
+            window.showToast('Mengambil data terbaru dari Cloud...', 'success');
+            await loadAllSavedData();
+            window.showToast('Data berhasil disegarkan!', 'success');
+        };
+
+        window.userProfile = { name: "Mario Putra", email: "mario.putra@kai.id", phone: "0812-3456-7890", role: "Administrator", unit: "Balai Yasa Tegal - Logam Jaya Teknik", photoUrl: "" };
+        try { const sp = localStorage.getItem('railspring_user_profile'); if(sp) window.userProfile = JSON.parse(sp); } catch(e){}
+
+        window.dbData = []; window.saranaSets = []; window.pdfDocs = [];
+        window.deleteIdTarget = null; window.activeFilterPerawatan = 'ALL';
+        window.selectedExcelFile_new = null; window.selectedExcelFile_lanjutan = null;
+        window.parsedPreview_new = null; window.parsedPreview_lanjutan = null;
+        window.currentViewData = null; window.currentActiveMonth = 'ALL';
+        window.modalPage = 1; window.lastModalFilteredRows = []; window.lastTrackerFilteredList = [];
+        const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        const DEFAULT_GD42T_SPECS = [
+            { name: 'Free state', load: '0 Kg', nom: 209.5, tp: 3, tm: 3 },
+            { name: 'Tare state', load: '567 Kg', nom: 203.2, tp: 3, tm: 3 },
+            { name: 'Normal load', load: '1539 Kg', nom: 192.4, tp: 3, tm: 3 },
+            { name: 'Maximum load', load: '2410 Kg', nom: 182.7, tp: 3, tm: 3 },
+            { name: 'Solid', load: '5355 Kg', nom: 150.0, tp: 3, tm: 3 }
+        ];
+
+        window.sortMonthLabels = function(labels) {
+            return [...labels].sort((a, b) => {
+                const parseLbl = (str) => {
+                    const parts = String(str).trim().split(/\s+/);
+                    const mIdx = MONTH_NAMES.findIndex(m => m.toLowerCase() === (parts[0] || '').toLowerCase());
+                    const yr = parseInt(parts[1], 10) || 2026;
+                    return mIdx === -1 ? 999999 : yr * 100 + mIdx;
+                };
+                return parseLbl(a) - parseLbl(b);
+            });
+        };
+
+        function detectSheetMonthInfo(textStr, fallbackYear = 2026) {
+            if (!textStr) return null;
+            const clean = String(textStr).trim().toLowerCase();
+            const numMatch = clean.match(/bulan\s*(0?[1-9]|1[0-2])/i);
+            if (numMatch) {
+                const idx = parseInt(numMatch[1], 10) - 1;
+                const ym = clean.match(/(20\d{2})/);
+                const year = ym ? parseInt(ym[1], 10) : fallbackYear;
+                return { monthIndex: idx, monthNumber: idx + 1, year, label: `${MONTH_NAMES[idx]} ${year}` };
+            }
+            const aliases = [
+                {idx:0,keys:['januari','january','jan']},{idx:1,keys:['februari','february','feb']},{idx:2,keys:['maret','march','mar']},
+                {idx:3,keys:['april','apr']},{idx:4,keys:['mei','may']},{idx:5,keys:['juni','june','jun']},{idx:6,keys:['juli','july','jul']},
+                {idx:7,keys:['agustus','august','agu','ags','aug']},{idx:8,keys:['september','sept','sep']},{idx:9,keys:['oktober','october','okt','oct']},
+                {idx:10,keys:['november','nov']},{idx:11,keys:['desember','december','des','dec']}
+            ];
+            for (const item of aliases) {
+                for (const k of item.keys) {
+                    if (new RegExp(`\b${k}\b`, 'i').test(clean) || clean.startsWith(k)) {
+                        const ym = clean.match(/(20\d{2}|\d{2})/);
+                        const year = ym ? (ym[1].length === 2 ? parseInt('20' + ym[1], 10) : parseInt(ym[1], 10)) : fallbackYear;
+                        return { monthIndex: item.idx, monthNumber: item.idx + 1, year, label: `${MONTH_NAMES[item.idx]} ${year}` };
+                    }
+                }
+            }
+            return null;
+        }
+
+        function detectMonthFromTimestampStr(waktuStr) {
+            if (!waktuStr || waktuStr === '-') return null;
+            const s = String(waktuStr).trim();
+            const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+            if (dmy) {
+                let d = parseInt(dmy[1], 10), m = parseInt(dmy[2], 10), y = parseInt(dmy[3], 10);
+                if (y < 100) y += 2000;
+                if (m >= 1 && m <= 12) return { day: d, monthIndex: m - 1, monthNumber: m, year: y, label: `${MONTH_NAMES[m - 1]} ${y}` };
+            }
+            const ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+            if (ymd) {
+                let y = parseInt(ymd[1], 10), m = parseInt(ymd[2], 10), d = parseInt(ymd[3], 10);
+                if (m >= 1 && m <= 12) return { day: d, monthIndex: m - 1, monthNumber: m, year: y, label: `${MONTH_NAMES[m - 1]} ${y}` };
+            }
+            return null;
+        }
+
+        function normalizeSpringCode(rawCode, defaultPrefix = 'OS') {
+            if (rawCode === null || rawCode === undefined) return '';
+            let s = String(rawCode).trim().toUpperCase();
+            if (!s) return '';
+            const blocked = ['#VALUE!', '#DIV/0!', 'NO SARANA', 'INP', 'TAG', 'DESC', 'DESC.', 'COND', 'COND.', 'UM COND.', 'NOM.', 'TOLL.+', 'TOLL.-', 'MEAN', 'MAX', 'MIN', 'ST.DEV.', 'CP', 'CPK', 'GOOD', 'BAD', 'LOW', 'HIGH'];
+            if (blocked.includes(s)) return '';
+            if (s === 'SAMPLE') return `${defaultPrefix}.SAMPLE`;
+            s = s.replace(/\s+/g, '').replace(/^(\d+)\.0$/, '$1');
+            const m = s.match(/^[A-Z0]{0,4}[\.,:\-\/]*([0-9OIL]{1,6})$/i);
+            if (m) {
+                const numPart = m[1].toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1');
+                if (/^\d+$/.test(numPart)) return `${defaultPrefix}.${numPart}`;
+            }
+            const cleanedDigits = s.replace(/O/gi, '0').match(/\d+/g);
+            if (cleanedDigits && cleanedDigits.length > 0) return `${defaultPrefix}.${cleanedDigits[cleanedDigits.length - 1]}`;
+            return s;
+        }
+
+        function formatExcelTimestamp(rawVal, sheetMonthNum = null) {
+            if (rawVal === null || rawVal === undefined || String(rawVal).trim() === '') return '-';
+            if (typeof rawVal === 'number' && rawVal > 30000 && rawVal < 70000) {
+                const utcDays = Math.floor(rawVal - 25569);
+                const dateInfo = new Date(utcDays * 86400 * 1000);
+                let totalSeconds = Math.floor(86400 * (rawVal - Math.floor(rawVal) + 0.0000001));
+                const hours = Math.floor(totalSeconds / 3600), minutes = Math.floor((totalSeconds % 3600) / 60);
+                let d = dateInfo.getUTCDate(), m = dateInfo.getUTCMonth() + 1, y = dateInfo.getUTCFullYear() % 100;
+                if (sheetMonthNum && m !== sheetMonthNum && d === sheetMonthNum) { const t = d; d = m; m = t; }
+                return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${String(y).padStart(2,'0')} ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
+            }
+            const s = String(rawVal).trim();
+            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2})/);
+            if (iso) {
+                let yr = parseInt(iso[1], 10) % 100, mo = parseInt(iso[2], 10), da = parseInt(iso[3], 10);
+                if (sheetMonthNum && mo !== sheetMonthNum && da === sheetMonthNum) { const t = da; da = mo; mo = t; }
+                return `${String(da).padStart(2,'0')}/${String(mo).padStart(2,'0')}/${String(yr).padStart(2,'0')} ${iso[4]}`;
+            }
+            return s;
+        }
+
+        function extractSaranaAndBogie(fileName, rawJenisPegas, rawSaranaMeta, rawBogieMeta) {
+            const cleanFile = String(fileName || '').replace(/\.xlsx?$/i, '').trim();
+            const combined = `${rawSaranaMeta || ''} ${cleanFile} ${rawJenisPegas || ''}`.toUpperCase();
+            let detectedSarana = rawSaranaMeta ? String(rawSaranaMeta).replace(/-/g, ' ').trim().toUpperCase() : '';
+            if (!detectedSarana) {
+                const patterns = [/(GD\s*\d+\s*T(?:ON)?)/i, /(GK\s*\d+\s*T(?:ON)?)/i, /(KKW\s*\d*\s*T?)/i, /(PPCW\s*\d*\s*T?)/i, /(M1|K1|K2|K3|MP1|MP2|MP3|BP|B)/i];
+                for (const rx of patterns) {
+                    const m = combined.match(rx);
+                    if (m) { detectedSarana = m[1].replace(/\s+/g, ' ').toUpperCase().replace(/T$/, ' TON'); break; }
+                }
+            }
+            if (!detectedSarana) detectedSarana = cleanFile.replace(/pegas|luar|dalam|ayun|bogie|bo/gi, '').trim().toUpperCase() || 'GD 42 TON';
+            let komp = combined.includes('DALAM') ? 'Pegas Dalam (IS)' : (combined.includes('LUAR') ? 'Pegas Luar (OS)' : (rawJenisPegas || cleanFile));
+            const bogieType = rawBogieMeta ? `${rawBogieMeta} (${komp})` : komp;
+            return { sarana: detectedSarana, bogie: `BO ${detectedSarana} - ${bogieType}` };
+        }
+
+        function getArchiveDefaultPrefix(arc) {
+            const c = `${arc?.jenis || ''} ${arc?.bogie || ''} ${arc?.nomor || ''}`.toUpperCase();
+            return (c.includes('DALAM') || c.includes('INNER') || /IS/.test(c)) ? 'IS' : 'OS';
+        }
+
+        function autoSequenceAndHealMonths(excelData, defaultPrefix = 'OS') {
+            if (!excelData) return {};
+            const regrouped = {};
+            const initialMonths = window.sortMonthLabels(Object.keys(excelData));
+
+            initialMonths.forEach(mLabel => {
+                const mInfo = detectSheetMonthInfo(mLabel);
+                const sheetMNum = mInfo ? mInfo.monthNumber : null;
+                const sheetYear = mInfo ? mInfo.year : 2026;
+                let reachedEndOfMonth = false;
+                let transitionedMonthLabel = null;
+
+                (excelData[mLabel] || []).forEach(r => {
+                    if (!r) return;
+                    r.nomor = normalizeSpringCode(r.nomor, defaultPrefix);
+                    const rowM = detectMonthFromTimestampStr(r.waktu);
+
+                    if (sheetMNum && rowM) {
+                        if (rowM.monthNumber === sheetMNum && rowM.day >= 28) {
+                            reachedEndOfMonth = true;
+                        } else if (reachedEndOfMonth && (rowM.monthNumber === (sheetMNum % 12) + 1 || (rowM.day === (sheetMNum % 12) + 1 && rowM.monthNumber <= 12))) {
+                            const nextMIdx = sheetMNum % 12;
+                            const nextYear = sheetMNum === 12 ? sheetYear + 1 : sheetYear;
+                            transitionedMonthLabel = `${MONTH_NAMES[nextMIdx]} ${nextYear}`;
+                            if (rowM.monthNumber !== nextMIdx + 1 && rowM.day === nextMIdx + 1) {
+                                const fixedDay = String(rowM.monthNumber).padStart(2, '0');
+                                const fixedMon = String(nextMIdx + 1).padStart(2, '0');
+                                r.waktu = String(r.waktu).replace(/^\d{1,2}[\/\-]\d{1,2}/, `${fixedDay}/${fixedMon}`);
+                            }
+                        } else if (transitionedMonthLabel) {
+                            const nextMNum = (sheetMNum % 12) + 1;
+                            if (rowM.monthNumber !== nextMNum && rowM.day === nextMNum) {
+                                const fixedDay = String(rowM.monthNumber).padStart(2, '0');
+                                const fixedMon = String(nextMNum).padStart(2, '0');
+                                r.waktu = String(r.waktu).replace(/^\d{1,2}[\/\-]\d{1,2}/, `${fixedDay}/${fixedMon}`);
+                            }
+                        }
+                    }
+
+                    const destMonth = transitionedMonthLabel || mLabel;
+                    if (!regrouped[destMonth]) regrouped[destMonth] = [];
+                    regrouped[destMonth].push(r);
+                });
+            });
+
+            const sortedMonths = window.sortMonthLabels(Object.keys(regrouped));
+            const finalData = {};
+            let lastMonthEndingNumber = null;
+
+            sortedMonths.forEach((mLabel, mIdx) => {
+                const rows = regrouped[mLabel] || [];
+                const mInfo = detectSheetMonthInfo(mLabel);
+                const isOctOrLater = mInfo && (mInfo.year > 2026 || (mInfo.year === 2026 && mInfo.monthNumber >= 10));
+
+                if (mIdx > 0 && lastMonthEndingNumber !== null && isOctOrLater) {
+                    let seqNum = lastMonthEndingNumber;
+                    rows.forEach(r => {
+                        seqNum++;
+                        r.nomor = `${defaultPrefix}.${seqNum}`;
+                    });
+                }
+
+                for (let i = rows.length - 1; i >= 0; i--) {
+                    const mLast = String(rows[i].nomor || '').match(/\.(\d+)$/);
+                    if (mLast) {
+                        lastMonthEndingNumber = parseInt(mLast[1], 10);
+                        break;
+                    }
+                }
+
+                finalData[mLabel] = rows;
+            });
+
+            return finalData;
+        }
+
+        function ensureArchiveMetadata(archive) {
+            if (!archive.sarana || !archive.bogie) {
+                const info = extractSaranaAndBogie(archive.nomor, archive.jenis);
+                archive.sarana = archive.sarana || info.sarana;
+                archive.bogie = archive.bogie || info.bogie;
+            }
+            if (!archive.paramSpecs) archive.paramSpecs = DEFAULT_GD42T_SPECS;
+            const targetPrefix = getArchiveDefaultPrefix(archive);
+            if (archive.excelData) {
+                archive.excelData = autoSequenceAndHealMonths(archive.excelData, targetPrefix);
+            }
+            return archive;
+        }
+
+        window.parseExcelData = function(workbook, fileName = '') {
+            let recordsByMonth = {}, overallJenisPegas = '', metaSarana = '', metaBogie = '', metaOperator = '', metaLokasi = '', detectedSpecs = null, totalExtracted = 0, typoFixedCount = 0;
+
+            const monthlySheets = workbook.SheetNames.filter(sn => !['vals','spc','source','chart','grafik'].includes(sn.trim().toLowerCase()) && detectSheetMonthInfo(sn) !== null);
+            const sheetsToProcess = workbook.SheetNames.filter(sn => {
+                const low = sn.trim().toLowerCase();
+                if (['vals','spc','chart','grafik'].includes(low)) return false;
+                if (low === 'source' && monthlySheets.length > 0) return false;
+                return true;
+            });
+
+            sheetsToProcess.forEach(sheetName => {
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: null, raw: true });
+                if (!rows || rows.length < 5) return;
+
+                let sheetPeriodeMonth = null;
+                for (let r = 0; r < Math.min(rows.length - 1, 15); r++) {
+                    const rowArr = rows[r] || [];
+                    for (let c = 0; c < rowArr.length; c++) {
+                        const cellStr = String(rowArr[c] || '').trim().toUpperCase();
+                        const nextVal = (rows[r + 1] && rows[r + 1][c] !== null && rows[r + 1][c] !== undefined) ? String(rows[r + 1][c]).trim() : '';
+                        if (cellStr === 'NAMA SARANA' && nextVal && !metaSarana) metaSarana = nextVal;
+                        if (cellStr === 'JENIS BOGIE' && nextVal && !metaBogie) metaBogie = nextVal;
+                        if (cellStr === 'JENIS PEGAS' && nextVal && !overallJenisPegas) overallJenisPegas = nextVal;
+                        if (cellStr === 'OPERATOR' && nextVal && !metaOperator) metaOperator = nextVal;
+                        if ((cellStr === 'LOKASI' || cellStr === 'KONDISI') && nextVal && !metaLokasi) metaLokasi = nextVal;
+                        if (cellStr === 'DATE:' && rowArr[c + 1] && typeof rowArr[c + 1] === 'string') {
+                            const mInfo = detectSheetMonthInfo(String(rowArr[c + 1]));
+                            if (mInfo) sheetPeriodeMonth = mInfo;
+                        }
+                    }
+                }
+
+                let nomRow = null, tpRow = null, tmRow = null, descRow = null, condRow = null, tmRowIdx = -1;
+                for (let i = 0; i < Math.min(rows.length, 35); i++) {
+                    const r = rows[i] || [];
+                    const str = r.map(x => String(x || '')).join(' ').toLowerCase();
+                    const numCount = r.filter(x => x !== null && x !== '' && !isNaN(parseFloat(x)) && parseFloat(x) > 0).length;
+                    if ((str.includes('free state') || str.includes('tare state')) && !descRow) descRow = r;
+                    if ((str.includes('cond.') || (descRow && i === rows.indexOf(descRow) + 1 && numCount >= 2)) && !condRow) condRow = r;
+                    if (str.includes('nom.') && !str.includes('c.nom') && !str.includes('nom. m.') && numCount >= 3 && !nomRow) nomRow = r;
+                    else if (str.includes('toll.+') && !str.includes('c.toll.+') && numCount >= 3 && !tpRow) tpRow = r;
+                    else if (str.includes('toll.-') && !str.includes('c.toll.-') && numCount >= 3 && !tmRow) { tmRow = r; tmRowIdx = i; }
+                }
+
+                if ((!nomRow || !tpRow || !tmRow) && descRow) {
+                    const dIdx = rows.indexOf(descRow);
+                    for (let i = dIdx + 1; i < Math.min(rows.length - 2, dIdx + 10); i++) {
+                        const r0 = rows[i] || [], r1 = rows[i+1] || [], r2 = rows[i+2] || [];
+                        if (r0.filter(x => typeof x === 'number' && x > 50).length >= 3 && r1.filter(x => typeof x === 'number' && x > 0 && x < 50).length >= 3) {
+                            nomRow = r0; tpRow = r1; tmRow = r2; tmRowIdx = i + 2; break;
+                        }
+                    }
+                }
+                if (!nomRow || !tpRow || !tmRow) return;
+
+                let colIndices = [];
+                for (let c = 1; c < nomRow.length; c++) {
+                    if (!isNaN(parseFloat(nomRow[c])) && parseFloat(nomRow[c]) > 20 && !isNaN(parseFloat(tpRow[c])) && !isNaN(parseFloat(tmRow[c]))) colIndices.push(c);
+                }
+                if (colIndices.length === 0) return;
+
+                if (!detectedSpecs) {
+                    detectedSpecs = colIndices.map((cIdx, idx) => ({
+                        name: (descRow && descRow[cIdx]) ? String(descRow[cIdx]).trim() : `Parameter P${idx}`,
+                        load: (condRow && condRow[cIdx]) ? `${String(condRow[cIdx]).trim()} Kg` : (idx === 0 ? '0 Kg' : ''),
+                        nom: parseFloat(nomRow[cIdx]), tp: parseFloat(tpRow[cIdx]), tm: parseFloat(tmRow[cIdx])
+                    }));
+                }
+
+                const defaultPrefix = (`${overallJenisPegas} ${fileName} ${sheetName}`.toUpperCase().includes('DALAM')) ? 'IS' : 'OS';
+                const sheetMonthInfo = detectSheetMonthInfo(sheetName) || sheetPeriodeMonth;
+                let lastRowMonthLabel = sheetMonthInfo ? sheetMonthInfo.label : null;
+                let lastSequentialNum = 0;
+
+                for (let i = Math.max(tmRowIdx + 1, 10); i < rows.length; i++) {
+                    const row = rows[i]; if (!row || !Array.isArray(row)) continue;
+                    let validMeas = 0;
+                    colIndices.forEach(cIdx => { const v = parseFloat(row[cIdx]); if (!isNaN(v) && v > 10) validMeas++; });
+                    if (validMeas < 3) continue;
+
+                    let rawCode = row[1];
+                    if (rawCode === null || rawCode === undefined || String(rawCode).trim() === '') {
+                        for (let k = colIndices[0] - 1; k >= 1; k--) {
+                            if (row[k] !== null && row[k] !== undefined && String(row[k]).trim() !== '' && !String(row[k]).includes('/')) {
+                                rawCode = row[k]; break;
+                            }
+                        }
+                    }
+                    const rawTrimmed = String(rawCode ?? '').trim().toUpperCase();
+                    let noUji = normalizeSpringCode(rawCode, defaultPrefix);
+                    if (!noUji && lastSequentialNum > 0) {
+                        noUji = `${defaultPrefix}.${lastSequentialNum + 1}`;
+                    }
+                    if (!noUji) continue;
+                    const mSeq = noUji.match(/\.(\d+)$/);
+                    if (mSeq) lastSequentialNum = parseInt(mSeq[1], 10);
+
+                    if (rawTrimmed !== noUji && !/^\d+\.0$/.test(rawTrimmed)) typoFixedCount++;
+
+                    let rawWaktu = null;
+                    for (let wIdx = colIndices[colIndices.length - 1] + 1; wIdx < Math.min(row.length, colIndices[colIndices.length - 1] + 6); wIdx++) {
+                        if (row[wIdx] !== null && row[wIdx] !== undefined && String(row[wIdx]).trim() !== '') { rawWaktu = row[wIdx]; break; }
+                    }
+                    if (!rawWaktu && row[3] && colIndices[0] > 4) rawWaktu = row[3];
+                    const waktuFormatted = formatExcelTimestamp(rawWaktu, sheetMonthInfo ? sheetMonthInfo.monthNumber : null);
+
+                    let targetMonthLabel = sheetMonthInfo ? sheetMonthInfo.label : null;
+                    if (!targetMonthLabel) {
+                        const rowM = detectMonthFromTimestampStr(waktuFormatted);
+                        if (rowM) { targetMonthLabel = rowM.label; lastRowMonthLabel = targetMonthLabel; }
+                        else targetMonthLabel = lastRowMonthLabel || 'Data Umum';
+                    }
+
+                    let springParams = [], isLulus = true;
+                    colIndices.forEach(colIdx => {
+                        const rawVal = row[colIdx];
+                        const val = (rawVal !== null && rawVal !== undefined && rawVal !== '') ? parseFloat(rawVal) : NaN;
+                        const nom = parseFloat(nomRow[colIdx]), tp = parseFloat(tpRow[colIdx]), tm = parseFloat(tmRow[colIdx]);
+                        if (!isNaN(val)) {
+                            const rVal = Math.round(val * 100) / 100;
+                            const pLulus = rVal >= (nom - tm);
+                            if (!pLulus) isLulus = false;
+                            springParams.push({ val: rVal, nom, tp, tm, lulus: pLulus });
+                        } else springParams.push({ val: null, nom, tp, tm, lulus: true });
+                    });
+
+                    if (!recordsByMonth[targetMonthLabel]) recordsByMonth[targetMonthLabel] = [];
+                    recordsByMonth[targetMonthLabel].push({ nomor: noUji, isLulus, keterangan: isLulus ? 'Siap Pakai' : 'Afkir', waktu: waktuFormatted, params: springParams });
+                    totalExtracted++;
+                }
+            });
+
+            const defaultPrefixFinal = (`${overallJenisPegas} ${fileName}`.toUpperCase().includes('DALAM')) ? 'IS' : 'OS';
+            const healedRecordsByMonth = autoSequenceAndHealMonths(recordsByMonth, defaultPrefixFinal);
+            const sortedKeys = window.sortMonthLabels(Object.keys(healedRecordsByMonth));
+            const autoMeta = extractSaranaAndBogie(fileName, overallJenisPegas || 'PEGAS-LUAR', metaSarana, metaBogie);
+
+            return {
+                recordsByMonth: healedRecordsByMonth, overallJenisPegas: overallJenisPegas || 'PEGAS-LUAR',
+                sarana: autoMeta.sarana, bogie: autoMeta.bogie, operator: metaOperator || 'MARIO', lokasi: metaLokasi || 'BYTG',
+                paramSpecs: detectedSpecs || DEFAULT_GD42T_SPECS, totalExtracted, typoFixedCount, monthCount: sortedKeys.length, monthList: sortedKeys
+            };
+        };
+
+        window.renderPdfCatalog = function() {
+            const c = document.getElementById('pdf-list-container'); if (!c) return;
+            const cards = (window.dbData || []).map(arc => {
+                const specs = arc.paramSpecs || DEFAULT_GD42T_SPECS;
+                return `<div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 mb-4 shadow-xs">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <div><h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-sliders text-blue-600 mr-2"></i>Parameter Otomatis: ${arc.sarana} — ${arc.bogie}</h3><p class="text-[11px] text-gray-500">Sumber: <span class="font-mono text-blue-600">${arc.nomor}</span></p></div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Sesuai Jenis Pegas File</span>
+                    </div>
+                    <div class="swipe-scroll-x">
+                        <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold"><tr><th class="p-2.5 border">Tahap</th><th class="p-2.5 border">Beban (Cond.)</th><th class="p-2.5 border">Nominal (Nom.)</th><th class="p-2.5 border">Toleransi</th><th class="p-2.5 border">Min Lulus</th></tr></thead>
+                            <tbody>${specs.map((sp, i) => `<tr><td class="p-2.5 border font-semibold">P${i} - ${sp.name}</td><td class="p-2.5 border">${sp.load || '-'}</td><td class="p-2.5 border font-mono font-bold">${sp.nom} mm</td><td class="p-2.5 border font-mono">+${sp.tp} / -${sp.tm} mm</td><td class="p-2.5 border font-mono font-bold text-emerald-700">${(sp.nom - sp.tm).toFixed(1)} mm</td></tr>`).join('')}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+            }).join('');
+            c.innerHTML = cards || `<div class="bg-white rounded-2xl border p-6 text-xs text-gray-500">Silakan upload file Excel pengujian pegas untuk menampilkan tabel standar parameter otomatis sesuai jenis pegasnya.</div>`;
+        };
+
+        async function loadAllSavedData() {
+            updateCloudStatusBadge();
+            const savedExcel = await loadFromPermanentDB(EXCEL_STORAGE_KEY);
+            window.dbData = Array.isArray(savedExcel) ? savedExcel.map(ensureArchiveMetadata) : [];
+
+            const savedSets = await loadFromPermanentDB(SETSARANA_STORAGE_KEY);
+            window.saranaSets = Array.isArray(savedSets) ? savedSets : [];
+
+            window.updateDashboardStats();
+            window.handleSearch();
+            if (typeof window.renderPdfCatalog === 'function') window.renderPdfCatalog();
+            window.refreshDashboardTracker();
+            window.populateSpringPickers();
+            window.renderSetSaranaList();
+        }
+
+        window.clearAllArchives = async function() {
+            window.dbData = []; await saveToPermanentDB(EXCEL_STORAGE_KEY, []);
+            window.updateDashboardStats(); window.handleSearch(); window.refreshDashboardTracker(); window.populateSpringPickers(); window.renderPdfCatalog();
+            window.showToast('Semua arsip berhasil dikosongkan!', 'success');
+        };
+
+        window.getArchiveSummary = function(archive) {
+            let total = 0, lulus = 0, afkir = 0;
+            const months = archive && archive.excelData ? window.sortMonthLabels(Object.keys(archive.excelData)) : [];
+            months.forEach(m => {
+                const arr = archive.excelData[m] || [];
+                total += arr.length;
+                arr.forEach(r => { if (r.isLulus) lulus++; else afkir++; });
+            });
+            return { total, lulus, afkir, months };
+        };
+
+        window.lookupSpringInExcelDB = function(springCode) {
+            if (!springCode) return null;
+            const target = String(springCode).trim().toUpperCase();
+            for (const archive of window.dbData) {
+                if (!archive.excelData) continue;
+                for (const bulan of Object.keys(archive.excelData)) {
+                    const found = archive.excelData[bulan].find(r => String(r.nomor || '').trim().toUpperCase() === target);
+                    if (found) return { ...found, bulan, sarana: archive.sarana, bogie: archive.bogie };
+                }
+            }
+            return null;
+        };
+
+        window.findSetSaranaBySpringCode = function(springCode) {
+            if (!springCode) return null;
+            const target = String(springCode).trim().toUpperCase();
+            for (const s of window.saranaSets) {
+                if ((s.pegasLuar || []).some(c => String(c).trim().toUpperCase() === target) || (s.pegasDalam || []).some(c => String(c).trim().toUpperCase() === target)) return s;
+            }
+            return null;
+        };
+
+        window.populateSpringPickers = function() {
+            const osPicker = document.getElementById('picker-os-excel'), isPicker = document.getElementById('picker-is-excel');
+            if (!osPicker || !isPicker) return;
+            let osOpts = [`<option value="">+ Pilih (OS)</option>`], isOpts = [`<option value="">+ Pilih (IS)</option>`], osC = 0, isC = 0;
+            window.dbData.forEach(arc => {
+                if (!arc.excelData) return;
+                Object.keys(arc.excelData).forEach(bln => {
+                    arc.excelData[bln].forEach(r => {
+                        const code = String(r.nomor || '').toUpperCase();
+                        if (code.startsWith('OS') && osC < 300) { osOpts.push(`<option value="${r.nomor}">${r.nomor} (${bln})</option>`); osC++; }
+                        else if (code.startsWith('IS') && isC < 300) { isOpts.push(`<option value="${r.nomor}">${r.nomor} (${bln})</option>`); isC++; }
+                    });
+                });
+            });
+            osPicker.innerHTML = osOpts.join(''); isPicker.innerHTML = isOpts.join('');
+        };
+
+        window.appendSpringFromPicker = function(type) {
+            const picker = document.getElementById(type === 'OS' ? 'picker-os-excel' : 'picker-is-excel');
+            const textarea = document.getElementById(type === 'OS' ? 'set-input-os' : 'set-input-is');
+            if (!picker.value) return;
+            const existing = textarea.value.split(',').map(s => s.trim()).filter(Boolean);
+            if (!existing.includes(picker.value)) { existing.push(picker.value); textarea.value = existing.join(', '); }
+            picker.value = ''; window.previewMatchedSprings();
+        };
+
+        window.previewMatchedSprings = function() {
+            const renderB = (codes, id) => {
+                const el = document.getElementById(id); if (!el) return;
+                el.innerHTML = codes.map(c => {
+                    const m = window.lookupSpringInExcelDB(c);
+                    return m ? `<span class="px-2 py-0.5 rounded border text-[10px] font-mono font-bold ${m.isLulus?'bg-emerald-100 text-emerald-800 border-emerald-300':'bg-red-100 text-red-800 border-red-300'}">${m.nomor}</span>` : `<span class="px-2 py-0.5 rounded border text-[10px] bg-white">${c}</span>`;
+                }).join('');
+            };
+            renderB((document.getElementById('set-input-os')?.value||'').split(',').map(s=>s.trim()).filter(Boolean), 'preview-os-badges');
+            renderB((document.getElementById('set-input-is')?.value||'').split(',').map(s=>s.trim()).filter(Boolean), 'preview-is-badges');
+        };
+
+        window.resetSetSaranaForm = function() {
+            document.getElementById('form-set-sarana')?.reset();
+            document.getElementById('edit-setsarana-id').value = '';
+            document.getElementById('set-input-tanggal').value = new Date().toISOString().split('T')[0];
+            window.previewMatchedSprings();
+        };
+
+        window.saveSetSaranaRecord = async function() {
+            const editId = document.getElementById('edit-setsarana-id').value;
+            const payload = {
+                id: editId ? parseInt(editId, 10) : Date.now(),
+                sarana: document.getElementById('set-input-sarana').value.trim().toUpperCase(),
+                noSarana: document.getElementById('set-input-nosarana').value.trim().toUpperCase(),
+                bogie: document.getElementById('set-input-bogie').value.trim(),
+                tanggal: document.getElementById('set-input-tanggal').value,
+                perawatan: (document.querySelector('input[name="jenis_perawatan"]:checked') || {}).value || 'P24',
+                pegasLuar: (document.getElementById('set-input-os').value||'').split(',').map(s=>normalizeSpringCode(s,'OS')).filter(Boolean),
+                pegasDalam: (document.getElementById('set-input-is').value||'').split(',').map(s=>normalizeSpringCode(s,'IS')).filter(Boolean),
+                catatan: document.getElementById('set-input-catatan').value.trim(),
+                petugas: window.userProfile.name
+            };
+            if (editId) { const idx = window.saranaSets.findIndex(s => s.id === payload.id); if (idx !== -1) window.saranaSets[idx] = payload; }
+            else window.saranaSets.unshift(payload);
+            await saveToPermanentDB(SETSARANA_STORAGE_KEY, window.saranaSets);
+            window.resetSetSaranaForm(); window.renderSetSaranaList(); window.updateDashboardStats(); window.refreshDashboardTracker();
+            window.showToast('Set Sarana disimpan & disinkronkan!', 'success');
+        };
+
+        window.setFilterPerawatan = function(flt) {
+            window.activeFilterPerawatan = flt;
+            ['ALL','P24','P48'].forEach(k => {
+                const b = document.getElementById('btn-flt-' + k.toLowerCase());
+                if (b) b.className = k === flt ? 'shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white' : 'shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600';
+            });
+            window.renderSetSaranaList();
+        };
+
+        window.renderSetSaranaList = function() {
+            const container = document.getElementById('setsarana-list-container'); if (!container) return;
+            document.getElementById('count-set-p24').textContent = window.saranaSets.filter(s => s.perawatan === 'P24').length;
+            document.getElementById('count-set-p48').textContent = window.saranaSets.filter(s => s.perawatan === 'P48').length;
+            const kw = (document.getElementById('search-setsarana')?.value || '').toLowerCase().trim();
+            const filtered = window.saranaSets.filter(s => (window.activeFilterPerawatan === 'ALL' || s.perawatan === window.activeFilterPerawatan) && (!kw || `${s.sarana} ${s.noSarana} ${s.bogie}`.toLowerCase().includes(kw)));
+            container.innerHTML = filtered.map(item => `
+                <div class="bg-white rounded-2xl border p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
+                    <div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2"><span class="font-bold text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">${item.sarana}</span> <span class="text-xs font-extrabold">${item.noSarana}</span> <span class="text-[11px] font-bold px-2 py-0.5 rounded ${item.perawatan==='P24'?'bg-cyan-100 text-cyan-800':'bg-amber-100 text-amber-800'}">${item.perawatan}</span></div>
+                        <p class="text-[11px] text-gray-500">${item.bogie} • OS: <span class="font-mono text-gray-700">${(item.pegasLuar||[]).join(', ')}</span> | IS: <span class="font-mono text-gray-700">${(item.pegasDalam||[]).join(', ')}</span></p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button onclick="window.editSetSaranaRecord(${item.id})" class="flex-1 sm:flex-initial text-xs font-semibold bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-xl">Edit</button>
+                        <button onclick="window.deleteSetSaranaRecord(${item.id})" class="flex-1 sm:flex-initial text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-600 px-3.5 py-2 rounded-xl">Hapus</button>
+                    </div>
+                </div>`).join('') || `<div class="bg-white rounded-2xl border p-6 text-center text-gray-400 text-xs">Belum ada Set Sarana.</div>`;
+        };
+
+        window.editSetSaranaRecord = function(id) {
+            const item = window.saranaSets.find(s => s.id === id); if (!item) return;
+            document.getElementById('edit-setsarana-id').value = item.id; document.getElementById('set-input-sarana').value = item.sarana;
+            document.getElementById('set-input-nosarana').value = item.noSarana; document.getElementById('set-input-bogie').value = item.bogie;
+            document.getElementById('set-input-os').value = (item.pegasLuar||[]).join(', '); document.getElementById('set-input-is').value = (item.pegasDalam||[]).join(', ');
+            window.previewMatchedSprings();
+            document.getElementById('main-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteSetSaranaRecord = async function(id) {
+            window.saranaSets = window.saranaSets.filter(s => s.id !== id);
+            await saveToPermanentDB(SETSARANA_STORAGE_KEY, window.saranaSets);
+            window.renderSetSaranaList(); window.updateDashboardStats(); window.refreshDashboardTracker();
+        };
+
+        window.exportSetSaranaExcel = function() {
+            if (window.saranaSets.length === 0) return window.showToast('Belum ada data Set Sarana', 'error');
+            const ws = XLSX.utils.json_to_sheet(window.saranaSets.map((s, i) => ({ No: i+1, Sarana: s.sarana, No_Sarana: s.noSarana, Bogie: s.bogie, Perawatan: s.perawatan, Tanggal: s.tanggal, OS: (s.pegasLuar||[]).join(', '), IS: (s.pegasDalam||[]).join(', ') })));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Set_Sarana'); XLSX.writeFile(wb, 'Set_Sarana_RailSpring.xlsx');
+        };
+
+        window.refreshDashboardTracker = function() {
+            const saranaSelect = document.getElementById('tracker-select-sarana'), chipsContainer = document.getElementById('tracker-sarana-chips');
+            const saranaSet = new Set(), monthSet = new Set();
+            window.dbData.forEach(d => { if (d.sarana) saranaSet.add(d.sarana); if (d.excelData) Object.keys(d.excelData).forEach(m => monthSet.add(m)); });
+            const saranaList = Array.from(saranaSet).sort(), sortedMonths = window.sortMonthLabels(Array.from(monthSet));
+            if (saranaSelect) saranaSelect.innerHTML = `<option value="ALL">-- Semua Sarana (${saranaList.length}) --</option>` + saranaList.map(s => `<option value="${s}">${s}</option>`).join('');
+            if (chipsContainer) {
+                chipsContainer.innerHTML = `<button onclick="document.getElementById('tracker-select-bulan').value='ALL'; window.executeSaranaTracking();" class="swipe-item shrink-0 px-3.5 py-1.5 rounded-full font-bold text-[11px] bg-blue-600 text-white">Semua Bulan</button>` +
+                    sortedMonths.map(m => `<button onclick="document.getElementById('tracker-select-bulan').value='${m}'; window.executeSaranaTracking();" class="swipe-item shrink-0 px-3.5 py-1.5 rounded-full font-bold text-[11px] bg-white text-slate-700 border hover:bg-blue-50">${m}</button>`).join('');
+            }
+            window.populateTrackerBogieAndMonthOptions(); window.executeSaranaTracking();
+        };
+
+        window.onTrackerSaranaChange = function() { window.populateTrackerBogieAndMonthOptions(); window.executeSaranaTracking(); };
+
+        window.populateTrackerBogieAndMonthOptions = function() {
+            const selSarana = document.getElementById('tracker-select-sarana')?.value || 'ALL';
+            const bogieSet = new Set(), monthSet = new Set();
+            window.dbData.forEach(d => {
+                if (selSarana !== 'ALL' && d.sarana !== selSarana) return;
+                if (d.bogie) bogieSet.add(d.bogie);
+                if (d.excelData) Object.keys(d.excelData).forEach(m => monthSet.add(m));
+            });
+            const bogieSelect = document.getElementById('tracker-select-bogie');
+            if (bogieSelect) bogieSelect.innerHTML = `<option value="ALL">-- Semua Bogie --</option>` + Array.from(bogieSet).map(b => `<option value="${b}">${b}</option>`).join('');
+            const bulanSelect = document.getElementById('tracker-select-bulan');
+            if (bulanSelect) {
+                const cur = bulanSelect.value || 'ALL', sortedM = window.sortMonthLabels(Array.from(monthSet));
+                bulanSelect.innerHTML = `<option value="ALL">Semua Bulan (${sortedM.length})</option>` + sortedM.map(m => `<option value="${m}">${m}</option>`).join('');
+                if (sortedM.includes(cur)) bulanSelect.value = cur;
+            }
+        };
+
+        window.resetTrackerFilters = function() {
+            document.getElementById('tracker-select-sarana').value = 'ALL'; document.getElementById('tracker-input-nomor').value = '';
+            document.getElementById('tracker-select-status').value = 'ALL'; document.getElementById('tracker-select-bulan').value = 'ALL';
+            window.onTrackerSaranaChange();
+        };
+
+        window.executeSaranaTracking = function() {
+            const tbody = document.getElementById('tracker-results-tbody'), summaryBar = document.getElementById('tracker-summary-bar');
+            if (!tbody) return;
+            if (window.dbData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-gray-400">Belum ada data pengujian. Ketuk tombol <strong>Upload Excel</strong>.</td></tr>`;
+                if (summaryBar) summaryBar.innerHTML = '';
+                return;
+            }
+            const selSarana = document.getElementById('tracker-select-sarana')?.value || 'ALL';
+            const selBogie = document.getElementById('tracker-select-bogie')?.value || 'ALL';
+            const selBulan = document.getElementById('tracker-select-bulan')?.value || 'ALL';
+            const selStatus = document.getElementById('tracker-select-status')?.value || 'ALL';
+            const qNum = (document.getElementById('tracker-input-nomor')?.value || '').toLowerCase().trim();
+
+            let matched = [], lulusC = 0, afkirC = 0;
+            window.dbData.forEach(arc => {
+                if (selSarana !== 'ALL' && arc.sarana !== selSarana) return;
+                if (selBogie !== 'ALL' && arc.bogie !== selBogie) return;
+                if (!arc.excelData) return;
+                window.sortMonthLabels(Object.keys(arc.excelData)).forEach(bln => {
+                    if (selBulan !== 'ALL' && bln !== selBulan) return;
+                    (arc.excelData[bln] || []).forEach(r => {
+                        if (qNum && !String(r.nomor).toLowerCase().includes(qNum)) return;
+                        const setMatch = window.findSetSaranaBySpringCode(r.nomor);
+                        if (selStatus === 'LULUS' && !r.isLulus) return;
+                        if (selStatus === 'AFKIR' && r.isLulus) return;
+                        if (selStatus === 'P24' && (!setMatch || setMatch.perawatan !== 'P24')) return;
+                        if (selStatus === 'P48' && (!setMatch || setMatch.perawatan !== 'P48')) return;
+                        if (r.isLulus) lulusC++; else afkirC++;
+                        matched.push({ archiveId: arc.id, sarana: arc.sarana, bogie: arc.bogie, nomor: r.nomor, bulan: bln, isLulus: r.isLulus, keterangan: r.keterangan, waktu: r.waktu || '-', params: r.params || [] });
+                    });
+                });
+            });
+
+            window.lastTrackerFilteredList = matched;
+            document.getElementById('tracker-db-status').textContent = `${matched.length.toLocaleString('id-ID')} Data`;
+            if (summaryBar) {
+                summaryBar.innerHTML = `<div class="flex flex-wrap gap-2"><span class="px-2.5 py-1 rounded-lg bg-slate-100 font-bold">Total: ${matched.length.toLocaleString('id-ID')}</span><span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold">Siap Pakai: ${lulusC.toLocaleString('id-ID')}</span><span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 font-bold">Afkir: ${afkirC.toLocaleString('id-ID')}</span></div>`;
+            }
+
+            tbody.innerHTML = matched.slice(0, 120).map((m, i) => {
+                const badges = (m.params || []).map((p, idx) => `<span class="px-1.5 py-0.5 rounded font-mono text-[10px] border ${p.lulus ? 'bg-slate-50 text-slate-700' : 'bg-red-100 text-red-700 font-bold'}">P${idx}:${p.val ?? '-'}</span>`).join(' ');
+                return `<tr class="hover:bg-blue-50/40"><td class="px-3.5 py-3 text-center">${i+1}</td><td class="px-3.5 py-3 font-bold">${m.sarana}</td><td class="px-3.5 py-3 text-xs">${m.bogie}</td><td class="px-3.5 py-3 font-mono font-bold text-blue-600">${m.nomor}</td><td class="px-3.5 py-3 text-xs"><strong>${m.bulan}</strong> (${m.waktu})</td><td class="px-3.5 py-3 text-center">${badges}</td><td class="px-3.5 py-3 font-bold ${m.isLulus?'text-emerald-600':'text-red-600'}">${m.isLulus?'Siap Pakai':'Afkir'}</td><td class="px-3.5 py-3 text-center"><button class="bg-blue-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold" onclick="window.openExcelViewModal(${m.archiveId}, '${m.bulan}', '${m.nomor}')">Detail</button></td></tr>`;
+            }).join('');
+        };
+
+        let chartInstanceOsPie = null, chartInstanceOsBar = null, chartInstanceIsPie = null, chartInstanceIsBar = null;
+        window.renderDashboardCharts = function() {
+            const canvasOsPie = document.getElementById('chart-os-pie'); if (!canvasOsPie) return;
+            const mOrder = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            let dOS = { total: 0, accept: 0, reject: 0, mt: [], mr: [] }, dIS = { total: 0, accept: 0, reject: 0, mt: [], mr: [] };
+            let mOS = {}, mIS = {}; mOrder.forEach(m => { mOS[m] = { t: 0, r: 0 }; mIS[m] = { t: 0, r: 0 }; });
+
+            (window.dbData || []).forEach(arc => {
+                if (!arc.excelData) return;
+                const isDalam = getArchiveDefaultPrefix(arc) === 'IS';
+                Object.keys(arc.excelData).forEach(blnThn => {
+                    const m = blnThn.split(' ')[0]; if (!mOrder.includes(m)) return;
+                    arc.excelData[blnThn].forEach(r => {
+                        if (isDalam) { dIS.total++; mIS[m].t++; if (r.isLulus) dIS.accept++; else { dIS.reject++; mIS[m].r++; } }
+                        else { dOS.total++; mOS[m].t++; if (r.isLulus) dOS.accept++; else { dOS.reject++; mOS[m].r++; } }
+                    });
+                });
+            });
+
+            mOrder.forEach(m => { dOS.mt.push(mOS[m].t); dOS.mr.push(mOS[m].r); dIS.mt.push(mIS[m].t); dIS.mr.push(mIS[m].r); });
+            const pct = (a, t) => t === 0 ? "0%" : ((a / t) * 100).toFixed(1) + "%";
+            document.getElementById('os-total-test').textContent = dOS.total.toLocaleString('id-ID');
+            document.getElementById('os-val-accept').textContent = dOS.accept.toLocaleString('id-ID');
+            document.getElementById('os-val-reject').textContent = dOS.reject.toLocaleString('id-ID');
+            document.getElementById('os-val-persentase').textContent = pct(dOS.accept, dOS.total);
+            document.getElementById('is-total-test').textContent = dIS.total.toLocaleString('id-ID');
+            document.getElementById('is-val-accept').textContent = dIS.accept.toLocaleString('id-ID');
+            document.getElementById('is-val-reject').textContent = dIS.reject.toLocaleString('id-ID');
+            document.getElementById('is-val-persentase').textContent = pct(dIS.accept, dIS.total);
+
+            if (chartInstanceOsPie) chartInstanceOsPie.destroy(); if (chartInstanceOsBar) chartInstanceOsBar.destroy();
+            if (chartInstanceIsPie) chartInstanceIsPie.destroy(); if (chartInstanceIsBar) chartInstanceIsBar.destroy();
+
+            chartInstanceOsPie = new Chart(canvasOsPie, { type: 'pie', data: { labels: ['Accept', 'Reject'], datasets: [{ data: [dOS.accept, dOS.reject], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            chartInstanceOsBar = new Chart(document.getElementById('chart-os-bar'), { type: 'bar', data: { labels: mOrder.map(m=>m.slice(0,3)), datasets: [{ label: 'Pengetesan', data: dOS.mt, backgroundColor: '#2563eb' }, { label: 'Reject', data: dOS.mr, backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false } });
+            chartInstanceIsPie = new Chart(document.getElementById('chart-is-pie'), { type: 'pie', data: { labels: ['Accept', 'Reject'], datasets: [{ data: [dIS.accept, dIS.reject], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            chartInstanceIsBar = new Chart(document.getElementById('chart-is-bar'), { type: 'bar', data: { labels: mOrder.map(m=>m.slice(0,3)), datasets: [{ label: 'Pengetesan', data: dIS.mt, backgroundColor: '#059669' }, { label: 'Reject', data: dIS.mr, backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false } });
+        };
+
+        window.handleExcelSelection = function(e, type) {
+            const file = e.target.files[0]; if (!file) return;
+            if (type === 'new') {
+                window.selectedExcelFile_new = file;
+                document.getElementById('excel-file-name-new').textContent = file.name;
+                document.getElementById('excel-file-display-new').classList.remove('hidden');
+                const infoEl = document.getElementById('excel-file-preview-info');
+                infoEl.textContent = 'Menganalisis sheet & bulan...';
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                    const parsed = window.parseExcelData(wb, file.name);
+                    window.parsedPreview_new = parsed;
+                    if (parsed.totalExtracted > 0) {
+                        document.getElementById('input-excel-sarana').value = parsed.sarana;
+                        document.getElementById('input-excel-bogie').value = parsed.bogie;
+                        infoEl.innerHTML = `Terdeteksi <strong>${parsed.monthCount} Bulan</strong> (${parsed.monthList.join(', ')}) • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')} Pengujian</strong>`;
+                    } else infoEl.textContent = 'Tidak ditemukan baris data pengujian valid.';
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                window.selectedExcelFile_lanjutan = file;
+                document.getElementById('excel-file-name-lanjutan').textContent = file.name;
+                document.getElementById('excel-file-display-lanjutan').classList.remove('hidden');
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                    window.parsedPreview_lanjutan = window.parseExcelData(wb, file.name);
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        };
+
+        window.processExcelNew = async function() {
+            if (!window.selectedExcelFile_new) return window.showToast('Pilih file Excel terlebih dahulu!', 'error');
+            const saveParsed = async (parsed) => {
+                if (!parsed || parsed.totalExtracted === 0) return window.showToast('Format file tidak sesuai.', 'error');
+                const rec = {
+                    id: Date.now(),
+                    sarana: document.getElementById('input-excel-sarana').value.trim().toUpperCase() || parsed.sarana,
+                    bogie: document.getElementById('input-excel-bogie').value.trim() || parsed.bogie,
+                    jenis: parsed.overallJenisPegas, operator: parsed.operator, lokasi: parsed.lokasi,
+                    nomor: window.selectedExcelFile_new.name, isExcel: true, paramSpecs: parsed.paramSpecs, excelData: parsed.recordsByMonth
+                };
+                const existIdx = window.dbData.findIndex(d => d.nomor.toLowerCase() === rec.nomor.toLowerCase());
+                if (existIdx !== -1) { rec.id = window.dbData[existIdx].id; window.dbData[existIdx] = rec; }
+                else window.dbData.unshift(rec);
+                await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
+                window.closeExcelModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker(); window.populateSpringPickers(); window.renderPdfCatalog();
+                window.showToast(`Sukses menyimpan ${parsed.totalExtracted.toLocaleString('id-ID')} data dari ${parsed.monthCount} bulan!`, 'success');
+                window.openExcelViewModal(rec.id, 'ALL');
+            };
+            if (window.parsedPreview_new) await saveParsed(window.parsedPreview_new);
+            else {
+                const reader = new FileReader();
+                reader.onload = async e => { await saveParsed(window.parseExcelData(XLSX.read(new Uint8Array(e.target.result), { type: 'array' }), window.selectedExcelFile_new.name)); };
+                reader.readAsArrayBuffer(window.selectedExcelFile_new);
+            }
+        };
+
+        window.processExcelLanjutan = async function() {
+            if (!window.selectedExcelFile_lanjutan) return;
+            const targetId = parseInt(document.getElementById('target-draft-select').value, 10);
+            const idx = window.dbData.findIndex(d => d.id === targetId);
+            if (idx === -1) return window.showToast('Pilih arsip target!', 'error');
+            const parsed = window.parsedPreview_lanjutan;
+            if (!parsed || parsed.totalExtracted === 0) return window.showToast('Gagal membaca file lanjutan.', 'error');
+            const target = window.dbData[idx];
+            Object.keys(parsed.recordsByMonth).forEach(m => {
+                if (!target.excelData[m]) target.excelData[m] = [];
+                parsed.recordsByMonth[m].forEach(r => target.excelData[m].push(r));
+            });
+            target.excelData = autoSequenceAndHealMonths(target.excelData, getArchiveDefaultPrefix(target));
+            await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
+            window.closeLanjutanModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker(); window.populateSpringPickers();
+            window.showToast('Data lanjutan berhasil digabungkan & diurutkan otomatis!', 'success');
+        };
+
+        window.openExcelViewModal = function(id, initialMonth = 'ALL', initialSearch = '') {
+            const data = window.dbData.find(d => d.id === id); if (!data || !data.excelData) return;
+            window.currentViewData = data;
+            const months = window.sortMonthLabels(Object.keys(data.excelData));
+            window.currentActiveMonth = (initialMonth === 'ALL' || months.includes(initialMonth)) ? initialMonth : (months[0] || 'ALL');
+            const sum = window.getArchiveSummary(data);
+            document.getElementById('excel-view-title').textContent = `${data.sarana} — ${data.bogie}`;
+            document.getElementById('excel-view-subtitle').textContent = `${data.nomor} • ${sum.months.length} Bulan • ${sum.total.toLocaleString('id-ID')} Pengujian`;
+            document.getElementById('modal-search-input').value = initialSearch || '';
+            document.getElementById('modal-filter-status').value = 'all';
+            window.modalPage = 1;
+            window.renderModalTabs(); window.renderModalTableHeader(); window.applyModalFilter();
+            document.getElementById('excel-view-modal').classList.remove('hidden');
+        };
+
+        window.closeExcelViewModal = function() { document.getElementById('excel-view-modal').classList.add('hidden'); };
+
+        window.renderModalTabs = function() {
+            const tabsEl = document.getElementById('excel-view-tabs'); if (!tabsEl || !window.currentViewData) return;
+            const excelData = window.currentViewData.excelData;
+            const months = window.sortMonthLabels(Object.keys(excelData));
+            const totalAll = months.reduce((a, m) => a + (excelData[m]?.length || 0), 0);
+            tabsEl.innerHTML = `<button onclick="window.selectModalMonthTab('ALL')" class="swipe-item tab-btn px-3.5 py-2.5 text-xs font-semibold rounded-t-lg whitespace-nowrap ${window.currentActiveMonth==='ALL'?'active':'text-slate-600'}">Semua (${totalAll.toLocaleString('id-ID')})</button>` +
+                months.map(m => `<button onclick="window.selectModalMonthTab('${m}')" class="swipe-item tab-btn px-3.5 py-2.5 text-xs font-semibold rounded-t-lg whitespace-nowrap ${window.currentActiveMonth===m?'active':'text-slate-600'}">${m} (${(excelData[m]||[]).length.toLocaleString('id-ID')})</button>`).join('');
+        };
+
+        window.selectModalMonthTab = function(bulan) { window.currentActiveMonth = bulan; window.modalPage = 1; window.renderModalTabs(); window.applyModalFilter(); };
+
+        window.renderModalTableHeader = function() {
+            const specs = window.currentViewData.paramSpecs || DEFAULT_GD42T_SPECS;
+            document.getElementById('excel-view-thead').innerHTML = `<tr><th class="px-3 py-2.5 text-center border-r">NO</th><th class="px-3 py-2.5 border-r">BULAN</th><th class="px-3 py-2.5 border-r">NO. PEGAS</th>` +
+                specs.map((sp, i) => `<th class="px-3 py-2.5 text-center border-r"><div>P${i}: ${sp.name}</div><div class="text-[9px] text-gray-500">${sp.load} (${sp.nom}±${sp.tm})</div></th>`).join('') +
+                `<th class="px-3 py-2.5 text-center border-r">STATUS</th><th class="px-3 py-2.5">WAKTU UJI</th></tr>`;
+        };
+
+        window.applyModalFilter = function() {
+            if (!window.currentViewData) return;
+            const excelData = window.currentViewData.excelData;
+            const months = window.currentActiveMonth === 'ALL' ? window.sortMonthLabels(Object.keys(excelData)) : [window.currentActiveMonth];
+            const q = (document.getElementById('modal-search-input')?.value || '').toLowerCase().trim();
+            const flt = document.getElementById('modal-filter-status')?.value || 'all';
+            let rows = [], tLulus = 0, tAfkir = 0;
+            months.forEach(bln => {
+                (excelData[bln] || []).forEach(r => {
+                    if (flt === 'lulus' && !r.isLulus) return;
+                    if (flt === 'afkir' && r.isLulus) return;
+                    if (q && !String(r.nomor).toLowerCase().includes(q) && !String(r.waktu||'').toLowerCase().includes(q)) return;
+                    if (r.isLulus) tLulus++; else tAfkir++;
+                    rows.push({ ...r, bulan: bln });
+                });
+            });
+            window.lastModalFilteredRows = rows;
+            const total = rows.length;
+            document.getElementById('excel-view-rekap').innerHTML = `
+                <div class="p-2.5 sm:p-3 rounded-xl bg-blue-50 border border-blue-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-blue-800">Total Diuji</p><p class="text-sm sm:text-xl font-extrabold text-blue-950">${total.toLocaleString('id-ID')}</p></div>
+                <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-emerald-800">Siap Pakai</p><p class="text-sm sm:text-xl font-extrabold text-emerald-700">${tLulus.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tLulus/total)*100).toFixed(0):0}%)</span></p></div>
+                <div class="p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-red-800">Afkir</p><p class="text-sm sm:text-xl font-extrabold text-red-600">${tAfkir.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tAfkir/total)*100).toFixed(0):0}%)</span></p></div>`;
+
+            const pageSize = parseInt(document.getElementById('modal-page-size')?.value || '200', 10);
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            if (window.modalPage > totalPages) window.modalPage = totalPages;
+            const start = (window.modalPage - 1) * pageSize;
+            const pageRows = rows.slice(start, start + pageSize);
+            document.getElementById('modal-pagination-info').textContent = `${total.toLocaleString('id-ID')} data`;
+            document.getElementById('modal-page-indicator').textContent = `${window.modalPage} / ${totalPages}`;
+
+            const specs = window.currentViewData.paramSpecs || DEFAULT_GD42T_SPECS;
+            document.getElementById('excel-view-tbody').innerHTML = pageRows.map((r, i) => `
+                <tr class="hover:bg-blue-50/40"><td class="px-3 py-2 text-center border-r">${start + i + 1}</td><td class="px-3 py-2 border-r font-semibold">${r.bulan}</td><td class="px-3 py-2 border-r font-mono font-bold text-blue-600">${r.nomor}</td>` +
+                specs.map((_, pIdx) => {
+                    const p = r.params?.[pIdx];
+                    if (!p || p.val === null) return `<td class="px-3 py-2 text-center border-r text-gray-400">-</td>`;
+                    return `<td class="px-3 py-2 text-center border-r font-mono ${p.lulus ? '' : 'bg-red-50 text-red-700 font-bold'}">${p.val}</td>`;
+                }).join('') +
+                `<td class="px-3 py-2 text-center border-r font-bold ${r.isLulus?'text-emerald-600':'text-red-600'}">${r.keterangan}</td><td class="px-3 py-2 font-mono text-gray-500">${r.waktu || '-'}</td></tr>`
+            ).join('');
+        };
+
+        window.changeModalPage = function(d) { window.modalPage = Math.max(1, window.modalPage + d); window.applyModalFilter(); };
+
+        window.exportMonthlyExcel = function() {
+            if (!window.currentViewData || !window.lastModalFilteredRows.length) return;
+            const specs = window.currentViewData.paramSpecs || DEFAULT_GD42T_SPECS;
+            const data = window.lastModalFilteredRows.map((r, i) => {
+                const o = { No: i+1, Bulan: r.bulan, No_Pegas: r.nomor };
+                specs.forEach((sp, idx) => { o[`P${idx}_${sp.name}`] = r.params?.[idx]?.val ?? '-'; });
+                o.Status = r.keterangan; o.Waktu = r.waktu || '-';
+                return o;
+            });
+            const ws = XLSX.utils.json_to_sheet(data), wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data_Pegas'); XLSX.writeFile(wb, `Data_Pegas_${window.currentViewData.sarana}.xlsx`);
+        };
+
+        window.printMonthlyReport = function() {
+            if (!window.currentViewData || !window.lastModalFilteredRows) return;
+            const rows = window.lastModalFilteredRows, specs = window.currentViewData.paramSpecs || DEFAULT_GD42T_SPECS;
+            document.getElementById('print-area').innerHTML = `
+                <div class="print-header"><div><h2>LAPORAN PENGUJIAN PEGAS — ${window.currentViewData.sarana}</h2><p>${window.currentViewData.bogie}</p></div><div>Dicetak: ${new Date().toLocaleDateString('id-ID')}</div></div>
+                <table class="print-table"><thead><tr><th>No</th><th>Bulan</th><th>No. Pegas</th>${specs.map((sp,i)=>`<th>P${i}: ${sp.name} (${sp.nom})</th>`).join('')}<th>Status</th><th>Waktu</th></tr></thead>
+                <tbody>${rows.slice(0,400).map((r,i)=>`<tr><td>${i+1}</td><td>${r.bulan}</td><td>${r.nomor}</td>${specs.map((_,idx)=>`<td>${r.params?.[idx]?.val ?? '-'}</td>`).join('')}<td>${r.keterangan}</td><td>${r.waktu||'-'}</td></tr>`).join('')}</tbody></table>`;
+            window.print();
+        };
+
+        window.printTrackerResults = function() {
+            if (window.dbData.length > 0 && window.lastTrackerFilteredList.length > 0) {
+                window.currentViewData = window.dbData[0]; window.lastModalFilteredRows = window.lastTrackerFilteredList; window.printMonthlyReport();
+            }
+        };
+
+        window.renderTable = function(dataToRender) {
+            const tbody = document.getElementById('table-body'); if (!tbody) return;
+            document.getElementById('table-info').textContent = `Menampilkan ${dataToRender.length} arsip`;
+            tbody.innerHTML = dataToRender.map((item, idx) => {
+                const sum = window.getArchiveSummary(item);
+                return `<tr class="border-b border-slate-800"><td class="px-4 py-3.5 text-center">${idx+1}</td><td class="px-4 py-3.5 font-bold text-white">${item.sarana}</td><td class="px-4 py-3.5 text-xs">${item.bogie}</td><td class="px-4 py-3.5 text-xs font-mono text-blue-400">${item.nomor} (${sum.months.length} Bulan)</td><td class="px-4 py-3.5 font-bold text-white">${sum.total.toLocaleString('id-ID')} Uji (${sum.lulus.toLocaleString('id-ID')} Lulus / ${sum.afkir.toLocaleString('id-ID')} Afkir)</td><td class="px-4 py-3.5 text-center"><button onclick="window.openExcelViewModal(${item.id}, 'ALL')" class="bg-blue-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs mr-1.5 font-bold">Buka</button><button onclick="window.confirmDelete(${item.id})" class="bg-red-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs font-bold">Hapus</button></td></tr>`;
+            }).join('') || `<tr><td colspan="6" class="text-center py-8 text-slate-400">Belum ada file Excel diunggah.</td></tr>`;
+        };
+
+        window.handleSearch = function() {
+            const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+            window.renderTable(!q ? window.dbData : window.dbData.filter(d => `${d.sarana} ${d.bogie} ${d.nomor}`.toLowerCase().includes(q)));
+        };
+
+        window.confirmDelete = function(id) { window.deleteIdTarget = id; document.getElementById('confirm-modal').classList.remove('hidden'); };
+        window.closeConfirmModal = function() { document.getElementById('confirm-modal').classList.add('hidden'); };
+        document.getElementById('btn-confirm-delete').addEventListener('click', async function() {
+            window.dbData = window.dbData.filter(d => d.id !== window.deleteIdTarget);
+            await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
+            window.closeConfirmModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker();
+        });
+
+        window.updateDashboardStats = function() {
+            document.getElementById('stat-total').textContent = window.dbData.length;
+            let grandTotal = 0;
+            window.dbData.forEach(arc => { grandTotal += window.getArchiveSummary(arc).total; });
+            document.getElementById('stat-month').textContent = grandTotal.toLocaleString('id-ID');
+            document.getElementById('stat-setsarana').textContent = `${window.saranaSets.length} Set`;
+            document.getElementById('stat-top').textContent = window.dbData.length > 0 ? window.dbData[0].sarana : '-';
+            if (typeof window.renderDashboardCharts === 'function') window.renderDashboardCharts();
+        };
+
+        const VIEW_TITLES = {
+            dashboard: 'Dashboard & Pelacakan',
+            setsarana: 'Set Sarana (P24 / P48)',
+            data: 'Data Pengujian Excel',
+            laporan: 'Laporan & Chat AI',
+            parameter: 'Parameter Standar Pegas',
+            pengaturan: 'Pengaturan & Biodata'
+        };
+
+        window.switchMenu = function(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('view-' + viewName);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('animate-fade-in-up');
+            }
+            const titleEl = document.getElementById('header-title');
+            if (titleEl && VIEW_TITLES[viewName]) titleEl.textContent = VIEW_TITLES[viewName];
+
+            // Highlight Desktop Sidebar
+            document.querySelectorAll('.nav-item').forEach(n => {
+                n.classList.remove('bg-blue-600', 'text-white');
+                n.classList.add('text-slate-300');
+            });
+            const activeDesk = document.getElementById('nav-' + viewName);
+            if (activeDesk) {
+                activeDesk.classList.remove('text-slate-300');
+                activeDesk.classList.add('bg-blue-600', 'text-white');
+            }
+
+            // Highlight Mobile Bottom Bar
+            document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+            const activeMob = document.getElementById('mnav-' + viewName);
+            if (activeMob) activeMob.classList.add('active');
+
+            // Tutup drawer mobile & scroll ke atas
+            window.toggleMobileDrawer(false);
+            document.getElementById('main-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (viewName === 'dashboard') { window.updateDashboardStats(); window.refreshDashboardTracker(); }
+            if (viewName === 'parameter') window.renderPdfCatalog();
+        };
+
+        window.generateAIReport = function() {
+            const c = document.getElementById('ai-report-content'); if (!c || !window.dbData.length) return;
+            let md = `# Evaluasi Pengujian Pegas\n\n`;
+            window.dbData.forEach(arc => {
+                const s = window.getArchiveSummary(arc);
+                md += `### ${arc.sarana} (${arc.bogie})\n- Total Uji: **${s.total.toLocaleString('id-ID')}** (Lulus: **${s.lulus.toLocaleString('id-ID')}**, Afkir: **${s.afkir.toLocaleString('id-ID')}**)\n`;
+                s.months.forEach(m => { const arr = arc.excelData[m]||[], l = arr.filter(x=>x.isLulus).length; md += `  - **${m}**: ${arr.length} unit (Lulus: ${l}, Afkir: ${arr.length-l})\n`; });
+            });
+            c.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : md;
+        };
+
+        window.handleAskAI = function() {
+            const inp = document.getElementById('ai-chat-input'), hist = document.getElementById('ai-chat-history'), q = inp.value.trim();
+            if (!q) return; inp.value = '';
+            hist.innerHTML += `<div class="bg-blue-600 text-white p-3 rounded-2xl ml-8 text-right">${q}</div>`;
+            const s = window.dbData[0] ? window.getArchiveSummary(window.dbData[0]) : { total: 0, lulus: 0, afkir: 0 };
+            hist.innerHTML += `<div class="bg-white p-3 rounded-2xl border mr-8">Total data aktif: <strong>${s.total.toLocaleString('id-ID')} unit</strong> (Siap Pakai: ${s.lulus.toLocaleString('id-ID')}, Afkir: ${s.afkir.toLocaleString('id-ID')}).</div>`;
+        };
+
+        window.openUploadModal = function() { document.getElementById('upload-modal').classList.remove('hidden'); };
+        window.closeUploadModal = function() { document.getElementById('upload-modal').classList.add('hidden'); };
+        window.handlePdfFileSelect = function(e) { if (e.target.files[0]) document.getElementById('pdf-selected-name').textContent = e.target.files[0].name; };
+        window.handleUpload = function() { window.showToast('Dokumen disimpan', 'success'); window.closeUploadModal(); };
+        window.updateProfileUI = function() {
+            document.querySelectorAll('.header-user-name').forEach(el => el.textContent = window.userProfile.name);
+            document.getElementById('input-bio-name').value = window.userProfile.name;
+            document.getElementById('input-bio-email').value = window.userProfile.email;
+            document.getElementById('input-bio-phone').value = window.userProfile.phone;
+            document.getElementById('input-bio-role').value = window.userProfile.role;
+            document.getElementById('input-bio-unit').value = window.userProfile.unit;
+        };
+        window.saveBiodata = function() { window.showToast('Biodata Disimpan!', 'success'); };
+        window.handlePhotoUpload = function() {};
+
+        window.handleLogin = function() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            if (u === 'RailSpring2026' && p === 'Logamjaya2026') {
+                window.showToast('Login berhasil. Membuka sistem...', 'success');
+                document.getElementById('login-page').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('app-layout').classList.remove('hidden');
+                    document.getElementById('app-layout').style.opacity = '1';
+                    loadAllSavedData();
+                }, 250);
+            } else {
+                window.showToast('ID Name atau Password salah!', 'error');
+            }
+        };
+        window.handleLogout = function() {
+            window.toggleMobileDrawer(false);
+            document.getElementById('app-layout').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('login-page').style.opacity = '1';
+        };
+        window.openExcelModal = function() { document.getElementById('excel-modal').classList.remove('hidden'); };
+        window.closeExcelModal = function() { document.getElementById('excel-modal').classList.add('hidden'); };
+        window.openLanjutanModal = function() {
+            const sel = document.getElementById('target-draft-select');
+            sel.innerHTML = window.dbData.map(d => `<option value="${d.id}">[${d.sarana}] ${d.nomor}</option>`).join('') || '<option value="">Belum ada arsip</option>';
+            document.getElementById('excel-lanjutan-modal').classList.remove('hidden');
+        };
+        window.closeLanjutanModal = function() { document.getElementById('excel-lanjutan-modal').classList.add('hidden'); };
+        window.showToast = function(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-message').textContent = msg;
+            if (icon) icon.className = type === 'success' ? 'fa-solid fa-check-circle text-lg' : 'fa-solid fa-circle-exclamation text-lg';
+            t.className = `fixed top-4 right-4 left-4 sm:left-auto z-[80] transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white ${type==='success'?'bg-emerald-600':'bg-red-600'}`;
+            setTimeout(() => {
+                t.classList.add('-translate-y-24', 'sm:translate-y-0', 'sm:translate-x-[120%]');
+            }, 3000);
+        };
+        document.addEventListener('DOMContentLoaded', () => { window.updateProfileUI(); });
+    </script>
+</body>
+</html>
