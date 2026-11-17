@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -67,7 +68,6 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        /* Mobile Drawer Transition */
         #mobile-sidebar-drawer { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
         #mobile-sidebar-backdrop { transition: opacity 0.3s ease; }
 
@@ -89,7 +89,7 @@
 
     <div id="print-area"></div>
 
-    <!-- LOGIN PAGE (RESPONSIVE FULL VIEWPORT) -->
+    <!-- LOGIN PAGE -->
     <div id="login-page" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto smooth-scroll transition-opacity duration-500 bg-cover bg-center bg-no-repeat" style="background-image: url('https://wsrv.nl/?url=https://i.pinimg.com/736x/6d/fb/be/6dfbbecb004680cc05fedceabd62962e.jpg');">
         <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm"></div>
         <div class="bg-white/95 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-md my-auto relative z-10 backdrop-blur-md animate-fade-in-up border border-white/40">
@@ -131,7 +131,7 @@
         <!-- MOBILE SLIDE-OVER DRAWER BACKDROP -->
         <div id="mobile-sidebar-backdrop" onclick="window.toggleMobileDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 md:hidden opacity-0"></div>
 
-        <!-- SIDEBAR (DESKTOP FIXED + MOBILE SLIDE-OVER DRAWER WITH SWIPE GESTURE) -->
+        <!-- SIDEBAR -->
         <aside id="mobile-sidebar-drawer" class="fixed md:static inset-y-0 left-0 w-72 md:w-64 bg-slate-900 text-white flex flex-col z-50 -translate-x-full md:translate-x-0 shrink-0 shadow-2xl md:shadow-none">
             <div class="p-4 sm:p-5 flex items-center justify-between border-b border-slate-800 bg-slate-950 h-16 md:h-[72px] shrink-0" style="padding-top: max(1rem, var(--safe-top));">
                 <div class="flex items-center gap-3">
@@ -184,7 +184,7 @@
                         </div>
                     </div>
                     <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Cloud Sync Multi-Perangkat Aktif
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Lazy Load Aktif
                     </span>
                 </div>
 
@@ -205,13 +205,13 @@
                 </div>
             </header>
 
-            <!-- SCROLLABLE WORKSPACE (PADDING BAWAH EXTRA UNTUK BOTTOM NAV DI HP) -->
+            <!-- SCROLLABLE WORKSPACE -->
             <div id="main-scroll-container" class="flex-1 overflow-y-auto smooth-scroll p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 bg-gray-50 dark-scrollbar">
 
                 <!-- VIEW: DASHBOARD -->
                 <div id="view-dashboard" class="view-section animate-fade-in-up space-y-5 sm:space-y-6">
 
-                    <!-- SWIPEABLE KPI CARDS DI HP, GRID 4 KOLOM DI DESKTOP -->
+                    <!-- KPI CARDS -->
                     <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 swipe-scroll-x no-scrollbar pb-1 -mx-3.5 px-3.5 md:mx-0 md:px-0">
                         <div onclick="window.switchMenu('data')" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-gray-100 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
                             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-database"></i></div>
@@ -234,7 +234,7 @@
                         </div>
                     </div>
 
-                    <!-- WELCOME & QUICK ACTION BAR (GESER HORIZONTAL DI HP) -->
+                    <!-- WELCOME & QUICK ACTION BAR -->
                     <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                         <div>
                             <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
@@ -247,7 +247,7 @@
                         </div>
                     </div>
 
-                    <!-- GRAFIK OS & IS (RESPONSIVE STACK ON MOBILE, 2 COL ON XL) -->
+                    <!-- GRAFIK OS & IS -->
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                         <div class="bg-white rounded-2xl shadow-xs border border-blue-100 p-4 sm:p-5">
                             <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
@@ -290,7 +290,7 @@
                         </div>
                     </div>
 
-                    <!-- PELACAKAN SARANA (FLEXIBLE & SWIPEABLE TABLE) -->
+                    <!-- PELACAKAN SARANA -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 sm:px-6 py-4 sm:py-5 text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                             <div class="flex items-center gap-3 sm:gap-4">
@@ -306,7 +306,7 @@
                             </div>
                         </div>
 
-                        <!-- SWIPEABLE MONTH CHIPS -->
+                        <!-- MONTH CHIPS -->
                         <div class="px-4 sm:px-6 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2 swipe-scroll-x no-scrollbar">
                             <span class="text-[11px] font-bold uppercase text-slate-500 shrink-0 mr-1"><i class="fa-solid fa-calendar-days mr-1 text-blue-600"></i>Bulan:</span>
                             <div id="tracker-sarana-chips" class="flex items-center gap-2"></div>
@@ -343,7 +343,6 @@
                             <div id="tracker-summary-bar" class="mt-3.5 pt-3 border-t border-gray-100 flex flex-wrap justify-between items-center gap-2 text-xs"></div>
                         </div>
 
-                        <!-- SWIPE HINT ON MOBILE -->
                         <div class="md:hidden px-4 py-1.5 bg-blue-50/70 text-blue-700 text-[11px] font-medium flex items-center justify-between border-b border-blue-100">
                             <span><i class="fa-solid fa-arrows-left-right mr-1.5"></i>Geser tabel ke kiri/kanan untuk melihat semua kolom</span>
                         </div>
@@ -536,7 +535,7 @@
                 </div>
             </div>
 
-            <!-- BOTTOM NAVIGATION BAR (KHUSUS HP / TABLET KECIL - MUDAH DIJANGKAU IBU JARI) -->
+            <!-- BOTTOM NAVIGATION BAR (MOBILE) -->
             <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-30 flex justify-around items-center px-1 pt-1.5 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]" style="padding-bottom: max(0.4rem, var(--safe-bottom));">
                 <button onclick="window.switchMenu('dashboard')" id="mnav-dashboard" class="mobile-nav-btn active flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-chart-pie text-sm"></i></div>
@@ -562,30 +561,46 @@
         </main>
     </div>
 
-    <!-- MODAL UPLOAD EXCEL BARU (BOTTOM-SHEET DI HP, CENTER MODAL DI DESKTOP) -->
+    <!-- MODAL UPLOAD EXCEL BARU -->
     <div id="excel-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
             <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
-                <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian Baru</h3>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian</h3>
+                    <p class="text-[11px] text-emerald-600 font-semibold">Supabase Storage + Lazy Load (Bisa pilih banyak file sekaligus)</p>
+                </div>
                 <button onclick="window.closeExcelModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-5 sm:p-6 space-y-4">
-                <input type="file" id="real-excel-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelSelection(event, 'new')">
+                <input type="file" id="real-excel-input" accept=".xlsx, .xls, .csv" multiple class="hidden" onchange="window.handleExcelSelection(event, 'new')">
                 <div class="flex justify-center px-5 py-6 border-2 border-dashed border-green-300 bg-green-50/30 rounded-2xl cursor-pointer active:scale-[0.99] transition" onclick="document.getElementById('real-excel-input').click()">
-                    <div class="text-center"><i class="fa-solid fa-file-excel text-4xl text-green-600 mb-2"></i><p class="text-sm font-bold text-blue-600">Ketuk untuk pilih file Excel (.xlsx / .xls)</p><p class="text-[11px] text-gray-500 mt-1">Otomatis membaca seluruh sheet bulanan & urutan seri</p></div>
+                    <div class="text-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-green-600 mb-2"></i>
+                        <p class="text-sm font-bold text-blue-600">Ketuk untuk pilih 1 atau Banyak File Excel (.xlsx / .xls)</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Bisa blok 20+ file sekaligus • Kompresi otomatis 85% ke Supabase Storage</p>
+                    </div>
                 </div>
-                <div id="excel-file-display-new" class="hidden p-3.5 border border-green-200 bg-green-50 rounded-xl">
-                    <p id="excel-file-name-new" class="text-xs font-bold text-gray-800 truncate">file.xlsx</p>
-                    <p id="excel-file-preview-info" class="text-[11px] text-green-700 font-medium mt-0.5">Menganalisis isi file...</p>
+                <div id="excel-file-display-new" class="hidden p-3.5 border border-green-200 bg-green-50 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center">
+                        <p id="excel-file-name-new" class="text-xs font-bold text-gray-800 truncate">0 file dipilih</p>
+                        <span id="excel-batch-badge" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-600 text-white">Siap</span>
+                    </div>
+                    <p id="excel-file-preview-info" class="text-[11px] text-green-700 font-medium">Menganalisis isi file...</p>
+                    <div id="excel-batch-progress-wrap" class="hidden space-y-1 pt-1">
+                        <div class="w-full bg-green-200 rounded-full h-2 overflow-hidden">
+                            <div id="excel-batch-progress-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="excel-batch-progress-text" class="text-[10px] text-emerald-800 font-semibold">Mengunggah...</p>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div id="single-file-meta-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><label class="block text-xs font-semibold mb-1">Sarana (Otomatis)</label><input type="text" id="input-excel-sarana" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
                     <div><label class="block text-xs font-semibold mb-1">Bogie (Otomatis)</label><input type="text" id="input-excel-bogie" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold outline-none"></div>
                 </div>
                 <div class="pt-2 flex justify-end gap-2">
                     <button onclick="window.closeExcelModal()" class="px-4 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button>
-                    <button onclick="window.processExcelNew()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl">Proses & Simpan Arsip</button>
+                    <button id="btn-process-excel-new" onclick="window.processExcelNew()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl">Unggah & Simpan ke Cloud</button>
                 </div>
             </div>
         </div>
@@ -617,7 +632,7 @@
         </div>
     </div>
 
-    <!-- MODAL EXCEL VIEW (FULLSCREEN DI HP, 96VW DI DESKTOP) -->
+    <!-- MODAL EXCEL VIEW -->
     <div id="excel-view-modal" class="hidden fixed inset-0 z-[65] flex items-center justify-center sm:p-4 bg-slate-900/80 backdrop-blur-xs">
         <div class="bg-white shadow-2xl w-full h-full md:w-[96vw] md:h-[94dvh] sm:rounded-2xl flex flex-col overflow-hidden" style="padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);">
             <div class="px-4 sm:px-6 py-3 border-b flex justify-between items-center gap-2 bg-slate-900 text-white shrink-0">
@@ -697,13 +712,232 @@
 
         const EXCEL_STORAGE_KEY = 'excel_archives_v7_clean';
         const SETSARANA_STORAGE_KEY = 'sarana_sets_p24_p48_v1';
+        const STORAGE_BUCKET_NAME = 'railspring-files';
 
         const supabaseClient = (!SUPABASE_URL.includes('TEMPEL_') && window.supabase)
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
         // =========================================================================
-        // KONTROL SLIDE-OVER DRAWER & GESTUR GESER (TOUCH SWIPE) UNTUK HP/TABLET
+        // INDEXEDDB CACHE LOKAL
+        // =========================================================================
+        const IDB_NAME = 'RailSpringCacheDB';
+        const IDB_STORE = 'archives';
+        function openLocalIDB() {
+            return new Promise((resolve) => {
+                if (!window.indexedDB) return resolve(null);
+                const req = indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        }
+        async function idbSet(k, v) {
+            try {
+                const db = await openLocalIDB();
+                if (!db) return;
+                return new Promise((resolve) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(v, k);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                });
+            } catch (e) {}
+        }
+        async function idbGet(k) {
+            try {
+                const db = await openLocalIDB();
+                if (!db) return null;
+                return new Promise((resolve) => {
+                    const tx = db.transaction(IDB_STORE, 'readonly');
+                    const req = tx.objectStore(IDB_STORE).get(k);
+                    req.onsuccess = () => resolve(req.result ?? null);
+                    req.onerror = () => resolve(null);
+                });
+            } catch (e) { return null; }
+        }
+        async function idbDel(k) {
+            try {
+                const db = await openLocalIDB();
+                if (!db) return;
+                return new Promise((resolve) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).delete(k);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                });
+            } catch (e) {}
+        }
+
+        // =========================================================================
+        // KOMPRESI RINGKAS DATA EXCEL
+        // =========================================================================
+        function packArchiveForStorage(arc) {
+            const packedMonths = {};
+            const ed = arc.excelData || {};
+            Object.keys(ed).forEach(m => {
+                packedMonths[m] = (ed[m] || []).map(r => [
+                    r.nomor || '',
+                    r.isLulus ? 1 : 0,
+                    r.waktu || '-',
+                    (r.params || []).map(p => (p && p.val !== null && p.val !== undefined) ? p.val : null)
+                ]);
+            });
+            return {
+                v: 2,
+                id: arc.id,
+                sarana: arc.sarana,
+                bogie: arc.bogie,
+                jenis: arc.jenis,
+                operator: arc.operator,
+                lokasi: arc.lokasi,
+                nomor: arc.nomor,
+                paramSpecs: arc.paramSpecs || DEFAULT_GD42T_SPECS,
+                months: packedMonths
+            };
+        }
+
+        function unpackArchiveFromStorage(packed, fallbackMeta = {}) {
+            if (!packed) return null;
+            if (packed.excelData) return ensureArchiveMetadata(packed);
+            const specs = packed.paramSpecs || fallbackMeta.paramSpecs || DEFAULT_GD42T_SPECS;
+            const excelData = {};
+            const rawMonths = packed.months || {};
+            Object.keys(rawMonths).forEach(m => {
+                excelData[m] = (rawMonths[m] || []).map(arr => {
+                    const nomor = arr[0] || '';
+                    const isLulus = arr[1] === 1;
+                    const waktu = arr[2] || '-';
+                    const vals = Array.isArray(arr[3]) ? arr[3] : [];
+                    const params = specs.map((sp, idx) => {
+                        const val = (vals[idx] !== undefined && vals[idx] !== null) ? vals[idx] : null;
+                        const pLulus = val === null ? true : val >= (sp.nom - sp.tm);
+                        return { val, nom: sp.nom, tp: sp.tp, tm: sp.tm, lulus: pLulus };
+                    });
+                    return {
+                        nomor,
+                        isLulus,
+                        keterangan: isLulus ? 'Siap Pakai' : 'Afkir',
+                        waktu,
+                        params
+                    };
+                });
+            });
+            return ensureArchiveMetadata({
+                id: packed.id || fallbackMeta.id,
+                sarana: packed.sarana || fallbackMeta.sarana,
+                bogie: packed.bogie || fallbackMeta.bogie,
+                jenis: packed.jenis || fallbackMeta.jenis,
+                operator: packed.operator || fallbackMeta.operator || 'MARIO',
+                lokasi: packed.lokasi || fallbackMeta.lokasi || 'BYTG',
+                nomor: packed.nomor || fallbackMeta.nomor,
+                isExcel: true,
+                paramSpecs: specs,
+                excelData,
+                _isLoaded: true
+            });
+        }
+
+        function buildArchiveMetaSummary(arc) {
+            const sum = window.getArchiveSummary(arc);
+            const isDalam = getArchiveDefaultPrefix(arc) === 'IS';
+            const monthStats = {};
+            (sum.months || []).forEach(m => {
+                const arr = (arc.excelData && arc.excelData[m]) ? arc.excelData[m] : [];
+                let l = 0, a = 0;
+                arr.forEach(r => { if (r.isLulus) l++; else a++; });
+                monthStats[m] = { total: arr.length, lulus: l, afkir: a };
+            });
+            return {
+                id: arc.id,
+                sarana: arc.sarana,
+                bogie: arc.bogie,
+                jenis: arc.jenis,
+                operator: arc.operator || 'MARIO',
+                lokasi: arc.lokasi || 'BYTG',
+                nomor: arc.nomor,
+                isDalam,
+                storagePath: `archives/arc_${arc.id}.json`,
+                stats: {
+                    total: sum.total,
+                    lulus: sum.lulus,
+                    afkir: sum.afkir,
+                    months: sum.months,
+                    monthStats
+                }
+            };
+        }
+
+        // =========================================================================
+        // LAZY LOADER SUPABASE STORAGE
+        // =========================================================================
+        window.ensureArchiveFullLoaded = async function(archiveId) {
+            const idx = window.dbData.findIndex(d => d.id === archiveId);
+            if (idx === -1) return null;
+            const arc = window.dbData[idx];
+            if (arc._isLoaded && arc.excelData && Object.keys(arc.excelData).length > 0) return arc;
+
+            const cachedPacked = await idbGet('arc_' + archiveId);
+            if (cachedPacked) {
+                const unpacked = unpackArchiveFromStorage(cachedPacked, arc);
+                if (unpacked && unpacked.excelData) {
+                    window.dbData[idx] = unpacked;
+                    return unpacked;
+                }
+            }
+
+            if (supabaseClient) {
+                const path = arc.storagePath || `archives/arc_${archiveId}.json`;
+                try {
+                    const { data: blobData, error } = await supabaseClient.storage
+                        .from(STORAGE_BUCKET_NAME)
+                        .download(path);
+                    if (!error && blobData) {
+                        const text = await blobData.text();
+                        const parsedJson = JSON.parse(text);
+                        await idbSet('arc_' + archiveId, parsedJson);
+                        const unpacked = unpackArchiveFromStorage(parsedJson, arc);
+                        if (unpacked) {
+                            window.dbData[idx] = unpacked;
+                            return unpacked;
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Fallback cek tabel database untuk arsip:', archiveId, err);
+                }
+
+                try {
+                    const { data: rowData } = await supabaseClient
+                        .from('railspring_storage')
+                        .select('payload')
+                        .eq('key', EXCEL_STORAGE_KEY + '_item_' + archiveId)
+                        .maybeSingle();
+                    if (rowData && rowData.payload) {
+                        const unpacked = unpackArchiveFromStorage(rowData.payload, arc);
+                        if (unpacked) {
+                            window.dbData[idx] = unpacked;
+                            return unpacked;
+                        }
+                    }
+                } catch (e) {}
+            }
+            return arc;
+        };
+
+        window.ensureAllArchivesLoaded = async function(onProgress) {
+            const unloaded = window.dbData.filter(d => !d._isLoaded);
+            if (unloaded.length === 0) return;
+            for (let i = 0; i < unloaded.length; i++) {
+                if (typeof onProgress === 'function') onProgress(i + 1, unloaded.length, unloaded[i]);
+                await window.ensureArchiveFullLoaded(unloaded[i].id);
+            }
+        };
+
+        // =========================================================================
+        // MOBILE DRAWER & TOUCH SWIPE GESTURES
         // =========================================================================
         window.toggleMobileDrawer = function(open) {
             const drawer = document.getElementById('mobile-sidebar-drawer');
@@ -735,13 +969,11 @@
                 if (e.changedTouches.length !== 1 || window.innerWidth >= 768) return;
                 const dx = e.changedTouches[0].clientX - touchStartX;
                 const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-                if (dy > 60) return; // Abaikan jika sedang scroll vertikal
+                if (dy > 60) return;
 
-                // Geser dari tepi kiri layar (< 35px) ke kanan untuk membuka menu
                 if (touchStartX < 35 && dx > 65) {
                     window.toggleMobileDrawer(true);
                 }
-                // Geser ke kiri saat drawer terbuka untuk menutup menu
                 const drawer = document.getElementById('mobile-sidebar-drawer');
                 if (drawer && !drawer.classList.contains('-translate-x-full') && dx < -65) {
                     window.toggleMobileDrawer(false);
@@ -755,7 +987,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Terhubung Cloud Supabase (Multi-Perangkat)';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Lazy Load Aktif';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -767,7 +999,82 @@
             }
         }
 
+        // =========================================================================
+        // UPLOAD & INDEKS SUPABASE STORAGE
+        // =========================================================================
+        window.uploadSingleArchiveToStorage = async function(arc) {
+            const packed = packArchiveForStorage(arc);
+            await idbSet('arc_' + arc.id, packed);
+
+            if (!supabaseClient) return { ok: true, mode: 'local' };
+
+            const jsonStr = JSON.stringify(packed);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const path = `archives/arc_${arc.id}.json`;
+
+            const { error: uploadErr } = await supabaseClient.storage
+                .from(STORAGE_BUCKET_NAME)
+                .upload(path, blob, {
+                    contentType: 'application/json',
+                    upsert: true
+                });
+
+            if (uploadErr) {
+                console.error('Supabase Storage upload error:', uploadErr);
+                const { error: fallbackErr } = await supabaseClient
+                    .from('railspring_storage')
+                    .upsert({ key: EXCEL_STORAGE_KEY + '_item_' + arc.id, payload: packed, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+                if (fallbackErr) {
+                    throw new Error(uploadErr.message || 'Gagal unggah ke Supabase Storage');
+                }
+            }
+            return { ok: true, sizeKB: Math.round(blob.size / 1024) };
+        };
+
+        window.saveArchiveIndexOnly = async function(archivesList) {
+            const indexList = archivesList.map(arc => arc._isLoaded ? buildArchiveMetaSummary(arc) : {
+                id: arc.id,
+                sarana: arc.sarana,
+                bogie: arc.bogie,
+                jenis: arc.jenis,
+                operator: arc.operator,
+                lokasi: arc.lokasi,
+                nomor: arc.nomor,
+                isDalam: arc.isDalam,
+                storagePath: arc.storagePath || `archives/arc_${arc.id}.json`,
+                stats: arc.stats
+            });
+
+            await idbSet('archives_index', indexList);
+            try { localStorage.setItem('cache_' + EXCEL_STORAGE_KEY + '_index', JSON.stringify(indexList)); } catch(e) {}
+
+            if (!supabaseClient) return;
+            const { error } = await supabaseClient
+                .from('railspring_storage')
+                .upsert({
+                    key: EXCEL_STORAGE_KEY + '_storage_index',
+                    payload: indexList,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'key' });
+            if (error) throw error;
+        };
+
         async function saveToPermanentDB(key, val) {
+            if (key === EXCEL_STORAGE_KEY && Array.isArray(val)) {
+                try {
+                    for (const item of val) {
+                        if (item._isLoaded && item.excelData) {
+                            await window.uploadSingleArchiveToStorage(item);
+                        }
+                    }
+                    await window.saveArchiveIndexOnly(val);
+                } catch (err) {
+                    console.error('Gagal menyimpan ke Supabase Storage:', err);
+                    window.showToast('Error Storage: ' + (err.message || 'Periksa bucket railspring-files'), 'error');
+                }
+                return;
+            }
+
             try { localStorage.setItem('cache_' + key, JSON.stringify(val)); } catch(e) {}
             if (!supabaseClient) return;
             try {
@@ -777,11 +1084,108 @@
                 if (error) throw error;
             } catch (err) {
                 console.error('Gagal menyimpan ke Supabase:', err);
-                window.showToast('Gagal sinkron ke Cloud Supabase', 'error');
             }
         }
 
         async function loadFromPermanentDB(key) {
+            if (key === EXCEL_STORAGE_KEY) {
+                let indexList = null;
+
+                if (supabaseClient) {
+                    try {
+                        const { data: idxData } = await supabaseClient
+                            .from('railspring_storage')
+                            .select('payload')
+                            .eq('key', EXCEL_STORAGE_KEY + '_storage_index')
+                            .maybeSingle();
+
+                        if (idxData && Array.isArray(idxData.payload) && idxData.payload.length > 0) {
+                            indexList = idxData.payload;
+                        } else {
+                            const { data: oldIdxData } = await supabaseClient
+                                .from('railspring_storage')
+                                .select('payload')
+                                .eq('key', EXCEL_STORAGE_KEY + '_index')
+                                .maybeSingle();
+
+                            if (oldIdxData && Array.isArray(oldIdxData.payload) && oldIdxData.payload.length > 0) {
+                                const migrated = [];
+                                for (const meta of oldIdxData.payload) {
+                                    const { data: itemRow } = await supabaseClient
+                                        .from('railspring_storage')
+                                        .select('payload')
+                                        .eq('key', EXCEL_STORAGE_KEY + '_item_' + meta.id)
+                                        .maybeSingle();
+                                    if (itemRow && itemRow.payload) {
+                                        const unpacked = unpackArchiveFromStorage(itemRow.payload, meta);
+                                        if (unpacked) {
+                                            await window.uploadSingleArchiveToStorage(unpacked);
+                                            migrated.push(unpacked);
+                                        }
+                                    }
+                                }
+                                if (migrated.length > 0) {
+                                    await window.saveArchiveIndexOnly(migrated);
+                                    return migrated;
+                                }
+                            } else {
+                                const { data: legacyData } = await supabaseClient
+                                    .from('railspring_storage')
+                                    .select('payload')
+                                    .eq('key', EXCEL_STORAGE_KEY)
+                                    .maybeSingle();
+                                if (legacyData && Array.isArray(legacyData.payload) && legacyData.payload.length > 0) {
+                                    const migrated = legacyData.payload.map(ensureArchiveMetadata);
+                                    for (const m of migrated) await window.uploadSingleArchiveToStorage(m);
+                                    await window.saveArchiveIndexOnly(migrated);
+                                    return migrated;
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Gagal memuat indeks dari Supabase:', err);
+                    }
+                }
+
+                if (!indexList) {
+                    indexList = await idbGet('archives_index');
+                }
+                if (!indexList) {
+                    try {
+                        const raw = localStorage.getItem('cache_' + EXCEL_STORAGE_KEY + '_index');
+                        if (raw) indexList = JSON.parse(raw);
+                    } catch (e) {}
+                }
+
+                if (Array.isArray(indexList) && indexList.length > 0) {
+                    await idbSet('archives_index', indexList);
+                    try { localStorage.setItem('cache_' + EXCEL_STORAGE_KEY + '_index', JSON.stringify(indexList)); } catch(e) {}
+
+                    const result = [];
+                    for (const meta of indexList) {
+                        const localFull = await idbGet('arc_' + meta.id);
+                        if (localFull) {
+                            result.push(unpackArchiveFromStorage(localFull, meta));
+                        } else {
+                            result.push({
+                                ...meta,
+                                isExcel: true,
+                                excelData: null,
+                                _isLoaded: false
+                            });
+                        }
+                    }
+                    return result;
+                }
+                return [];
+            }
+
+            let localCached = null;
+            try {
+                const local = localStorage.getItem('cache_' + key);
+                if (local) localCached = JSON.parse(local);
+            } catch (e) {}
+
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
@@ -795,16 +1199,13 @@
                     }
                 } catch (err) { console.error('Gagal memuat dari Supabase:', err); }
             }
-            try {
-                const local = localStorage.getItem('cache_' + key);
-                return local ? JSON.parse(local) : null;
-            } catch (e) { return null; }
+            return localCached;
         }
 
         window.syncFromCloudManual = async function() {
-            window.showToast('Mengambil data terbaru dari Cloud...', 'success');
+            window.showToast('Menyegarkan indeks arsip dari Cloud...', 'success');
             await loadAllSavedData();
-            window.showToast('Data berhasil disegarkan!', 'success');
+            window.showToast(`Terhubung (${window.dbData.length} arsip siap)!`, 'success');
         };
 
         window.userProfile = { name: "Mario Putra", email: "mario.putra@kai.id", phone: "0812-3456-7890", role: "Administrator", unit: "Balai Yasa Tegal - Logam Jaya Teknik", photoUrl: "" };
@@ -841,10 +1242,10 @@
         function detectSheetMonthInfo(textStr, fallbackYear = 2026) {
             if (!textStr) return null;
             const clean = String(textStr).trim().toLowerCase();
-            const numMatch = clean.match(/bulan\s*(0?[1-9]|1[0-2])/i);
+            const numMatch = clean.match(/\bbulan\s*(0?[1-9]|1[0-2])\b/i);
             if (numMatch) {
                 const idx = parseInt(numMatch[1], 10) - 1;
-                const ym = clean.match(/(20\d{2})/);
+                const ym = clean.match(/\b(20\d{2})\b/);
                 const year = ym ? parseInt(ym[1], 10) : fallbackYear;
                 return { monthIndex: idx, monthNumber: idx + 1, year, label: `${MONTH_NAMES[idx]} ${year}` };
             }
@@ -856,8 +1257,8 @@
             ];
             for (const item of aliases) {
                 for (const k of item.keys) {
-                    if (new RegExp(`\b${k}\b`, 'i').test(clean) || clean.startsWith(k)) {
-                        const ym = clean.match(/(20\d{2}|\d{2})/);
+                    if (new RegExp(`\\b${k}\\b`, 'i').test(clean) || clean.startsWith(k)) {
+                        const ym = clean.match(/\b(20\d{2}|\d{2})\b/);
                         const year = ym ? (ym[1].length === 2 ? parseInt('20' + ym[1], 10) : parseInt(ym[1], 10)) : fallbackYear;
                         return { monthIndex: item.idx, monthNumber: item.idx + 1, year, label: `${MONTH_NAMES[item.idx]} ${year}` };
                     }
@@ -927,7 +1328,7 @@
             const combined = `${rawSaranaMeta || ''} ${cleanFile} ${rawJenisPegas || ''}`.toUpperCase();
             let detectedSarana = rawSaranaMeta ? String(rawSaranaMeta).replace(/-/g, ' ').trim().toUpperCase() : '';
             if (!detectedSarana) {
-                const patterns = [/(GD\s*\d+\s*T(?:ON)?)/i, /(GK\s*\d+\s*T(?:ON)?)/i, /(KKW\s*\d*\s*T?)/i, /(PPCW\s*\d*\s*T?)/i, /(M1|K1|K2|K3|MP1|MP2|MP3|BP|B)/i];
+                const patterns = [/\b(GD\s*\d+\s*T(?:ON)?)\b/i, /\b(GK\s*\d+\s*T(?:ON)?)\b/i, /\b(KKW\s*\d*\s*T?)\b/i, /\b(PPCW\s*\d*\s*T?)\b/i, /\b(M1|K1|K2|K3|MP1|MP2|MP3|BP|B)\b/i];
                 for (const rx of patterns) {
                     const m = combined.match(rx);
                     if (m) { detectedSarana = m[1].replace(/\s+/g, ' ').toUpperCase().replace(/T$/, ' TON'); break; }
@@ -941,7 +1342,7 @@
 
         function getArchiveDefaultPrefix(arc) {
             const c = `${arc?.jenis || ''} ${arc?.bogie || ''} ${arc?.nomor || ''}`.toUpperCase();
-            return (c.includes('DALAM') || c.includes('INNER') || /IS/.test(c)) ? 'IS' : 'OS';
+            return (c.includes('DALAM') || c.includes('INNER') || /\bIS\b/.test(c)) ? 'IS' : 'OS';
         }
 
         function autoSequenceAndHealMonths(excelData, defaultPrefix = 'OS') {
@@ -1202,7 +1603,9 @@
         async function loadAllSavedData() {
             updateCloudStatusBadge();
             const savedExcel = await loadFromPermanentDB(EXCEL_STORAGE_KEY);
-            window.dbData = Array.isArray(savedExcel) ? savedExcel.map(ensureArchiveMetadata) : [];
+            window.dbData = Array.isArray(savedExcel)
+                ? savedExcel.map(item => item.excelData ? ensureArchiveMetadata(item) : item)
+                : [];
 
             const savedSets = await loadFromPermanentDB(SETSARANA_STORAGE_KEY);
             window.saranaSets = Array.isArray(savedSets) ? savedSets : [];
@@ -1216,12 +1619,27 @@
         }
 
         window.clearAllArchives = async function() {
-            window.dbData = []; await saveToPermanentDB(EXCEL_STORAGE_KEY, []);
+            if (supabaseClient && window.dbData.length > 0) {
+                const paths = window.dbData.map(d => d.storagePath || `archives/arc_${d.id}.json`);
+                try { await supabaseClient.storage.from(STORAGE_BUCKET_NAME).remove(paths); } catch(e) {}
+            }
+            for (const d of window.dbData) { await idbDel('arc_' + d.id); }
+            window.dbData = [];
+            await window.saveArchiveIndexOnly([]);
             window.updateDashboardStats(); window.handleSearch(); window.refreshDashboardTracker(); window.populateSpringPickers(); window.renderPdfCatalog();
             window.showToast('Semua arsip berhasil dikosongkan!', 'success');
         };
 
         window.getArchiveSummary = function(archive) {
+            if (!archive) return { total: 0, lulus: 0, afkir: 0, months: [] };
+            if (!archive.excelData && archive.stats) {
+                return {
+                    total: archive.stats.total || 0,
+                    lulus: archive.stats.lulus || 0,
+                    afkir: archive.stats.afkir || 0,
+                    months: window.sortMonthLabels(archive.stats.months || [])
+                };
+            }
             let total = 0, lulus = 0, afkir = 0;
             const months = archive && archive.excelData ? window.sortMonthLabels(Object.keys(archive.excelData)) : [];
             months.forEach(m => {
@@ -1372,7 +1790,11 @@
         window.refreshDashboardTracker = function() {
             const saranaSelect = document.getElementById('tracker-select-sarana'), chipsContainer = document.getElementById('tracker-sarana-chips');
             const saranaSet = new Set(), monthSet = new Set();
-            window.dbData.forEach(d => { if (d.sarana) saranaSet.add(d.sarana); if (d.excelData) Object.keys(d.excelData).forEach(m => monthSet.add(m)); });
+            window.dbData.forEach(d => {
+                if (d.sarana) saranaSet.add(d.sarana);
+                const mKeys = d.excelData ? Object.keys(d.excelData) : (d.stats?.months || []);
+                mKeys.forEach(m => monthSet.add(m));
+            });
             const saranaList = Array.from(saranaSet).sort(), sortedMonths = window.sortMonthLabels(Array.from(monthSet));
             if (saranaSelect) saranaSelect.innerHTML = `<option value="ALL">-- Semua Sarana (${saranaList.length}) --</option>` + saranaList.map(s => `<option value="${s}">${s}</option>`).join('');
             if (chipsContainer) {
@@ -1390,7 +1812,8 @@
             window.dbData.forEach(d => {
                 if (selSarana !== 'ALL' && d.sarana !== selSarana) return;
                 if (d.bogie) bogieSet.add(d.bogie);
-                if (d.excelData) Object.keys(d.excelData).forEach(m => monthSet.add(m));
+                const mKeys = d.excelData ? Object.keys(d.excelData) : (d.stats?.months || []);
+                mKeys.forEach(m => monthSet.add(m));
             });
             const bogieSelect = document.getElementById('tracker-select-bogie');
             if (bogieSelect) bogieSelect.innerHTML = `<option value="ALL">-- Semua Bogie --</option>` + Array.from(bogieSet).map(b => `<option value="${b}">${b}</option>`).join('');
@@ -1408,7 +1831,7 @@
             window.onTrackerSaranaChange();
         };
 
-        window.executeSaranaTracking = function() {
+        window.executeSaranaTracking = async function() {
             const tbody = document.getElementById('tracker-results-tbody'), summaryBar = document.getElementById('tracker-summary-bar');
             if (!tbody) return;
             if (window.dbData.length === 0) {
@@ -1421,6 +1844,19 @@
             const selBulan = document.getElementById('tracker-select-bulan')?.value || 'ALL';
             const selStatus = document.getElementById('tracker-select-status')?.value || 'ALL';
             const qNum = (document.getElementById('tracker-input-nomor')?.value || '').toLowerCase().trim();
+
+            const candidateArchives = window.dbData.filter(arc => {
+                if (selSarana !== 'ALL' && arc.sarana !== selSarana) return false;
+                if (selBogie !== 'ALL' && arc.bogie !== selBogie) return false;
+                return true;
+            });
+            const unloadedCandidates = candidateArchives.filter(a => !a._isLoaded || !a.excelData);
+            if (unloadedCandidates.length > 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-blue-600 font-semibold"><i class="fa-solid fa-cloud-arrow-down fa-bounce mr-2"></i>Mengunduh ${unloadedCandidates.length} arsip dari Supabase Storage...</td></tr>`;
+                for (const u of unloadedCandidates) {
+                    await window.ensureArchiveFullLoaded(u.id);
+                }
+            }
 
             let matched = [], lulusC = 0, afkirC = 0;
             window.dbData.forEach(arc => {
@@ -1462,15 +1898,23 @@
             let mOS = {}, mIS = {}; mOrder.forEach(m => { mOS[m] = { t: 0, r: 0 }; mIS[m] = { t: 0, r: 0 }; });
 
             (window.dbData || []).forEach(arc => {
-                if (!arc.excelData) return;
-                const isDalam = getArchiveDefaultPrefix(arc) === 'IS';
-                Object.keys(arc.excelData).forEach(blnThn => {
-                    const m = blnThn.split(' ')[0]; if (!mOrder.includes(m)) return;
-                    arc.excelData[blnThn].forEach(r => {
-                        if (isDalam) { dIS.total++; mIS[m].t++; if (r.isLulus) dIS.accept++; else { dIS.reject++; mIS[m].r++; } }
-                        else { dOS.total++; mOS[m].t++; if (r.isLulus) dOS.accept++; else { dOS.reject++; mOS[m].r++; } }
+                const isDalam = (typeof arc.isDalam === 'boolean') ? arc.isDalam : (getArchiveDefaultPrefix(arc) === 'IS');
+                if (arc.excelData) {
+                    Object.keys(arc.excelData).forEach(blnThn => {
+                        const m = blnThn.split(' ')[0]; if (!mOrder.includes(m)) return;
+                        arc.excelData[blnThn].forEach(r => {
+                            if (isDalam) { dIS.total++; mIS[m].t++; if (r.isLulus) dIS.accept++; else { dIS.reject++; mIS[m].r++; } }
+                            else { dOS.total++; mOS[m].t++; if (r.isLulus) dOS.accept++; else { dOS.reject++; mOS[m].r++; } }
+                        });
                     });
-                });
+                } else if (arc.stats && arc.stats.monthStats) {
+                    Object.keys(arc.stats.monthStats).forEach(blnThn => {
+                        const m = blnThn.split(' ')[0]; if (!mOrder.includes(m)) return;
+                        const st = arc.stats.monthStats[blnThn];
+                        if (isDalam) { dIS.total += st.total; dIS.accept += st.lulus; dIS.reject += st.afkir; mIS[m].t += st.total; mIS[m].r += st.afkir; }
+                        else { dOS.total += st.total; dOS.accept += st.lulus; dOS.reject += st.afkir; mOS[m].t += st.total; mOS[m].r += st.afkir; }
+                    });
+                }
             });
 
             mOrder.forEach(m => { dOS.mt.push(mOS[m].t); dOS.mr.push(mOS[m].r); dIS.mt.push(mIS[m].t); dIS.mr.push(mIS[m].r); });
@@ -1493,27 +1937,55 @@
             chartInstanceIsBar = new Chart(document.getElementById('chart-is-bar'), { type: 'bar', data: { labels: mOrder.map(m=>m.slice(0,3)), datasets: [{ label: 'Pengetesan', data: dIS.mt, backgroundColor: '#059669' }, { label: 'Reject', data: dIS.mr, backgroundColor: '#ef4444' }] }, options: { responsive: true, maintainAspectRatio: false } });
         };
 
+        window.selectedExcelFiles_batch = [];
+
         window.handleExcelSelection = function(e, type) {
-            const file = e.target.files[0]; if (!file) return;
+            const files = Array.from(e.target.files || []);
+            if (files.length === 0) return;
+
             if (type === 'new') {
-                window.selectedExcelFile_new = file;
-                document.getElementById('excel-file-name-new').textContent = file.name;
-                document.getElementById('excel-file-display-new').classList.remove('hidden');
+                window.selectedExcelFiles_batch = files;
+                window.selectedExcelFile_new = files[0];
+                window.parsedPreview_new = null;
+
+                const displayEl = document.getElementById('excel-file-display-new');
+                const nameEl = document.getElementById('excel-file-name-new');
                 const infoEl = document.getElementById('excel-file-preview-info');
-                infoEl.textContent = 'Menganalisis sheet & bulan...';
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-                    const parsed = window.parseExcelData(wb, file.name);
-                    window.parsedPreview_new = parsed;
-                    if (parsed.totalExtracted > 0) {
-                        document.getElementById('input-excel-sarana').value = parsed.sarana;
-                        document.getElementById('input-excel-bogie').value = parsed.bogie;
-                        infoEl.innerHTML = `Terdeteksi <strong>${parsed.monthCount} Bulan</strong> (${parsed.monthList.join(', ')}) • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')} Pengujian</strong>`;
-                    } else infoEl.textContent = 'Tidak ditemukan baris data pengujian valid.';
-                };
-                reader.readAsArrayBuffer(file);
+                const badgeEl = document.getElementById('excel-batch-badge');
+                const metaWrap = document.getElementById('single-file-meta-fields');
+
+                displayEl.classList.remove('hidden');
+                document.getElementById('excel-batch-progress-wrap').classList.add('hidden');
+
+                if (files.length === 1) {
+                    const file = files[0];
+                    if (metaWrap) metaWrap.classList.remove('hidden');
+                    nameEl.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+                    if (badgeEl) badgeEl.textContent = '1 File';
+                    infoEl.textContent = 'Menganalisis sheet & bulan...';
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                        const parsed = window.parseExcelData(wb, file.name);
+                        window.parsedPreview_new = parsed;
+                        if (parsed.totalExtracted > 0) {
+                            document.getElementById('input-excel-sarana').value = parsed.sarana;
+                            document.getElementById('input-excel-bogie').value = parsed.bogie;
+                            infoEl.innerHTML = `Terdeteksi <strong>${parsed.monthCount} Bulan</strong> (${parsed.monthList.join(', ')}) • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')} Pengujian</strong>`;
+                        } else {
+                            infoEl.textContent = 'Tidak ditemukan baris data pengujian valid.';
+                        }
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    if (metaWrap) metaWrap.classList.add('hidden');
+                    const totalKB = Math.round(files.reduce((a, f) => a + f.size, 0) / 1024);
+                    nameEl.textContent = `${files.length} File Excel dipilih (${(totalKB / 1024).toFixed(2)} MB total)`;
+                    if (badgeEl) badgeEl.textContent = `${files.length} File Antrean`;
+                    infoEl.innerHTML = `Sarana & Bogie akan dideteksi otomatis dari setiap file, dikompresi, lalu diunggah ke <strong>Supabase Storage</strong>.`;
+                }
             } else {
+                const file = files[0];
                 window.selectedExcelFile_lanjutan = file;
                 document.getElementById('excel-file-name-lanjutan').textContent = file.name;
                 document.getElementById('excel-file-display-lanjutan').classList.remove('hidden');
@@ -1526,53 +1998,140 @@
             }
         };
 
-        window.processExcelNew = async function() {
-            if (!window.selectedExcelFile_new) return window.showToast('Pilih file Excel terlebih dahulu!', 'error');
-            const saveParsed = async (parsed) => {
-                if (!parsed || parsed.totalExtracted === 0) return window.showToast('Format file tidak sesuai.', 'error');
-                const rec = {
-                    id: Date.now(),
-                    sarana: document.getElementById('input-excel-sarana').value.trim().toUpperCase() || parsed.sarana,
-                    bogie: document.getElementById('input-excel-bogie').value.trim() || parsed.bogie,
-                    jenis: parsed.overallJenisPegas, operator: parsed.operator, lokasi: parsed.lokasi,
-                    nomor: window.selectedExcelFile_new.name, isExcel: true, paramSpecs: parsed.paramSpecs, excelData: parsed.recordsByMonth
-                };
-                const existIdx = window.dbData.findIndex(d => d.nomor.toLowerCase() === rec.nomor.toLowerCase());
-                if (existIdx !== -1) { rec.id = window.dbData[existIdx].id; window.dbData[existIdx] = rec; }
-                else window.dbData.unshift(rec);
-                await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
-                window.closeExcelModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker(); window.populateSpringPickers(); window.renderPdfCatalog();
-                window.showToast(`Sukses menyimpan ${parsed.totalExtracted.toLocaleString('id-ID')} data dari ${parsed.monthCount} bulan!`, 'success');
-                window.openExcelViewModal(rec.id, 'ALL');
-            };
-            if (window.parsedPreview_new) await saveParsed(window.parsedPreview_new);
-            else {
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = async e => { await saveParsed(window.parseExcelData(XLSX.read(new Uint8Array(e.target.result), { type: 'array' }), window.selectedExcelFile_new.name)); };
-                reader.readAsArrayBuffer(window.selectedExcelFile_new);
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = e => reject(e);
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        window.processExcelNew = async function() {
+            const files = window.selectedExcelFiles_batch && window.selectedExcelFiles_batch.length > 0
+                ? window.selectedExcelFiles_batch
+                : (window.selectedExcelFile_new ? [window.selectedExcelFile_new] : []);
+            if (files.length === 0) return window.showToast('Pilih minimal 1 file Excel terlebih dahulu!', 'error');
+
+            const btn = document.getElementById('btn-process-excel-new');
+            const progWrap = document.getElementById('excel-batch-progress-wrap');
+            const progBar = document.getElementById('excel-batch-progress-bar');
+            const progText = document.getElementById('excel-batch-progress-text');
+
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-60'); }
+            if (progWrap) progWrap.classList.remove('hidden');
+
+            let successCount = 0;
+            let totalRowsSaved = 0;
+            let lastSavedId = null;
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const pct = Math.round(((i) / files.length) * 100);
+                    if (progBar) progBar.style.width = `${Math.max(8, pct)}%`;
+                    if (progText) progText.textContent = `(${i + 1}/${files.length}) Membaca & mengompresi ${file.name}...`;
+
+                    let parsed = (files.length === 1 && window.parsedPreview_new) ? window.parsedPreview_new : null;
+                    if (!parsed) {
+                        const buf = await readFileAsArrayBuffer(file);
+                        const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+                        parsed = window.parseExcelData(wb, file.name);
+                    }
+
+                    if (!parsed || parsed.totalExtracted === 0) {
+                        console.warn('File dilewati (tidak ada baris uji):', file.name);
+                        continue;
+                    }
+
+                    const customSarana = files.length === 1 ? document.getElementById('input-excel-sarana').value.trim().toUpperCase() : '';
+                    const customBogie = files.length === 1 ? document.getElementById('input-excel-bogie').value.trim() : '';
+
+                    const rec = {
+                        id: Date.now() + i,
+                        sarana: customSarana || parsed.sarana,
+                        bogie: customBogie || parsed.bogie,
+                        jenis: parsed.overallJenisPegas,
+                        operator: parsed.operator,
+                        lokasi: parsed.lokasi,
+                        nomor: file.name,
+                        isExcel: true,
+                        _isLoaded: true,
+                        paramSpecs: parsed.paramSpecs,
+                        excelData: parsed.recordsByMonth
+                    };
+
+                    if (progText) progText.textContent = `(${i + 1}/${files.length}) Mengunggah ${file.name} ke Supabase Storage...`;
+                    await window.uploadSingleArchiveToStorage(rec);
+
+                    const existIdx = window.dbData.findIndex(d => d.nomor.toLowerCase() === rec.nomor.toLowerCase());
+                    if (existIdx !== -1) {
+                        rec.id = window.dbData[existIdx].id;
+                        window.dbData[existIdx] = rec;
+                    } else {
+                        window.dbData.unshift(rec);
+                    }
+
+                    successCount++;
+                    totalRowsSaved += parsed.totalExtracted;
+                    lastSavedId = rec.id;
+
+                    if (progBar) progBar.style.width = `${Math.round(((i + 1) / files.length) * 100)}%`;
+                }
+
+                if (successCount > 0) {
+                    await window.saveArchiveIndexOnly(window.dbData);
+                    window.closeExcelModal();
+                    window.handleSearch();
+                    window.updateDashboardStats();
+                    window.refreshDashboardTracker();
+                    window.populateSpringPickers();
+                    window.renderPdfCatalog();
+                    window.showToast(`Berhasil mengunggah ${successCount} file (${totalRowsSaved.toLocaleString('id-ID')} pengujian) ke Cloud Storage!`, 'success');
+                    if (files.length === 1 && lastSavedId) {
+                        window.openExcelViewModal(lastSavedId, 'ALL');
+                    }
+                } else {
+                    window.showToast('Tidak ada data pengujian valid yang ditemukan pada file terpilih.', 'error');
+                }
+            } catch (err) {
+                console.error('Batch upload error:', err);
+                window.showToast('Gagal upload: ' + (err.message || 'Periksa koneksi / bucket Supabase Storage'), 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
             }
         };
 
         window.processExcelLanjutan = async function() {
             if (!window.selectedExcelFile_lanjutan) return;
             const targetId = parseInt(document.getElementById('target-draft-select').value, 10);
-            const idx = window.dbData.findIndex(d => d.id === targetId);
-            if (idx === -1) return window.showToast('Pilih arsip target!', 'error');
+            const target = await window.ensureArchiveFullLoaded(targetId);
+            if (!target) return window.showToast('Pilih arsip target!', 'error');
             const parsed = window.parsedPreview_lanjutan;
             if (!parsed || parsed.totalExtracted === 0) return window.showToast('Gagal membaca file lanjutan.', 'error');
-            const target = window.dbData[idx];
+            if (!target.excelData) target.excelData = {};
             Object.keys(parsed.recordsByMonth).forEach(m => {
                 if (!target.excelData[m]) target.excelData[m] = [];
                 parsed.recordsByMonth[m].forEach(r => target.excelData[m].push(r));
             });
             target.excelData = autoSequenceAndHealMonths(target.excelData, getArchiveDefaultPrefix(target));
-            await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
+            target._isLoaded = true;
+            await window.uploadSingleArchiveToStorage(target);
+            await window.saveArchiveIndexOnly(window.dbData);
             window.closeLanjutanModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker(); window.populateSpringPickers();
-            window.showToast('Data lanjutan berhasil digabungkan & diurutkan otomatis!', 'success');
+            window.showToast('Data lanjutan berhasil digabungkan & diunggah ke Storage!', 'success');
         };
 
-        window.openExcelViewModal = function(id, initialMonth = 'ALL', initialSearch = '') {
-            const data = window.dbData.find(d => d.id === id); if (!data || !data.excelData) return;
+        window.openExcelViewModal = async function(id, initialMonth = 'ALL', initialSearch = '') {
+            const rawMeta = window.dbData.find(d => d.id === id);
+            if (!rawMeta) return;
+            if (!rawMeta._isLoaded || !rawMeta.excelData) {
+                window.showToast(`Mengunduh detail ${rawMeta.nomor} dari Cloud Storage...`, 'success');
+            }
+            const data = await window.ensureArchiveFullLoaded(id);
+            if (!data || !data.excelData) {
+                return window.showToast('Gagal memuat isi file dari Cloud Storage.', 'error');
+            }
             window.currentViewData = data;
             const months = window.sortMonthLabels(Object.keys(data.excelData));
             window.currentActiveMonth = (initialMonth === 'ALL' || months.includes(initialMonth)) ? initialMonth : (months[0] || 'ALL');
@@ -1697,9 +2256,16 @@
         window.confirmDelete = function(id) { window.deleteIdTarget = id; document.getElementById('confirm-modal').classList.remove('hidden'); };
         window.closeConfirmModal = function() { document.getElementById('confirm-modal').classList.add('hidden'); };
         document.getElementById('btn-confirm-delete').addEventListener('click', async function() {
+            const targetArc = window.dbData.find(d => d.id === window.deleteIdTarget);
+            if (targetArc && supabaseClient) {
+                const path = targetArc.storagePath || `archives/arc_${targetArc.id}.json`;
+                try { await supabaseClient.storage.from(STORAGE_BUCKET_NAME).remove([path]); } catch(e) {}
+            }
+            if (window.deleteIdTarget) await idbDel('arc_' + window.deleteIdTarget);
             window.dbData = window.dbData.filter(d => d.id !== window.deleteIdTarget);
-            await saveToPermanentDB(EXCEL_STORAGE_KEY, window.dbData);
+            await window.saveArchiveIndexOnly(window.dbData);
             window.closeConfirmModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker();
+            window.showToast('Arsip & file Cloud Storage dihapus!', 'success');
         });
 
         window.updateDashboardStats = function() {
@@ -1731,7 +2297,6 @@
             const titleEl = document.getElementById('header-title');
             if (titleEl && VIEW_TITLES[viewName]) titleEl.textContent = VIEW_TITLES[viewName];
 
-            // Highlight Desktop Sidebar
             document.querySelectorAll('.nav-item').forEach(n => {
                 n.classList.remove('bg-blue-600', 'text-white');
                 n.classList.add('text-slate-300');
@@ -1742,12 +2307,10 @@
                 activeDesk.classList.add('bg-blue-600', 'text-white');
             }
 
-            // Highlight Mobile Bottom Bar
             document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
             const activeMob = document.getElementById('mnav-' + viewName);
             if (activeMob) activeMob.classList.add('active');
 
-            // Tutup drawer mobile & scroll ke atas
             window.toggleMobileDrawer(false);
             document.getElementById('main-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -1761,7 +2324,15 @@
             window.dbData.forEach(arc => {
                 const s = window.getArchiveSummary(arc);
                 md += `### ${arc.sarana} (${arc.bogie})\n- Total Uji: **${s.total.toLocaleString('id-ID')}** (Lulus: **${s.lulus.toLocaleString('id-ID')}**, Afkir: **${s.afkir.toLocaleString('id-ID')}**)\n`;
-                s.months.forEach(m => { const arr = arc.excelData[m]||[], l = arr.filter(x=>x.isLulus).length; md += `  - **${m}**: ${arr.length} unit (Lulus: ${l}, Afkir: ${arr.length-l})\n`; });
+                s.months.forEach(m => {
+                    if (arc.excelData && arc.excelData[m]) {
+                        const arr = arc.excelData[m], l = arr.filter(x=>x.isLulus).length;
+                        md += `  - **${m}**: ${arr.length} unit (Lulus: ${l}, Afkir: ${arr.length-l})\n`;
+                    } else if (arc.stats?.monthStats?.[m]) {
+                        const st = arc.stats.monthStats[m];
+                        md += `  - **${m}**: ${st.total} unit (Lulus: ${st.lulus}, Afkir: ${st.afkir})\n`;
+                    }
+                });
             });
             c.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : md;
         };
@@ -1778,16 +2349,56 @@
         window.closeUploadModal = function() { document.getElementById('upload-modal').classList.add('hidden'); };
         window.handlePdfFileSelect = function(e) { if (e.target.files[0]) document.getElementById('pdf-selected-name').textContent = e.target.files[0].name; };
         window.handleUpload = function() { window.showToast('Dokumen disimpan', 'success'); window.closeUploadModal(); };
+
         window.updateProfileUI = function() {
+            const initial = (window.userProfile.name || 'M').charAt(0).toUpperCase();
             document.querySelectorAll('.header-user-name').forEach(el => el.textContent = window.userProfile.name);
+            document.querySelectorAll('.header-user-role').forEach(el => el.textContent = window.userProfile.role);
+            const roleCard = document.getElementById('card-user-role');
+            if (roleCard) roleCard.textContent = window.userProfile.role;
+
+            const headerAvatar = document.getElementById('header-avatar-container');
+            const cardAvatar = document.getElementById('card-avatar-display');
+            if (window.userProfile.photoUrl) {
+                if (headerAvatar) headerAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
+                if (cardAvatar) cardAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
+            } else {
+                if (headerAvatar) headerAvatar.innerHTML = `<span id="header-avatar-initial">${initial}</span>`;
+                if (cardAvatar) cardAvatar.innerHTML = `<span id="card-avatar-initial">${initial}</span>`;
+            }
+
             document.getElementById('input-bio-name').value = window.userProfile.name;
             document.getElementById('input-bio-email').value = window.userProfile.email;
             document.getElementById('input-bio-phone').value = window.userProfile.phone;
             document.getElementById('input-bio-role').value = window.userProfile.role;
             document.getElementById('input-bio-unit').value = window.userProfile.unit;
+            const welcomeEl = document.getElementById('welcome-message');
+            if (welcomeEl) welcomeEl.textContent = `Selamat Datang di RailSpring, ${window.userProfile.name}`;
         };
-        window.saveBiodata = function() { window.showToast('Biodata Disimpan!', 'success'); };
-        window.handlePhotoUpload = function() {};
+
+        window.saveBiodata = function() {
+            window.userProfile.name = document.getElementById('input-bio-name').value.trim() || window.userProfile.name;
+            window.userProfile.email = document.getElementById('input-bio-email').value.trim() || window.userProfile.email;
+            window.userProfile.phone = document.getElementById('input-bio-phone').value.trim() || window.userProfile.phone;
+            window.userProfile.role = document.getElementById('input-bio-role').value.trim() || window.userProfile.role;
+            window.userProfile.unit = document.getElementById('input-bio-unit').value.trim() || window.userProfile.unit;
+            try { localStorage.setItem('railspring_user_profile', JSON.stringify(window.userProfile)); } catch(e) {}
+            window.updateProfileUI();
+            window.showToast('Biodata Disimpan!', 'success');
+        };
+
+        window.handlePhotoUpload = function(e) {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                window.userProfile.photoUrl = evt.target.result;
+                try { localStorage.setItem('railspring_user_profile', JSON.stringify(window.userProfile)); } catch(err) {}
+                window.updateProfileUI();
+                window.showToast('Foto profil diperbarui!', 'success');
+            };
+            reader.readAsDataURL(file);
+        };
 
         window.handleLogin = function() {
             const u = document.getElementById('username').value.trim();
@@ -1805,12 +2416,14 @@
                 window.showToast('ID Name atau Password salah!', 'error');
             }
         };
+
         window.handleLogout = function() {
             window.toggleMobileDrawer(false);
             document.getElementById('app-layout').classList.add('hidden');
             document.getElementById('login-page').classList.remove('hidden');
             document.getElementById('login-page').style.opacity = '1';
         };
+
         window.openExcelModal = function() { document.getElementById('excel-modal').classList.remove('hidden'); };
         window.closeExcelModal = function() { document.getElementById('excel-modal').classList.add('hidden'); };
         window.openLanjutanModal = function() {
@@ -1819,6 +2432,7 @@
             document.getElementById('excel-lanjutan-modal').classList.remove('hidden');
         };
         window.closeLanjutanModal = function() { document.getElementById('excel-lanjutan-modal').classList.add('hidden'); };
+
         window.showToast = function(msg, type = 'success') {
             const t = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
@@ -1829,7 +2443,10 @@
                 t.classList.add('-translate-y-24', 'sm:translate-y-0', 'sm:translate-x-[120%]');
             }, 3000);
         };
+
         document.addEventListener('DOMContentLoaded', () => { window.updateProfileUI(); });
     </script>
 </body>
 </html>
+
+```
