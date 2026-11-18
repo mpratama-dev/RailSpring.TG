@@ -183,7 +183,7 @@
                         </div>
                     </div>
                     <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Waktu Uji Akurat Aktif
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Smart Cache Sync Aktif
                     </span>
                 </div>
 
@@ -237,7 +237,7 @@
                     <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                         <div>
                             <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
-                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & mempertahankan nomor seri asli (`OS` / `IS`).</p>
+                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & sinkron otomatis lintas HP dan PC.</p>
                         </div>
                         <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
                             <button onclick="window.syncFromCloudManual()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Segarkan Cloud</button>
@@ -778,7 +778,7 @@
         }
 
         // =========================================================================
-        // KOMPRESI RINGKAS DATA EXCEL
+        // KOMPRESI RINGKAS DATA EXCEL (DENGAN REVISION STAMP)
         // =========================================================================
         function packArchiveForStorage(arc) {
             const packedMonths = {};
@@ -792,7 +792,8 @@
                 ]);
             });
             return {
-                v: 2,
+                v: 3,
+                rev: arc.rev || Date.now(),
                 id: arc.id,
                 sarana: arc.sarana,
                 bogie: arc.bogie,
@@ -833,6 +834,7 @@
             });
             return ensureArchiveMetadata({
                 id: packed.id || fallbackMeta.id,
+                rev: packed.rev || fallbackMeta.stats?.rev || Date.now(),
                 sarana: packed.sarana || fallbackMeta.sarana,
                 bogie: packed.bogie || fallbackMeta.bogie,
                 jenis: packed.jenis || fallbackMeta.jenis,
@@ -870,6 +872,7 @@
                     total: sum.total,
                     lulus: sum.lulus,
                     afkir: sum.afkir,
+                    rev: arc.rev || Date.now(),
                     months: sum.months,
                     monthStats
                 }
@@ -879,18 +882,30 @@
         // =========================================================================
         // LAZY LOADER SUPABASE STORAGE
         // =========================================================================
-        window.ensureArchiveFullLoaded = async function(archiveId) {
+        window.ensureArchiveFullLoaded = async function(archiveId, forceFresh = false) {
             const idx = window.dbData.findIndex(d => d.id === archiveId);
             if (idx === -1) return null;
             const arc = window.dbData[idx];
-            if (arc._isLoaded && arc.excelData && Object.keys(arc.excelData).length > 0) return arc;
+            if (!forceFresh && arc._isLoaded && arc.excelData && Object.keys(arc.excelData).length > 0) return arc;
 
-            const cachedPacked = await idbGet('arc_' + archiveId);
-            if (cachedPacked) {
-                const unpacked = unpackArchiveFromStorage(cachedPacked, arc);
-                if (unpacked && unpacked.excelData) {
-                    window.dbData[idx] = unpacked;
-                    return unpacked;
+            if (!forceFresh) {
+                const cachedPacked = await idbGet('arc_' + archiveId);
+                if (cachedPacked) {
+                    let cachedRows = 0;
+                    Object.values(cachedPacked.months || {}).forEach(a => { if (Array.isArray(a)) cachedRows += a.length; });
+                    const expectedTotal = arc.stats?.total;
+                    const expectedRev = arc.stats?.rev;
+                    const validCache = (expectedTotal === undefined || cachedRows === expectedTotal) &&
+                                       (!expectedRev || cachedPacked.rev === expectedRev);
+                    if (validCache) {
+                        const unpacked = unpackArchiveFromStorage(cachedPacked, arc);
+                        if (unpacked && unpacked.excelData) {
+                            window.dbData[idx] = unpacked;
+                            return unpacked;
+                        }
+                    } else {
+                        await idbDel('arc_' + archiveId);
+                    }
                 }
             }
 
@@ -921,6 +936,7 @@
                         .eq('key', EXCEL_STORAGE_KEY + '_item_' + archiveId)
                         .maybeSingle();
                     if (rowData && rowData.payload) {
+                        await idbSet('arc_' + archiveId, rowData.payload);
                         const unpacked = unpackArchiveFromStorage(rowData.payload, arc);
                         if (unpacked) {
                             window.dbData[idx] = unpacked;
@@ -992,7 +1008,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Waktu Uji Akurat Aktif';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Smart Cache Sync Aktif';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -1008,6 +1024,7 @@
         // UPLOAD & INDEKS SUPABASE STORAGE
         // =========================================================================
         window.uploadSingleArchiveToStorage = async function(arc) {
+            arc.rev = Date.now();
             const packed = packArchiveForStorage(arc);
             await idbSet('arc_' + arc.id, packed);
 
@@ -1021,6 +1038,7 @@
                 .from(STORAGE_BUCKET_NAME)
                 .upload(path, blob, {
                     contentType: 'application/json',
+                    cacheControl: '0',
                     upsert: true
                 });
 
@@ -1170,7 +1188,26 @@
                     for (const meta of indexList) {
                         const localFull = await idbGet('arc_' + meta.id);
                         if (localFull) {
-                            result.push(unpackArchiveFromStorage(localFull, meta));
+                            let localRowCount = 0;
+                            Object.values(localFull.months || {}).forEach(arr => {
+                                if (Array.isArray(arr)) localRowCount += arr.length;
+                            });
+                            const expectedTotal = meta.stats?.total;
+                            const expectedRev = meta.stats?.rev;
+                            const isCacheFresh = (expectedTotal === undefined || localRowCount === expectedTotal) &&
+                                                 (!expectedRev || localFull.rev === expectedRev);
+
+                            if (isCacheFresh) {
+                                result.push(unpackArchiveFromStorage(localFull, meta));
+                            } else {
+                                await idbDel('arc_' + meta.id);
+                                result.push({
+                                    ...meta,
+                                    isExcel: true,
+                                    excelData: null,
+                                    _isLoaded: false
+                                });
+                            }
                         } else {
                             result.push({
                                 ...meta,
@@ -1208,9 +1245,11 @@
         }
 
         window.syncFromCloudManual = async function() {
-            window.showToast('Menyegarkan indeks arsip dari Cloud...', 'success');
+            window.showToast('Menyegarkan data dari Cloud...', 'success');
             await loadAllSavedData();
-            window.showToast(`Terhubung (${window.dbData.length} arsip siap)!`, 'success');
+            let totalUnit = 0;
+            window.dbData.forEach(a => { totalUnit += window.getArchiveSummary(a).total; });
+            window.showToast(`Sinkron: ${window.dbData.length} file (${totalUnit.toLocaleString('id-ID')} unit)!`, 'success');
         };
 
         window.userProfile = { name: "Mario Putra", email: "mario.putra@kai.id", phone: "0812-3456-7890", role: "Administrator", unit: "Balai Yasa Tegal - Logam Jaya Teknik", photoUrl: "" };
@@ -1272,7 +1311,6 @@
             return null;
         }
 
-        // Mengoreksi tanggal US MM/DD/YY yang terbalik menjadi DD/MM/YY jika bulan belum terjadi di tahun berjalan
         function fixSwappedDayMonth(d, m, y) {
             const now = new Date();
             const curYear = now.getFullYear();
@@ -1390,8 +1428,6 @@
             return (c.includes('DALAM') || c.includes('INNER') || /\bIS\b/.test(c)) ? 'IS' : 'OS';
         }
 
-        // Memisahkan otomatis ke Bulan & Tahun masing-masing berdasarkan WAKTU UJI
-        // serta mempertahankan nomor seri asli dari Excel (tidak menimpa OS.8118)
         function autoSequenceAndHealMonths(excelData, defaultPrefix = 'OS') {
             if (!excelData) return {};
             const regrouped = {};
@@ -1508,7 +1544,6 @@
                 }
                 if (colIndices.length === 0) return;
 
-                // Deteksi otomatis indeks kolom Tanggal/Waktu Uji (seperti kolom di sebelah Process Sec)
                 let detectedTimeColIdx = -1;
                 const dateColScores = {};
                 const startScanRow = Math.max(tmRowIdx + 1, 10);
@@ -2100,8 +2135,12 @@
                     const customSarana = files.length === 1 ? document.getElementById('input-excel-sarana').value.trim().toUpperCase() : '';
                     const customBogie = files.length === 1 ? document.getElementById('input-excel-bogie').value.trim() : '';
 
+                    const existIdx = window.dbData.findIndex(d => d.nomor.toLowerCase() === file.name.toLowerCase());
+                    const recId = existIdx !== -1 ? window.dbData[existIdx].id : (Date.now() + i);
+
                     const rec = {
-                        id: Date.now() + i,
+                        id: recId,
+                        rev: Date.now(),
                         sarana: customSarana || parsed.sarana,
                         bogie: customBogie || parsed.bogie,
                         jenis: parsed.overallJenisPegas,
@@ -2117,9 +2156,7 @@
                     if (progText) progText.textContent = `(${i + 1}/${files.length}) Mengunggah ${file.name} ke Supabase Storage...`;
                     await window.uploadSingleArchiveToStorage(rec);
 
-                    const existIdx = window.dbData.findIndex(d => d.nomor.toLowerCase() === rec.nomor.toLowerCase());
                     if (existIdx !== -1) {
-                        rec.id = window.dbData[existIdx].id;
                         window.dbData[existIdx] = rec;
                     } else {
                         window.dbData.unshift(rec);
@@ -2158,7 +2195,7 @@
         window.processExcelLanjutan = async function() {
             if (!window.selectedExcelFile_lanjutan) return window.showToast('Pilih file Excel lanjutan terlebih dahulu!', 'error');
             const targetId = parseInt(document.getElementById('target-draft-select').value, 10);
-            const target = await window.ensureArchiveFullLoaded(targetId);
+            const target = await window.ensureArchiveFullLoaded(targetId, true);
             if (!target) return window.showToast('Pilih arsip target!', 'error');
 
             const btn = document.getElementById('btn-process-excel-lanjutan');
@@ -2199,6 +2236,7 @@
                 });
 
                 target.excelData = autoSequenceAndHealMonths(target.excelData, getArchiveDefaultPrefix(target));
+                target.rev = Date.now();
                 target._isLoaded = true;
 
                 await window.uploadSingleArchiveToStorage(target);
