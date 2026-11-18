@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -184,7 +183,7 @@
                         </div>
                     </div>
                     <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Lazy Load Aktif
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Auto Bulan/Tahun Aktif
                     </span>
                 </div>
 
@@ -238,7 +237,7 @@
                     <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                         <div>
                             <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
-                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Otomatis memisahkan pergantian bulan & melanjutkan nomor seri terakhir lintas bulan (`OS` / `IS`).</p>
+                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Otomatis membuat folder <strong>Bulan & Tahun</strong> sesuai tanggal uji Excel & mempertahankan nomor seri asli (`OS` / `IS`).</p>
                         </div>
                         <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
                             <button onclick="window.syncFromCloudManual()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Segarkan Cloud</button>
@@ -324,7 +323,7 @@
                                 </div>
                                 <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200/80">
                                     <label class="block text-[11px] font-bold uppercase text-amber-900 mb-1.5">3. Cari No. Seri Pegas</label>
-                                    <input type="text" id="tracker-input-nomor" oninput="window.executeSaranaTracking()" placeholder="Cth: OS.7036..." class="block w-full px-3 py-2 bg-white border border-amber-300 rounded-lg text-sm sm:text-xs font-semibold outline-none">
+                                    <input type="text" id="tracker-input-nomor" oninput="window.executeSaranaTracking()" placeholder="Cth: OS.8118..." class="block w-full px-3 py-2 bg-white border border-amber-300 rounded-lg text-sm sm:text-xs font-semibold outline-none">
                                 </div>
                                 <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
                                     <label class="block text-[11px] font-bold uppercase text-gray-700 mb-1.5">4. Bulan & Status</label>
@@ -568,7 +567,7 @@
             <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
                 <div>
                     <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian</h3>
-                    <p class="text-[11px] text-emerald-600 font-semibold">Supabase Storage + Lazy Load (Bisa pilih banyak file sekaligus)</p>
+                    <p class="text-[11px] text-emerald-600 font-semibold">Auto Pemisahan Bulan & Tahun sesuai Tanggal Uji Excel</p>
                 </div>
                 <button onclick="window.closeExcelModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -578,7 +577,7 @@
                     <div class="text-center">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-green-600 mb-2"></i>
                         <p class="text-sm font-bold text-blue-600">Ketuk untuk pilih 1 atau Banyak File Excel (.xlsx / .xls)</p>
-                        <p class="text-[11px] text-gray-500 mt-1">Bisa blok 20+ file sekaligus • Kompresi otomatis 85% ke Supabase Storage</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Bisa blok 20+ file sekaligus • Kompresi otomatis ke Supabase Storage</p>
                     </div>
                 </div>
                 <div id="excel-file-display-new" class="hidden p-3.5 border border-green-200 bg-green-50 rounded-xl space-y-2">
@@ -611,22 +610,28 @@
         <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
             <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
-                <h3 class="font-bold text-sm sm:text-base">Upload File Excel Lanjutan</h3>
+                <div>
+                    <h3 class="font-bold text-sm sm:text-base">Upload File Excel Lanjutan</h3>
+                    <p class="text-[11px] text-amber-700 font-semibold">Otomatis membuat tab Bulan & Tahun baru saat tanggal berganti bulan/tahun</p>
+                </div>
                 <button onclick="window.closeLanjutanModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-5 sm:p-6 space-y-4">
-                <select id="target-draft-select" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold"></select>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Pilih Arsip Sarana Tujuan:</label>
+                    <select id="target-draft-select" class="block w-full py-2.5 px-3 border rounded-xl text-sm sm:text-xs font-semibold"></select>
+                </div>
                 <input type="file" id="lanjutan-excel-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelSelection(event, 'lanjutan')">
                 <div class="flex justify-center px-5 py-6 border-2 border-dashed border-amber-300 bg-amber-50/30 rounded-2xl cursor-pointer" onclick="document.getElementById('lanjutan-excel-input').click()">
-                    <div class="text-center"><i class="fa-solid fa-file-import text-4xl text-amber-500 mb-2"></i><p class="text-sm font-bold text-blue-600">Pilih File Excel Lanjutan</p></div>
+                    <div class="text-center"><i class="fa-solid fa-file-import text-4xl text-amber-500 mb-2"></i><p class="text-sm font-bold text-blue-600">Pilih File Excel Lanjutan</p><p class="text-[11px] text-gray-500 mt-1">Nomor seri Excel asli (mis. OS.8118) dipertahankan apa adanya</p></div>
                 </div>
-                <div id="excel-file-display-lanjutan" class="hidden p-3.5 border border-amber-200 bg-amber-50 rounded-xl">
+                <div id="excel-file-display-lanjutan" class="hidden p-3.5 border border-amber-200 bg-amber-50 rounded-xl space-y-1">
                     <p id="excel-file-name-lanjutan" class="text-xs font-bold truncate">file.xlsx</p>
-                    <p id="excel-lanjutan-preview-info" class="text-[11px] text-amber-800 font-medium mt-0.5">Siap disinkronkan</p>
+                    <p id="excel-lanjutan-preview-info" class="text-[11px] text-amber-800 font-medium">Menganalisis isi file...</p>
                 </div>
                 <div class="pt-2 flex justify-end gap-2">
                     <button onclick="window.closeLanjutanModal()" class="px-4 py-2.5 text-xs bg-gray-100 rounded-xl">Batal</button>
-                    <button onclick="window.processExcelLanjutan()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-amber-500 rounded-xl">Sinkronkan</button>
+                    <button id="btn-process-excel-lanjutan" onclick="window.processExcelLanjutan()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl">Sinkronkan</button>
                 </div>
             </div>
         </div>
@@ -987,7 +992,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Lazy Load Aktif';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Auto Bulan/Tahun Aktif';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -1302,22 +1307,20 @@
             return s;
         }
 
-        function formatExcelTimestamp(rawVal, sheetMonthNum = null) {
+        function formatExcelTimestamp(rawVal) {
             if (rawVal === null || rawVal === undefined || String(rawVal).trim() === '') return '-';
             if (typeof rawVal === 'number' && rawVal > 30000 && rawVal < 70000) {
                 const utcDays = Math.floor(rawVal - 25569);
                 const dateInfo = new Date(utcDays * 86400 * 1000);
                 let totalSeconds = Math.floor(86400 * (rawVal - Math.floor(rawVal) + 0.0000001));
                 const hours = Math.floor(totalSeconds / 3600), minutes = Math.floor((totalSeconds % 3600) / 60);
-                let d = dateInfo.getUTCDate(), m = dateInfo.getUTCMonth() + 1, y = dateInfo.getUTCFullYear() % 100;
-                if (sheetMonthNum && m !== sheetMonthNum && d === sheetMonthNum) { const t = d; d = m; m = t; }
+                const d = dateInfo.getUTCDate(), m = dateInfo.getUTCMonth() + 1, y = dateInfo.getUTCFullYear() % 100;
                 return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${String(y).padStart(2,'0')} ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
             }
             const s = String(rawVal).trim();
             const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2})/);
             if (iso) {
-                let yr = parseInt(iso[1], 10) % 100, mo = parseInt(iso[2], 10), da = parseInt(iso[3], 10);
-                if (sheetMonthNum && mo !== sheetMonthNum && da === sheetMonthNum) { const t = da; da = mo; mo = t; }
+                const yr = parseInt(iso[1], 10) % 100, mo = parseInt(iso[2], 10), da = parseInt(iso[3], 10);
                 return `${String(da).padStart(2,'0')}/${String(mo).padStart(2,'0')}/${String(yr).padStart(2,'0')} ${iso[4]}`;
             }
             return s;
@@ -1345,46 +1348,21 @@
             return (c.includes('DALAM') || c.includes('INNER') || /\bIS\b/.test(c)) ? 'IS' : 'OS';
         }
 
+        // Memisahkan otomatis ke Bulan & Tahun masing-masing berdasarkan WAKTU UJI
+        // serta mempertahankan nomor seri asli dari Excel (tidak menimpa OS.8118)
         function autoSequenceAndHealMonths(excelData, defaultPrefix = 'OS') {
             if (!excelData) return {};
             const regrouped = {};
             const initialMonths = window.sortMonthLabels(Object.keys(excelData));
 
             initialMonths.forEach(mLabel => {
-                const mInfo = detectSheetMonthInfo(mLabel);
-                const sheetMNum = mInfo ? mInfo.monthNumber : null;
-                const sheetYear = mInfo ? mInfo.year : 2026;
-                let reachedEndOfMonth = false;
-                let transitionedMonthLabel = null;
-
                 (excelData[mLabel] || []).forEach(r => {
                     if (!r) return;
-                    r.nomor = normalizeSpringCode(r.nomor, defaultPrefix);
+                    const normalized = normalizeSpringCode(r.nomor, defaultPrefix);
+                    if (normalized) r.nomor = normalized;
+
                     const rowM = detectMonthFromTimestampStr(r.waktu);
-
-                    if (sheetMNum && rowM) {
-                        if (rowM.monthNumber === sheetMNum && rowM.day >= 28) {
-                            reachedEndOfMonth = true;
-                        } else if (reachedEndOfMonth && (rowM.monthNumber === (sheetMNum % 12) + 1 || (rowM.day === (sheetMNum % 12) + 1 && rowM.monthNumber <= 12))) {
-                            const nextMIdx = sheetMNum % 12;
-                            const nextYear = sheetMNum === 12 ? sheetYear + 1 : sheetYear;
-                            transitionedMonthLabel = `${MONTH_NAMES[nextMIdx]} ${nextYear}`;
-                            if (rowM.monthNumber !== nextMIdx + 1 && rowM.day === nextMIdx + 1) {
-                                const fixedDay = String(rowM.monthNumber).padStart(2, '0');
-                                const fixedMon = String(nextMIdx + 1).padStart(2, '0');
-                                r.waktu = String(r.waktu).replace(/^\d{1,2}[\/\-]\d{1,2}/, `${fixedDay}/${fixedMon}`);
-                            }
-                        } else if (transitionedMonthLabel) {
-                            const nextMNum = (sheetMNum % 12) + 1;
-                            if (rowM.monthNumber !== nextMNum && rowM.day === nextMNum) {
-                                const fixedDay = String(rowM.monthNumber).padStart(2, '0');
-                                const fixedMon = String(nextMNum).padStart(2, '0');
-                                r.waktu = String(r.waktu).replace(/^\d{1,2}[\/\-]\d{1,2}/, `${fixedDay}/${fixedMon}`);
-                            }
-                        }
-                    }
-
-                    const destMonth = transitionedMonthLabel || mLabel;
+                    const destMonth = rowM ? rowM.label : mLabel;
                     if (!regrouped[destMonth]) regrouped[destMonth] = [];
                     regrouped[destMonth].push(r);
                 });
@@ -1392,29 +1370,19 @@
 
             const sortedMonths = window.sortMonthLabels(Object.keys(regrouped));
             const finalData = {};
-            let lastMonthEndingNumber = null;
+            let lastKnownSeq = 0;
 
-            sortedMonths.forEach((mLabel, mIdx) => {
+            sortedMonths.forEach(mLabel => {
                 const rows = regrouped[mLabel] || [];
-                const mInfo = detectSheetMonthInfo(mLabel);
-                const isOctOrLater = mInfo && (mInfo.year > 2026 || (mInfo.year === 2026 && mInfo.monthNumber >= 10));
-
-                if (mIdx > 0 && lastMonthEndingNumber !== null && isOctOrLater) {
-                    let seqNum = lastMonthEndingNumber;
-                    rows.forEach(r => {
-                        seqNum++;
-                        r.nomor = `${defaultPrefix}.${seqNum}`;
-                    });
-                }
-
-                for (let i = rows.length - 1; i >= 0; i--) {
-                    const mLast = String(rows[i].nomor || '').match(/\.(\d+)$/);
-                    if (mLast) {
-                        lastMonthEndingNumber = parseInt(mLast[1], 10);
-                        break;
+                rows.forEach(r => {
+                    if (!r.nomor && lastKnownSeq > 0) {
+                        lastKnownSeq++;
+                        r.nomor = `${defaultPrefix}.${lastKnownSeq}`;
+                    } else {
+                        const mSeq = String(r.nomor || '').match(/\.(\d+)$/);
+                        if (mSeq) lastKnownSeq = parseInt(mSeq[1], 10);
                     }
-                }
-
+                });
                 finalData[mLabel] = rows;
             });
 
@@ -1540,13 +1508,16 @@
                         if (row[wIdx] !== null && row[wIdx] !== undefined && String(row[wIdx]).trim() !== '') { rawWaktu = row[wIdx]; break; }
                     }
                     if (!rawWaktu && row[3] && colIndices[0] > 4) rawWaktu = row[3];
-                    const waktuFormatted = formatExcelTimestamp(rawWaktu, sheetMonthInfo ? sheetMonthInfo.monthNumber : null);
+                    const waktuFormatted = formatExcelTimestamp(rawWaktu);
 
-                    let targetMonthLabel = sheetMonthInfo ? sheetMonthInfo.label : null;
-                    if (!targetMonthLabel) {
-                        const rowM = detectMonthFromTimestampStr(waktuFormatted);
-                        if (rowM) { targetMonthLabel = rowM.label; lastRowMonthLabel = targetMonthLabel; }
-                        else targetMonthLabel = lastRowMonthLabel || 'Data Umum';
+                    // Prioritaskan Bulan & Tahun dari tanggal baris WAKTU UJI agar otomatis bikin bulan/tahun baru saat ganti bulan/tahun
+                    const rowM = detectMonthFromTimestampStr(waktuFormatted);
+                    let targetMonthLabel = null;
+                    if (rowM) {
+                        targetMonthLabel = rowM.label;
+                        lastRowMonthLabel = targetMonthLabel;
+                    } else {
+                        targetMonthLabel = lastRowMonthLabel || (sheetMonthInfo ? sheetMonthInfo.label : 'Data Umum');
                     }
 
                     let springParams = [], isLulus = true;
@@ -1962,7 +1933,7 @@
                     if (metaWrap) metaWrap.classList.remove('hidden');
                     nameEl.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
                     if (badgeEl) badgeEl.textContent = '1 File';
-                    infoEl.textContent = 'Menganalisis sheet & bulan...';
+                    infoEl.textContent = 'Menganalisis tanggal uji & bulan...';
                     const reader = new FileReader();
                     reader.onload = function(evt) {
                         const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
@@ -1971,7 +1942,7 @@
                         if (parsed.totalExtracted > 0) {
                             document.getElementById('input-excel-sarana').value = parsed.sarana;
                             document.getElementById('input-excel-bogie').value = parsed.bogie;
-                            infoEl.innerHTML = `Terdeteksi <strong>${parsed.monthCount} Bulan</strong> (${parsed.monthList.join(', ')}) • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')} Pengujian</strong>`;
+                            infoEl.innerHTML = `Otomatis terbagi ke <strong>${parsed.monthCount} Periode</strong> (${parsed.monthList.join(', ')}) • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')} Pengujian</strong>`;
                         } else {
                             infoEl.textContent = 'Tidak ditemukan baris data pengujian valid.';
                         }
@@ -1982,17 +1953,32 @@
                     const totalKB = Math.round(files.reduce((a, f) => a + f.size, 0) / 1024);
                     nameEl.textContent = `${files.length} File Excel dipilih (${(totalKB / 1024).toFixed(2)} MB total)`;
                     if (badgeEl) badgeEl.textContent = `${files.length} File Antrean`;
-                    infoEl.innerHTML = `Sarana & Bogie akan dideteksi otomatis dari setiap file, dikompresi, lalu diunggah ke <strong>Supabase Storage</strong>.`;
+                    infoEl.innerHTML = `Sarana, Bogie, serta Bulan & Tahun akan dipisahkan otomatis dari setiap file lalu diunggah ke <strong>Supabase Storage</strong>.`;
                 }
             } else {
                 const file = files[0];
                 window.selectedExcelFile_lanjutan = file;
+                window.parsedPreview_lanjutan = null;
                 document.getElementById('excel-file-name-lanjutan').textContent = file.name;
+                const infoEl = document.getElementById('excel-lanjutan-preview-info');
+                if (infoEl) infoEl.textContent = 'Membaca periode bulan/tahun & nomor seri Excel...';
                 document.getElementById('excel-file-display-lanjutan').classList.remove('hidden');
+
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-                    window.parsedPreview_lanjutan = window.parseExcelData(wb, file.name);
+                    const parsed = window.parseExcelData(wb, file.name);
+                    window.parsedPreview_lanjutan = parsed;
+                    if (infoEl && parsed.totalExtracted > 0) {
+                        const firstMonth = parsed.monthList[0];
+                        const lastMonth = parsed.monthList[parsed.monthList.length - 1];
+                        const firstCode = parsed.recordsByMonth[firstMonth]?.[0]?.nomor || '-';
+                        const lastMonthRows = parsed.recordsByMonth[lastMonth] || [];
+                        const firstCodeNewestMonth = lastMonthRows[0]?.nomor || firstCode;
+                        infoEl.innerHTML = `Terdeteksi <strong>${parsed.monthList.join(', ')}</strong> • Total <strong>${parsed.totalExtracted.toLocaleString('id-ID')}</strong> data (Awal ${lastMonth}: <strong>${firstCodeNewestMonth}</strong>)`;
+                    } else if (infoEl) {
+                        infoEl.textContent = 'Tidak ditemukan baris pengujian valid pada file ini.';
+                    }
                 };
                 reader.readAsArrayBuffer(file);
             }
@@ -2030,7 +2016,7 @@
                     const file = files[i];
                     const pct = Math.round(((i) / files.length) * 100);
                     if (progBar) progBar.style.width = `${Math.max(8, pct)}%`;
-                    if (progText) progText.textContent = `(${i + 1}/${files.length}) Membaca & mengompresi ${file.name}...`;
+                    if (progText) progText.textContent = `(${i + 1}/${files.length}) Membaca & memisahkan bulan/tahun ${file.name}...`;
 
                     let parsed = (files.length === 1 && window.parsedPreview_new) ? window.parsedPreview_new : null;
                     if (!parsed) {
@@ -2103,23 +2089,78 @@
         };
 
         window.processExcelLanjutan = async function() {
-            if (!window.selectedExcelFile_lanjutan) return;
+            if (!window.selectedExcelFile_lanjutan) return window.showToast('Pilih file Excel lanjutan terlebih dahulu!', 'error');
             const targetId = parseInt(document.getElementById('target-draft-select').value, 10);
             const target = await window.ensureArchiveFullLoaded(targetId);
             if (!target) return window.showToast('Pilih arsip target!', 'error');
-            const parsed = window.parsedPreview_lanjutan;
-            if (!parsed || parsed.totalExtracted === 0) return window.showToast('Gagal membaca file lanjutan.', 'error');
-            if (!target.excelData) target.excelData = {};
-            Object.keys(parsed.recordsByMonth).forEach(m => {
-                if (!target.excelData[m]) target.excelData[m] = [];
-                parsed.recordsByMonth[m].forEach(r => target.excelData[m].push(r));
-            });
-            target.excelData = autoSequenceAndHealMonths(target.excelData, getArchiveDefaultPrefix(target));
-            target._isLoaded = true;
-            await window.uploadSingleArchiveToStorage(target);
-            await window.saveArchiveIndexOnly(window.dbData);
-            window.closeLanjutanModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker(); window.populateSpringPickers();
-            window.showToast('Data lanjutan berhasil digabungkan & diunggah ke Storage!', 'success');
+
+            const btn = document.getElementById('btn-process-excel-lanjutan');
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-60'); }
+
+            try {
+                let parsed = window.parsedPreview_lanjutan;
+                if (!parsed) {
+                    const buf = await readFileAsArrayBuffer(window.selectedExcelFile_lanjutan);
+                    const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+                    parsed = window.parseExcelData(wb, window.selectedExcelFile_lanjutan.name);
+                }
+                if (!parsed || parsed.totalExtracted === 0) {
+                    return window.showToast('Gagal membaca data pengujian pada file lanjutan.', 'error');
+                }
+
+                if (!target.excelData) target.excelData = {};
+                const createdNewMonths = [];
+
+                Object.keys(parsed.recordsByMonth).forEach(m => {
+                    if (!target.excelData[m]) {
+                        target.excelData[m] = [];
+                        createdNewMonths.push(m);
+                    }
+                    // Hindari duplikasi baris jika file lanjutan masih menyertakan sebagian data bulan lama
+                    const existingMap = new Map();
+                    target.excelData[m].forEach((row, idx) => {
+                        existingMap.set(`${row.nomor}|${row.waktu}`, idx);
+                    });
+
+                    parsed.recordsByMonth[m].forEach(r => {
+                        const key = `${r.nomor}|${r.waktu}`;
+                        if (existingMap.has(key)) {
+                            target.excelData[m][existingMap.get(key)] = r;
+                        } else {
+                            target.excelData[m].push(r);
+                        }
+                    });
+                });
+
+                target.excelData = autoSequenceAndHealMonths(target.excelData, getArchiveDefaultPrefix(target));
+                target._isLoaded = true;
+
+                await window.uploadSingleArchiveToStorage(target);
+                await window.saveArchiveIndexOnly(window.dbData);
+
+                window.closeLanjutanModal();
+                window.handleSearch();
+                window.updateDashboardStats();
+                window.refreshDashboardTracker();
+                window.populateSpringPickers();
+
+                const sortedAllMonths = window.sortMonthLabels(Object.keys(target.excelData));
+                const newestMonth = createdNewMonths.length > 0
+                    ? window.sortMonthLabels(createdNewMonths)[createdNewMonths.length - 1]
+                    : (sortedAllMonths[sortedAllMonths.length - 1] || 'ALL');
+
+                const infoMsg = createdNewMonths.length > 0
+                    ? `Periode baru otomatis dibuat: ${createdNewMonths.join(', ')}!`
+                    : `Data berhasil disinkronkan ke ${sortedAllMonths.join(', ')}!`;
+                window.showToast(infoMsg, 'success');
+
+                window.openExcelViewModal(target.id, newestMonth);
+            } catch (err) {
+                console.error('Upload lanjutan error:', err);
+                window.showToast('Gagal sinkronisasi: ' + (err.message || 'Periksa koneksi Cloud'), 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
+            }
         };
 
         window.openExcelViewModal = async function(id, initialMonth = 'ALL', initialSearch = '') {
@@ -2244,7 +2285,7 @@
             document.getElementById('table-info').textContent = `Menampilkan ${dataToRender.length} arsip`;
             tbody.innerHTML = dataToRender.map((item, idx) => {
                 const sum = window.getArchiveSummary(item);
-                return `<tr class="border-b border-slate-800"><td class="px-4 py-3.5 text-center">${idx+1}</td><td class="px-4 py-3.5 font-bold text-white">${item.sarana}</td><td class="px-4 py-3.5 text-xs">${item.bogie}</td><td class="px-4 py-3.5 text-xs font-mono text-blue-400">${item.nomor} (${sum.months.length} Bulan)</td><td class="px-4 py-3.5 font-bold text-white">${sum.total.toLocaleString('id-ID')} Uji (${sum.lulus.toLocaleString('id-ID')} Lulus / ${sum.afkir.toLocaleString('id-ID')} Afkir)</td><td class="px-4 py-3.5 text-center"><button onclick="window.openExcelViewModal(${item.id}, 'ALL')" class="bg-blue-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs mr-1.5 font-bold">Buka</button><button onclick="window.confirmDelete(${item.id})" class="bg-red-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs font-bold">Hapus</button></td></tr>`;
+                return `<tr class="border-b border-slate-800"><td class="px-4 py-3.5 text-center">${idx+1}</td><td class="px-4 py-3.5 font-bold text-white">${item.sarana}</td><td class="px-4 py-3.5 text-xs">${item.bogie}</td><td class="px-4 py-3.5 text-xs font-mono text-blue-400">${item.nomor} (${sum.months.length} Bulan: ${sum.months.join(', ')})</td><td class="px-4 py-3.5 font-bold text-white">${sum.total.toLocaleString('id-ID')} Uji (${sum.lulus.toLocaleString('id-ID')} Lulus / ${sum.afkir.toLocaleString('id-ID')} Afkir)</td><td class="px-4 py-3.5 text-center"><button onclick="window.openExcelViewModal(${item.id}, 'ALL')" class="bg-blue-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs mr-1.5 font-bold">Buka</button><button onclick="window.confirmDelete(${item.id})" class="bg-red-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs font-bold">Hapus</button></td></tr>`;
             }).join('') || `<tr><td colspan="6" class="text-center py-8 text-slate-400">Belum ada file Excel diunggah.</td></tr>`;
         };
 
@@ -2429,6 +2470,9 @@
         window.openLanjutanModal = function() {
             const sel = document.getElementById('target-draft-select');
             sel.innerHTML = window.dbData.map(d => `<option value="${d.id}">[${d.sarana}] ${d.nomor}</option>`).join('') || '<option value="">Belum ada arsip</option>';
+            document.getElementById('excel-file-display-lanjutan').classList.add('hidden');
+            window.selectedExcelFile_lanjutan = null;
+            window.parsedPreview_lanjutan = null;
             document.getElementById('excel-lanjutan-modal').classList.remove('hidden');
         };
         window.closeLanjutanModal = function() { document.getElementById('excel-lanjutan-modal').classList.add('hidden'); };
@@ -2441,12 +2485,10 @@
             t.className = `fixed top-4 right-4 left-4 sm:left-auto z-[80] transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white ${type==='success'?'bg-emerald-600':'bg-red-600'}`;
             setTimeout(() => {
                 t.classList.add('-translate-y-24', 'sm:translate-y-0', 'sm:translate-x-[120%]');
-            }, 3000);
+            }, 3500);
         };
 
         document.addEventListener('DOMContentLoaded', () => { window.updateProfileUI(); });
     </script>
 </body>
 </html>
-
-```
