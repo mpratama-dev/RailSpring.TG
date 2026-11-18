@@ -2,660 +2,369 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RailSpring — Sistem Manajemen & Pengujian Pegas Sarana</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <title>RailSpring: Sistem Informasi Data Pegas Sarana Kereta Api</title>
+    <link rel="icon" href="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
         }
-        *, *::before, *::after {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f3f4f6;
+            height: 100dvh;
+            width: 100%;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f1f5f9;
-            color: #1e293b;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-        button {
-            cursor: pointer;
-            font-family: inherit;
-        }
-        input, select, textarea {
-            font-family: inherit;
-        }
-        .hidden {
-            display: none !important;
-        }
-
-        /* ================= LOGIN PAGE ================= */
-        #login-page {
-            min-height: 100vh;
-            min-height: 100dvh;
-            background: linear-gradient(135deg, #020617 0%, #172554 50%, #0f172a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 26rem;
-            background: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .login-logo {
-            width: 4rem;
-            height: 4rem;
-            border-radius: 1rem;
-            background: linear-gradient(45deg, #2563eb, #4f46e5);
-            color: #ffffff;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.75rem;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
-        }
-        .login-input-wrap {
-            position: relative;
-        }
-        .login-input-icon {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            padding-left: 0.875rem;
-            display: flex;
-            align-items: center;
-            color: #94a3b8;
-            pointer-events: none;
-        }
-        .login-input {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #0f172a;
-            background: #ffffff;
-            outline: none;
-        }
-        .login-input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-        .login-btn {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            background: #2563eb;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.875rem;
-            border: none;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.35);
-            transition: background 0.2s;
-        }
-        .login-btn:hover {
-            background: #1d4ed8;
-        }
-
-        /* ================= APP LAYOUT & SIDEBAR ================= */
-        #app-layout {
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            background-color: #f1f5f9;
-        }
-        #mobile-sidebar-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(2, 6, 23, 0.65);
-            z-index: 40;
-        }
-        #mobile-sidebar-drawer {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 18rem;
-            background: #0f172a;
-            color: #ffffff;
-            z-index: 50;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            padding-top: var(--safe-top);
-            padding-bottom: var(--safe-bottom);
-        }
-        #mobile-sidebar-drawer.drawer-open {
-            transform: translateX(0);
-        }
-        #desktop-sidebar {
-            display: none;
-            width: 17rem;
-            background: #0f172a;
-            color: #ffffff;
-            flex-direction: column;
-            flex-shrink: 0;
-            user-select: none;
-        }
-        @media (min-width: 768px) {
-            #desktop-sidebar {
-                display: flex;
-            }
-            #mobile-menu-btn,
-            #mobile-bottom-nav {
-                display: none !important;
-            }
-        }
-
-        /* ================= TOP HEADER & AVATAR FIX ================= */
-        header.app-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 0.75rem 1.25rem;
-            padding-top: max(0.75rem, var(--safe-top));
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-        #header-avatar-container {
-            width: 2.25rem;
-            height: 2.25rem;
-            min-width: 2.25rem;
-            min-height: 2.25rem;
-            max-width: 2.25rem;
-            max-height: 2.25rem;
-            border-radius: 9999px;
-            background: #2563eb;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
-            flex-shrink: 0;
+            overscroll-behavior-y: none;
         }
-        #header-avatar-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        #card-avatar-display {
-            width: 6.5rem;
-            height: 6.5rem;
-            border-radius: 9999px;
-            background: #2563eb;
-            color: #ffffff;
-            font-size: 2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin: 0 auto;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25);
-        }
-        #card-avatar-display img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* ================= MAIN CONTENT & CARDS ================= */
-        main.app-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-        }
-        #main-scroll-container {
-            flex: 1;
-            overflow-y: auto;
+        .smooth-scroll {
             -webkit-overflow-scrolling: touch;
-            padding: 1.25rem;
-            padding-bottom: 5.5rem;
+            scroll-behavior: smooth;
         }
-        @media (min-width: 768px) {
-            #main-scroll-container {
-                padding: 1.5rem;
-                padding-bottom: 2rem;
-            }
+        .swipe-scroll-x {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            scrollbar-width: thin;
         }
-        .rs-card {
-            background: #ffffff;
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        }
-        .rs-btn-primary {
-            background: #2563eb;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            border-radius: 0.75rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-        }
-        .rs-btn-primary:hover {
-            background: #1d4ed8;
-        }
-        .rs-btn-emerald {
-            background: #059669;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            border-radius: 0.75rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-        }
-        .rs-btn-emerald:hover {
-            background: #047857;
-        }
-        .rs-btn-indigo {
-            background: #4f46e5;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            border-radius: 0.75rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-        }
-        .rs-btn-indigo:hover {
-            background: #4338ca;
-        }
-        .rs-btn-amber {
-            background: #f59e0b;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            border-radius: 0.75rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-        }
-        .rs-btn-red {
-            background: #dc2626;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            border-radius: 0.75rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-        }
-
-        /* ================= MODALS & UTILITIES ================= */
-        .rs-modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.7);
-            z-index: 60;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .swipe-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .smooth-scroll { -webkit-overflow-scrolling: touch; }
+        .swipe-item { scroll-snap-align: start; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .dark-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .dark-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        .dark-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-        .tab-btn.active { background-color: #2563eb; color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25); }
+        .dark-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .dark-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        .dark-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .ai-markdown h1, .ai-markdown h2, .ai-markdown h3 { font-weight: bold; color: #1e293b; margin-top: 1em; margin-bottom: 0.5em; }
+        .ai-markdown h1 { font-size: 1.3em; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.3em; }
+        .ai-markdown h2 { font-size: 1.15em; }
+        .ai-markdown p { margin-bottom: 0.8em; line-height: 1.6; }
+        .ai-markdown ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 0.8em; }
+        .ai-markdown ol { list-style-type: decimal; margin-left: 1.5em; margin-bottom: 0.8em; }
+        .ai-markdown strong { font-weight: 600; color: #0f172a; }
+
+        .tab-btn.active { border-bottom: 3px solid #2563eb; color: #1e40af; font-weight: 700; background-color: #eff6ff; }
         .mobile-nav-btn.active { color: #2563eb; }
-        .mobile-nav-btn.active .nav-pill { background-color: #dbeafe; color: #1d4ed8; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.25s ease-out; }
-        .ai-markdown h1 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: #1e293b; }
-        .ai-markdown h3 { font-size: 0.95rem; font-weight: 700; margin-top: 0.75rem; margin-bottom: 0.25rem; color: #1d4ed8; }
-        .ai-markdown ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+        .mobile-nav-btn.active .nav-pill { background-color: #dbeafe; color: #1d4ed8; transform: translateY(-2px); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        #mobile-sidebar-drawer { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+        #mobile-sidebar-backdrop { transition: opacity 0.3s ease; }
+
+        #print-area { display: none; }
         @media print {
-            body * { visibility: hidden; }
-            #print-area, #print-area * { visibility: visible; }
-            #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white; padding: 16px; }
-            .print-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
-            .print-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-            .print-table th, .print-table td { border: 1px solid #333; padding: 4px 6px; text-align: left; }
-            .print-table th { background: #f1f5f9; }
+            @page { size: A4 landscape; margin: 10mm; }
+            html, body { background: #fff !important; overflow: visible !important; height: auto !important; width: 100% !important; display: block !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body > *:not(#print-area) { display: none !important; }
+            #print-area { display: block !important; width: 100% !important; font-family: Arial, sans-serif; font-size: 11px; color: #1f2937; }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 16px; }
+            .print-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
+            .print-table th, .print-table td { border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; }
+            .print-table th { background-color: #f1f5f9 !important; text-transform: uppercase; font-weight: bold; }
+            .print-table tr { page-break-inside: avoid; }
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+<body class="text-gray-800 antialiased flex flex-col md:flex-row">
 
-    <!-- AREA CETAK PDF -->
-    <div id="print-area" class="hidden"></div>
+    <div id="print-area"></div>
 
-    <!-- HALAMAN LOGIN -->
-    <div id="login-page" class="transition-opacity duration-300">
-        <div class="login-card space-y-6">
-            <div class="text-center space-y-2">
-                <div class="login-logo">
-                    <i class="fa-solid fa-train-subway"></i>
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto smooth-scroll transition-opacity duration-500 bg-cover bg-center bg-no-repeat" style="background-image: url('https://wsrv.nl/?url=https://i.pinimg.com/736x/6d/fb/be/6dfbbecb004680cc05fedceabd62962e.jpg');">
+        <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm"></div>
+        <div class="bg-white/95 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-md my-auto relative z-10 backdrop-blur-md animate-fade-in-up border border-white/40">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="flex items-center justify-center mx-auto mb-4 h-14 sm:h-16">
+                    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" alt="Logo PT KAI" class="h-11 sm:h-12 w-auto object-contain">
                 </div>
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight" style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">RailSpring 2026</h1>
-                <p class="text-xs text-slate-500" style="margin:0.25rem 0 0; font-size:0.75rem; color:#64748b;">Sistem Informasi Pengujian & Pelacakan Pegas Sarana</p>
+                <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">RailSpring</h1>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Sistem Informasi & Pelacakan Pegas Sarana KAI</p>
             </div>
-            <form onsubmit="event.preventDefault(); window.handleLogin();" class="space-y-4" style="display:flex; flex-direction:column; gap:1rem;">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5" style="display:block; font-size:0.75rem; font-weight:700; color:#334155; margin-bottom:0.375rem;">ID Pengguna</label>
-                    <div class="login-input-wrap">
-                        <span class="login-input-icon"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="username" required placeholder="Masukkan ID Name" class="login-input">
+            <form id="login-form" onsubmit="event.preventDefault(); window.handleLogin();" class="space-y-4 sm:space-y-5">
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-600">ID Name / Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i class="fa-regular fa-user"></i></div>
+                        <input type="text" id="username" value="RailSpring2026" required class="block w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 text-base sm:text-sm outline-none" placeholder="RailSpring2026">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5" style="display:block; font-size:0.75rem; font-weight:700; color:#334155; margin-bottom:0.375rem;">Kata Sandi</label>
-                    <div class="login-input-wrap">
-                        <span class="login-input-icon"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="password" required placeholder="Masukkan Password" class="login-input">
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-600">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock"></i></div>
+                        <input type="password" id="password" value="Logamjaya2026" required class="block w-full pl-10 pr-3.5 py-3 bg-gray-50/80 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 text-base sm:text-sm outline-none" placeholder="••••••••">
                     </div>
                 </div>
-                <button type="submit" class="login-btn">
-                    Masuk ke Sistem <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                <button type="submit" class="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition-all mt-4 cursor-pointer">
+                    <span>Masuk ke Sistem</span><i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
             </form>
-            <div class="text-center text-[11px] text-slate-400 border-t pt-4" style="text-align:center; font-size:0.7rem; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:1rem;">
-                Balai Yasa Tegal • Logam Jaya Teknik
+            <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                <p class="text-[11px] text-gray-400">&copy; 2026 Balai Yasa Tegal - Hak Cipta Dilindungi</p>
             </div>
         </div>
     </div>
 
-    <!-- APLIKASI UTAMA -->
-    <div id="app-layout" class="hidden transition-opacity duration-300">
+    <!-- APP LAYOUT -->
+    <div id="app-layout" class="hidden w-full h-full flex flex-col md:flex-row opacity-0 transition-opacity duration-500 bg-gray-50">
 
-        <!-- BACKDROP & DRAWER SIDEBAR MOBILE -->
-        <div id="mobile-sidebar-backdrop" onclick="window.toggleMobileDrawer(false)" class="hidden"></div>
-        <aside id="mobile-sidebar-drawer">
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between" style="padding:1.25rem; border-bottom:1px solid #1e293b; display:flex; align-items:center; justify-content:space-between;">
-                <div class="flex items-center gap-3" style="display:flex; align-items:center; gap:0.75rem;">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-lg font-bold shadow-md" style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:#2563eb; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-train"></i></div>
-                    <div><h2 class="font-extrabold text-base tracking-tight" style="margin:0; font-size:1rem; font-weight:800;">RailSpring</h2><p class="text-[10px] text-slate-400" style="margin:0; font-size:0.65rem; color:#94a3b8;">Cloud Sync v3.2</p></div>
-                </div>
-                <button onclick="window.toggleMobileDrawer(false)" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center" style="width:2rem; height:2rem; border-radius:0.5rem; background:#1e293b; color:#cbd5e1; border:none;"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto" style="flex:1; padding:1rem; display:flex; flex-direction:column; gap:0.375rem; overflow-y:auto;">
-                <button onclick="window.switchMenu('dashboard')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-chart-pie w-5 text-blue-400"></i>Dashboard & Tracker</button>
-                <button onclick="window.switchMenu('setsarana')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-layer-group w-5 text-amber-400"></i>Set Sarana (P24/P48)</button>
-                <button onclick="window.switchMenu('data')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-database w-5 text-emerald-400"></i>Data Pengujian Excel</button>
-                <button onclick="window.switchMenu('laporan')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-robot w-5 text-indigo-400"></i>Laporan & Chat AI</button>
-                <button onclick="window.switchMenu('parameter')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-sliders w-5 text-cyan-400"></i>Parameter Pegas</button>
-                <button onclick="window.switchMenu('pengaturan')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; color:#e2e8f0; background:transparent; border:none; text-align:left; font-weight:600;"><i class="fa-solid fa-gear w-5 text-slate-400"></i>Pengaturan & Biodata</button>
-            </nav>
-            <div class="p-4 border-t border-slate-800" style="padding:1rem; border-top:1px solid #1e293b;">
-                <button onclick="window.handleLogout()" class="w-full py-2.5 px-4 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2" style="width:100%; padding:0.625rem 1rem; background:rgba(220,38,38,0.2); color:#f87171; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; display:flex; align-items:center; justify-content:center; gap:0.5rem;"><i class="fa-solid fa-right-from-bracket"></i>Keluar Sistem</button>
-            </div>
-        </aside>
+        <!-- MOBILE SLIDE-OVER DRAWER BACKDROP -->
+        <div id="mobile-sidebar-backdrop" onclick="window.toggleMobileDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 md:hidden opacity-0"></div>
 
-        <!-- SIDEBAR DESKTOP -->
-        <aside id="desktop-sidebar">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3.5" style="padding:1.5rem; border-bottom:1px solid #1e293b; display:flex; align-items:center; gap:0.875rem;">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-600/30" style="width:2.75rem; height:2.75rem; border-radius:1rem; background:linear-gradient(45deg,#2563eb,#6366f1); display:flex; align-items:center; justify-content:center; font-size:1.25rem;"><i class="fa-solid fa-train-subway"></i></div>
-                <div>
-                    <h1 class="font-extrabold text-lg tracking-tight leading-none" style="margin:0; font-size:1.125rem; font-weight:800; color:#ffffff;">RailSpring</h1>
-                    <p class="text-[11px] text-slate-400 mt-1" style="margin:0.25rem 0 0; font-size:0.7rem; color:#94a3b8;">Spring Test & Cloud DB</p>
-                </div>
-            </div>
-            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto" style="flex:1; padding:1rem; display:flex; flex-direction:column; gap:0.375rem; overflow-y:auto;">
-                <button onclick="window.switchMenu('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-chart-pie w-4"></i>Dashboard & Pelacakan</button>
-                <button onclick="window.switchMenu('setsarana')" id="nav-setsarana" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800 transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-layer-group w-4"></i>Set Sarana (P24 / P48)</button>
-                <button onclick="window.switchMenu('data')" id="nav-data" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800 transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-database w-4"></i>Data Pengujian Excel</button>
-                <button onclick="window.switchMenu('laporan')" id="nav-laporan" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800 transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-wand-magic-sparkles w-4"></i>Laporan & Chat AI</button>
-                <button onclick="window.switchMenu('parameter')" id="nav-parameter" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800 transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-sliders w-4"></i>Parameter Standar Pegas</button>
-                <button onclick="window.switchMenu('pengaturan')" id="nav-pengaturan" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800 transition" style="width:100%; display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; text-align:left;"><i class="fa-solid fa-user-gear w-4"></i>Pengaturan & Biodata</button>
-            </nav>
-            <div class="p-4 border-t border-slate-800" style="padding:1rem; border-top:1px solid #1e293b;">
-                <button onclick="window.handleLogout()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2" style="width:100%; padding:0.625rem 1rem; background:#1e293b; color:#cbd5e1; border-radius:0.75rem; font-size:0.75rem; font-weight:700; border:none; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-                    <i class="fa-solid fa-right-from-bracket"></i>Keluar
-                </button>
-            </div>
-        </aside>
-
-        <!-- KONTEN UTAMA -->
-        <main class="app-main">
-            <!-- TOP HEADER -->
-            <header class="app-header">
-                <div class="flex items-center gap-3 min-w-0" style="display:flex; align-items:center; gap:0.75rem; min-width:0;">
-                    <button id="mobile-menu-btn" onclick="window.toggleMobileDrawer(true)" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0" style="width:2.25rem; height:2.25rem; border-radius:0.75rem; background:#f1f5f9; color:#334155; border:none; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-bars"></i></button>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-2" style="display:flex; align-items:center; gap:0.5rem;">
-                            <h2 id="header-title" class="text-sm sm:text-lg font-extrabold text-slate-900 truncate" style="margin:0; font-size:1.1rem; font-weight:800; color:#0f172a;">Dashboard & Pelacakan</h2>
-                            <span id="mobile-cloud-dot" class="md:hidden w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        </div>
-                        <p id="welcome-message" class="text-[11px] text-slate-500 truncate hidden sm:block" style="margin:0; font-size:0.72rem; color:#64748b;">Selamat Datang di RailSpring, Mario Putra</p>
+        <!-- SIDEBAR -->
+        <aside id="mobile-sidebar-drawer" class="fixed md:static inset-y-0 left-0 w-72 md:w-64 bg-slate-900 text-white flex flex-col z-50 -translate-x-full md:translate-x-0 shrink-0 shadow-2xl md:shadow-none">
+            <div class="p-4 sm:p-5 flex items-center justify-between border-b border-slate-800 bg-slate-950 h-16 md:h-[72px] shrink-0" style="padding-top: max(1rem, var(--safe-top));">
+                <div class="flex items-center gap-3">
+                    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo_PT_Kereta_Api_Indonesia_(Persero)_2020.svg" alt="Logo KAI" class="h-8 w-auto object-contain bg-white px-2 py-1 rounded">
+                    <div>
+                        <h2 class="font-bold text-lg tracking-wide leading-none">RailSpring</h2>
+                        <span class="text-[10px] text-slate-400 md:hidden">Geser kiri untuk tutup</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2.5 sm:gap-3 shrink-0" style="display:flex; align-items:center; gap:0.75rem; flex-shrink:0;">
-                    <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0" style="padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.72rem; font-weight:600; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0;">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.2
-                    </span>
-                    <button onclick="window.openExcelModal()" class="rs-btn-emerald">
-                        <i class="fa-solid fa-file-excel"></i><span>Upload Excel</span>
+                <button onclick="window.toggleMobileDrawer(false)" class="md:hidden w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto smooth-scroll py-5 px-3 space-y-1.5">
+                <p class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Menu Utama</p>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('dashboard')" id="nav-dashboard" class="nav-item bg-blue-600 text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard & Lacak</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('setsarana')" id="nav-setsarana" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center justify-between px-3.5 py-3 rounded-xl transition-all text-sm font-medium">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-layer-group w-5 text-center"></i> Set Sarana</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">P24/P48</span>
+                </a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('data')" id="nav-data" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-database w-5 text-center"></i> Data Pengujian</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('laporan')" id="nav-laporan" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i> Laporan AI</a>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('parameter')" id="nav-parameter" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-sliders w-5 text-center"></i> Parameter Pegas</a>
+
+                <p class="px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-6 mb-2">Akun & Sistem</p>
+                <a href="#" onclick="event.preventDefault(); window.switchMenu('pengaturan')" id="nav-pengaturan" class="nav-item text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all text-sm font-medium"><i class="fa-solid fa-user-gear w-5 text-center"></i> Pengaturan & Bio</a>
+                <div class="my-3 border-t border-slate-800 mx-2"></div>
+                <a href="#" onclick="event.preventDefault(); window.handleLogout()" class="text-red-400 hover:bg-red-600 hover:text-white flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all cursor-pointer text-sm font-medium"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout</a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800 text-center shrink-0 bg-slate-950/60" style="padding-bottom: max(1rem, var(--safe-bottom));">
+                <p class="text-[10px] text-slate-500 leading-relaxed uppercase tracking-wider">&copy; 2026 Hak Cipta Dilindungi<br><span class="font-bold text-slate-400">Data Logam Jaya Teknik<br>BALAI YASA TEGAL</span></p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
+            <!-- TOP BAR -->
+            <header class="bg-white shadow-xs border-b border-gray-200 px-3.5 sm:px-6 h-16 md:h-[72px] flex justify-between items-center z-30 shrink-0" style="padding-top: var(--safe-top);">
+                <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                    <button class="md:hidden w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center shrink-0 transition" onclick="window.toggleMobileDrawer(true)" aria-label="Buka Menu">
+                        <i class="fa-solid fa-bars text-lg"></i>
                     </button>
-                    <div onclick="window.switchMenu('pengaturan')" class="flex items-center gap-2.5 cursor-pointer pl-1" style="display:flex; align-items:center; gap:0.625rem; cursor:pointer;">
-                        <div id="header-avatar-container">
-                            <span id="header-avatar-initial">M</span>
+                    <div class="min-w-0">
+                        <h1 id="header-title" class="text-base sm:text-xl font-bold text-gray-800 truncate">Dashboard & Pelacakan</h1>
+                        <div class="flex items-center gap-1.5 md:hidden">
+                            <span id="mobile-cloud-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span id="mobile-cloud-text" class="text-[10px] text-gray-500 font-medium truncate">Cloud Sync v3.1</span>
                         </div>
-                        <div class="hidden xl:block text-left leading-tight">
-                            <p class="text-xs font-bold text-slate-800 header-user-name" style="margin:0; font-size:0.75rem; font-weight:700; color:#1e293b;">Mario Putra</p>
-                            <p class="text-[10px] text-slate-500 header-user-role" style="margin:0; font-size:0.65rem; color:#64748b;">Administrator</p>
+                    </div>
+                    <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.1
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <button onclick="window.forcePullCloudToDevice()" title="Reset Cache & Ambil Paksa dari Cloud" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span class="hidden sm:inline">Sync</span>
+                    </button>
+                    <div class="flex items-center gap-2.5 cursor-pointer hover:bg-gray-100/80 p-1 sm:pl-3 rounded-full transition" onclick="window.switchMenu('pengaturan')">
+                        <div class="hidden sm:block text-right">
+                            <p class="text-sm font-semibold text-gray-800 leading-tight header-user-name">Mario Putra</p>
+                            <p class="text-xs text-gray-500 header-user-role">Administrator</p>
+                        </div>
+                        <div id="header-avatar-container" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm sm:text-base border-2 border-white shadow-sm overflow-hidden">
+                            <span id="header-avatar-initial">M</span>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <!-- SCROLL CONTAINER -->
-            <div id="main-scroll-container" class="space-y-5 sm:space-y-6">
+            <!-- SCROLLABLE WORKSPACE -->
+            <div id="main-scroll-container" class="flex-1 overflow-y-auto smooth-scroll p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 bg-gray-50 dark-scrollbar">
 
                 <!-- VIEW: DASHBOARD -->
-                <div id="view-dashboard" class="view-section space-y-5 sm:space-y-6">
+                <div id="view-dashboard" class="view-section animate-fade-in-up space-y-5 sm:space-y-6">
 
-                    <!-- PANEL DIAGNOSTIK & PAKSA SINKRONISASI CLOUD -->
-                    <div class="rs-card p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-                        <div class="flex items-start sm:items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0" style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-cloud-arrow-up text-lg"></i></div>
+                    <!-- KPI CARDS -->
+                    <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 swipe-scroll-x no-scrollbar pb-1 -mx-3.5 px-3.5 md:mx-0 md:px-0">
+                        <div onclick="window.switchMenu('data')" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-gray-100 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-database"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total File Excel</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-total">0</h3></div>
+                        </div>
+
+                        <div onclick="if(window.dbData.length>0) window.openExcelViewModal(window.dbData[0].id)" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-emerald-100 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Unit Diuji</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-month">0</h3><p class="text-[10px] text-emerald-600 font-semibold" id="stat-month-sub">Ketuk untuk detail</p></div>
+                        </div>
+
+                        <div onclick="window.switchMenu('setsarana')" class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 cursor-pointer bg-white rounded-2xl shadow-xs border border-amber-200/80 p-4 sm:p-5 flex items-center gap-3.5 hover:shadow-md active:scale-[0.99] transition">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                            <div><p class="text-[10px] sm:text-[11px] font-bold text-amber-800 uppercase tracking-wider">Set Sarana (P24/P48)</p><h3 class="text-xl sm:text-2xl font-extrabold text-gray-800 mt-0.5" id="stat-setsarana">0 Set</h3></div>
+                        </div>
+
+                        <div class="swipe-item min-w-[230px] sm:min-w-[250px] md:min-w-0 flex-1 bg-white rounded-2xl shadow-xs border border-gray-100 p-4 sm:p-5 flex items-center gap-3.5">
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-xl shrink-0"><i class="fa-solid fa-train-subway"></i></div>
+                            <div class="min-w-0"><p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Sarana Terakhir</p><h3 class="text-sm sm:text-base font-extrabold text-gray-800 mt-0.5 truncate" id="stat-top">-</h3><p class="text-[10px] text-gray-400 truncate" id="stat-top-bogie">Auto-detect aktif</p></div>
+                        </div>
+                    </div>
+
+                    <!-- WELCOME, DIAGNOSTIK CLOUD & QUICK ACTION BAR -->
+                    <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 space-y-3">
+                        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                             <div>
-                                <p class="text-xs font-extrabold text-slate-800 uppercase tracking-wide" style="margin:0; font-size:0.75rem; font-weight:800;">Status Sinkronisasi Cloud Supabase (PC ↔ HP)</p>
-                                <p id="sync-diagnostic-text" class="text-xs text-slate-600 mt-0.5" style="margin:0.15rem 0 0; font-size:0.75rem; color:#475569;">Memeriksa status sinkronisasi database...</p>
+                                <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & sinkron lintas HP dan PC.</p>
+                            </div>
+                            <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
+                                <button onclick="window.forcePullCloudToDevice()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Ambil Paksa Cloud (HP)</button>
+                                <button onclick="window.forcePushLocalToCloud()" class="swipe-item shrink-0 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Kirim Lokal ke Cloud (PC)</button>
+                                <button onclick="window.switchMenu('setsarana')" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-layer-group"></i> Set Sarana</button>
+                                <button onclick="window.switchMenu('data'); window.openExcelModal();" class="swipe-item shrink-0 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-file-excel"></i> Upload Excel</button>
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-                            <button onclick="window.forcePushLocalToCloud()" class="rs-btn-indigo">
-                                <i class="fa-solid fa-upload"></i>Kirim Lokal ke Cloud (PC)
-                            </button>
-                            <button onclick="window.forcePullCloudToDevice()" class="rs-btn-emerald">
-                                <i class="fa-solid fa-rotate"></i>Ambil Paksa Cloud (HP)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 4 KARTU STATISTIK UTAMA -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        <div class="rs-card p-4 sm:p-5">
-                            <p class="text-[11px] font-bold text-gray-500 uppercase" style="margin:0; font-size:0.7rem; font-weight:700; color:#64748b;">Total Arsip Excel</p>
-                            <div class="flex items-end justify-between mt-2" style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:0.5rem;">
-                                <h3 id="stat-total" class="text-2xl sm:text-3xl font-extrabold text-slate-900" style="margin:0; font-size:1.75rem; font-weight:800;">0</h3>
-                                <span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center" style="width:2.25rem; height:2.25rem; border-radius:0.75rem; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-file-excel"></i></span>
-                            </div>
-                        </div>
-                        <div class="rs-card p-4 sm:p-5">
-                            <p class="text-[11px] font-bold text-gray-500 uppercase" style="margin:0; font-size:0.7rem; font-weight:700; color:#64748b;">Total Unit Diuji</p>
-                            <div class="flex items-end justify-between mt-2" style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:0.5rem;">
-                                <h3 id="stat-month" class="text-2xl sm:text-3xl font-extrabold text-blue-600" style="margin:0; font-size:1.75rem; font-weight:800; color:#2563eb;">0</h3>
-                                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center" style="width:2.25rem; height:2.25rem; border-radius:0.75rem; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-vial-circle-check"></i></span>
-                            </div>
-                        </div>
-                        <div class="rs-card p-4 sm:p-5">
-                            <p class="text-[11px] font-bold text-gray-500 uppercase" style="margin:0; font-size:0.7rem; font-weight:700; color:#64748b;">Data Set Sarana</p>
-                            <div class="flex items-end justify-between mt-2" style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:0.5rem;">
-                                <h3 id="stat-setsarana" class="text-xl sm:text-2xl font-extrabold text-slate-900" style="margin:0; font-size:1.4rem; font-weight:800;">0 Set</h3>
-                                <span class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center" style="width:2.25rem; height:2.25rem; border-radius:0.75rem; background:#fffbeb; color:#d97706; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-layer-group"></i></span>
-                            </div>
-                        </div>
-                        <div class="rs-card p-4 sm:p-5">
-                            <p class="text-[11px] font-bold text-gray-500 uppercase" style="margin:0; font-size:0.7rem; font-weight:700; color:#64748b;">Sarana Terbaru</p>
-                            <div class="flex items-end justify-between mt-2" style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:0.5rem;">
-                                <h3 id="stat-top" class="text-base sm:text-xl font-extrabold text-slate-900 truncate" style="margin:0; font-size:1.15rem; font-weight:800;">-</h3>
-                                <span class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0" style="width:2.25rem; height:2.25rem; border-radius:0.75rem; background:#eef2ff; color:#4f46e5; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-train"></i></span>
-                            </div>
+                        <div id="sync-diagnostic-banner" class="p-2.5 sm:px-4 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 flex flex-wrap items-center justify-between gap-2">
+                            <span id="sync-diagnostic-text"><i class="fa-solid fa-circle-notch fa-spin text-blue-600 mr-1.5"></i>Memeriksa status Cloud Supabase vs Perangkat ini...</span>
+                            <button onclick="window.checkCloudVsLocalStatus()" class="text-blue-600 hover:underline font-bold">Cek Ulang</button>
                         </div>
                     </div>
 
-                    <!-- GRAFIK PEGAS LUAR (OS) & PEGAS DALAM (IS) -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                        <!-- PEGAS LUAR (OS) -->
-                        <div class="rs-card p-4 sm:p-5 space-y-4">
-                            <div class="flex justify-between items-center border-b pb-3" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem;">
-                                <div>
-                                    <h3 class="font-extrabold text-sm sm:text-base text-slate-900" style="margin:0; font-weight:800;"><i class="fa-solid fa-circle-dot text-blue-600 mr-1.5"></i>Pegas Luar (Outer Spring / OS)</h3>
-                                    <p class="text-[11px] text-gray-500" style="margin:0; font-size:0.7rem; color:#64748b;">Rekap kelulusan & tren bulanan pegas luar</p>
+                    <!-- GRAFIK OS & IS -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="bg-white rounded-2xl shadow-xs border border-blue-100 p-4 sm:p-5">
+                            <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                                <div><h3 class="font-bold text-gray-800 text-sm sm:text-base"><i class="fa-solid fa-chart-pie text-blue-600 mr-2"></i>Statistik Pegas Luar (OS)</h3><p class="text-[11px] text-gray-500 mt-0.5">Pengetesan & Reject per Bulan</p></div>
+                                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Total Uji</p><p class="text-lg sm:text-xl font-extrabold text-blue-700" id="os-total-test">0</p></div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                <div class="sm:col-span-4 flex flex-row sm:flex-col items-center justify-around sm:justify-center gap-4">
+                                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0"><canvas id="chart-os-pie"></canvas></div>
+                                    <table class="w-full max-w-[160px] text-xs text-left">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Accept</td><td class="py-1 text-right font-bold text-emerald-600" id="os-val-accept">0</td></tr>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Reject</td><td class="py-1 text-right font-bold text-red-600" id="os-val-reject">0</td></tr>
+                                            <tr><td class="py-1 font-semibold text-gray-600">Persentase</td><td class="py-1 text-right font-bold text-gray-800" id="os-val-persentase">0%</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-extrabold" id="os-total-test">0</span>
-                            </div>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100"><p class="text-[10px] font-bold text-emerald-700 uppercase" style="margin:0;">Accept</p><p id="os-val-accept" class="text-base sm:text-lg font-extrabold text-emerald-700" style="margin:0;">0</p></div>
-                                <div class="p-2.5 rounded-xl bg-red-50 border border-red-100"><p class="text-[10px] font-bold text-red-700 uppercase" style="margin:0;">Reject</p><p id="os-val-reject" class="text-base sm:text-lg font-extrabold text-red-600" style="margin:0;">0</p></div>
-                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><p class="text-[10px] font-bold text-slate-600 uppercase" style="margin:0;">Rasio Lulus</p><p id="os-val-persentase" class="text-base sm:text-lg font-extrabold text-slate-800" style="margin:0;">0%</p></div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
-                                <div class="sm:col-span-4 h-36 relative" style="height:9rem;"><canvas id="chart-os-pie"></canvas></div>
-                                <div class="sm:col-span-8 h-40 relative" style="height:10rem;"><canvas id="chart-os-bar"></canvas></div>
+                                <div class="sm:col-span-8 w-full h-48 sm:h-52 relative"><canvas id="chart-os-bar"></canvas></div>
                             </div>
                         </div>
 
-                        <!-- PEGAS DALAM (IS) -->
-                        <div class="rs-card p-4 sm:p-5 space-y-4">
-                            <div class="flex justify-between items-center border-b pb-3" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem;">
-                                <div>
-                                    <h3 class="font-extrabold text-sm sm:text-base text-slate-900" style="margin:0; font-weight:800;"><i class="fa-solid fa-bullseye text-emerald-600 mr-1.5"></i>Pegas Dalam (Inner Spring / IS)</h3>
-                                    <p class="text-[11px] text-gray-500" style="margin:0; font-size:0.7rem; color:#64748b;">Rekap kelulusan & tren bulanan pegas dalam</p>
+                        <div class="bg-white rounded-2xl shadow-xs border border-emerald-100 p-4 sm:p-5">
+                            <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+                                <div><h3 class="font-bold text-gray-800 text-sm sm:text-base"><i class="fa-solid fa-chart-pie text-emerald-600 mr-2"></i>Statistik Pegas Dalam (IS)</h3><p class="text-[11px] text-gray-500 mt-0.5">Pengetesan & Reject per Bulan</p></div>
+                                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Total Uji</p><p class="text-lg sm:text-xl font-extrabold text-emerald-700" id="is-total-test">0</p></div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                <div class="sm:col-span-4 flex flex-row sm:flex-col items-center justify-around sm:justify-center gap-4">
+                                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0"><canvas id="chart-is-pie"></canvas></div>
+                                    <table class="w-full max-w-[160px] text-xs text-left">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Accept</td><td class="py-1 text-right font-bold text-emerald-600" id="is-val-accept">0</td></tr>
+                                            <tr class="border-b border-gray-100"><td class="py-1 font-semibold text-gray-600">Reject</td><td class="py-1 text-right font-bold text-red-600" id="is-val-reject">0</td></tr>
+                                            <tr><td class="py-1 font-semibold text-gray-600">Persentase</td><td class="py-1 text-right font-bold text-gray-800" id="is-val-persentase">0%</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-extrabold" id="is-total-test">0</span>
-                            </div>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100"><p class="text-[10px] font-bold text-emerald-700 uppercase" style="margin:0;">Accept</p><p id="is-val-accept" class="text-base sm:text-lg font-extrabold text-emerald-700" style="margin:0;">0</p></div>
-                                <div class="p-2.5 rounded-xl bg-red-50 border border-red-100"><p class="text-[10px] font-bold text-red-700 uppercase" style="margin:0;">Reject</p><p id="is-val-reject" class="text-base sm:text-lg font-extrabold text-red-600" style="margin:0;">0</p></div>
-                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><p class="text-[10px] font-bold text-slate-600 uppercase" style="margin:0;">Rasio Lulus</p><p id="is-val-persentase" class="text-base sm:text-lg font-extrabold text-slate-800" style="margin:0;">0%</p></div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
-                                <div class="sm:col-span-4 h-36 relative" style="height:9rem;"><canvas id="chart-is-pie"></canvas></div>
-                                <div class="sm:col-span-8 h-40 relative" style="height:10rem;"><canvas id="chart-is-bar"></canvas></div>
+                                <div class="sm:col-span-8 w-full h-48 sm:h-52 relative"><canvas id="chart-is-bar"></canvas></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- PELACAKAN DATA PEGAS SARANA (TRACKER) -->
-                    <div class="rs-card overflow-hidden">
-                        <div class="p-4 sm:p-5 bg-slate-900 text-white flex flex-wrap justify-between items-center gap-3" style="background:#0f172a; color:#ffffff; padding:1rem 1.25rem; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
-                            <div>
-                                <h3 class="font-bold text-sm sm:text-base" style="margin:0;"><i class="fa-solid fa-magnifying-glass-chart text-cyan-400 mr-2"></i>Pelacakan Cepat Data Pengujian Pegas</h3>
-                                <p class="text-[11px] text-slate-300 mt-0.5" style="margin:0.2rem 0 0; font-size:0.7rem; color:#cbd5e1;">Filter berdasarkan jenis sarana, bogie, periode bulan, status, atau nomor seri pegas.</p>
+                    <!-- PELACAKAN SARANA -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 sm:px-6 py-4 sm:py-5 text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
+                            <div class="flex items-center gap-3 sm:gap-4">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-lg sm:text-2xl shrink-0"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2"><span class="px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-slate-950 rounded">Mode Investigasi</span><span class="text-xs text-blue-200 font-mono" id="tracker-db-status">Terhubung ke Arsip</span></div>
+                                    <h3 class="text-sm sm:text-lg font-bold mt-1 leading-snug">Pelacakan Sarana, Bulan Pengujian & Nomor Pegas</h3>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span id="tracker-db-status" class="px-3 py-1 rounded-full bg-slate-800 text-cyan-300 text-xs font-bold border border-slate-700">0 Data</span>
-                                <button onclick="window.printTrackerResults()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>Cetak</button>
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <button onclick="window.resetTrackerFilters()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 text-xs font-semibold"><i class="fa-solid fa-rotate-left mr-1"></i>Reset</button>
+                                <button onclick="window.printTrackerResults()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-bold shadow"><i class="fa-solid fa-print mr-1"></i>Cetak</button>
                             </div>
                         </div>
 
-                        <div class="p-4 sm:p-5 space-y-4 bg-slate-50/70 border-b">
-                            <div id="tracker-sarana-chips" class="flex items-center gap-2 swipe-scroll-x no-scrollbar pb-1"></div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Sarana</label>
-                                    <select id="tracker-select-sarana" onchange="window.onTrackerSaranaChange()" class="w-full py-2 px-3 bg-white border border-gray-300 rounded-xl text-xs font-semibold outline-none"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Jenis Bogie</label>
-                                    <select id="tracker-select-bogie" onchange="window.executeSaranaTracking()" class="w-full py-2 px-3 bg-white border border-gray-300 rounded-xl text-xs font-semibold outline-none"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Bulan Uji</label>
-                                    <select id="tracker-select-bulan" onchange="window.executeSaranaTracking()" class="w-full py-2 px-3 bg-white border border-gray-300 rounded-xl text-xs font-semibold outline-none"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Status / Perawatan</label>
-                                    <select id="tracker-select-status" onchange="window.executeSaranaTracking()" class="w-full py-2 px-3 bg-white border border-gray-300 rounded-xl text-xs font-semibold outline-none">
-                                        <option value="ALL">Semua Status</option>
-                                        <option value="LULUS">Siap Pakai (Accept)</option>
-                                        <option value="AFKIR">Afkir (Reject)</option>
-                                        <option value="P24">Terpasang Set P24</option>
-                                        <option value="P48">Terpasang Set P48</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">No. Pegas (OS / IS)</label>
-                                    <input type="text" id="tracker-input-nomor" oninput="window.executeSaranaTracking()" placeholder="Cth: OS.5514" class="w-full py-2 px-3 bg-white border border-gray-300 rounded-xl text-xs font-mono font-semibold outline-none">
-                                </div>
-                                <div class="flex items-end">
-                                    <button onclick="window.resetTrackerFilters()" class="w-full py-2 px-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-rotate-left mr-1"></i>Reset Filter</button>
-                                </div>
-                            </div>
-                            <div id="tracker-summary-bar" class="text-xs"></div>
+                        <!-- MONTH CHIPS -->
+                        <div class="px-4 sm:px-6 py-3 bg-slate-50 border-b border-gray-200 flex items-center gap-2 swipe-scroll-x no-scrollbar">
+                            <span class="text-[11px] font-bold uppercase text-slate-500 shrink-0 mr-1"><i class="fa-solid fa-calendar-days mr-1 text-blue-600"></i>Bulan:</span>
+                            <div id="tracker-sarana-chips" class="flex items-center gap-2"></div>
                         </div>
 
-                        <div class="swipe-scroll-x">
-                            <table class="w-full text-xs text-left whitespace-nowrap">
-                                <thead class="bg-slate-100 text-slate-700 font-bold uppercase text-[10px] border-b">
+                        <div class="p-4 sm:p-6 bg-white border-b border-gray-100">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                                <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                                    <label class="block text-[11px] font-bold uppercase text-blue-900 mb-1.5">1. Pilih Sarana</label>
+                                    <select id="tracker-select-sarana" onchange="window.onTrackerSaranaChange()" class="block w-full py-2 px-3 bg-white border border-blue-300 rounded-lg text-sm sm:text-xs font-semibold outline-none"><option value="ALL">-- Semua Sarana --</option></select>
+                                </div>
+                                <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                                    <label class="block text-[11px] font-bold uppercase text-indigo-900 mb-1.5">2. Jenis BO / Bogie</label>
+                                    <select id="tracker-select-bogie" onchange="window.executeSaranaTracking()" class="block w-full py-2 px-3 bg-white border border-indigo-300 rounded-lg text-sm sm:text-xs font-semibold outline-none"><option value="ALL">-- Semua Bogie --</option></select>
+                                </div>
+                                <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200/80">
+                                    <label class="block text-[11px] font-bold uppercase text-amber-900 mb-1.5">3. Cari No. Seri Pegas</label>
+                                    <input type="text" id="tracker-input-nomor" oninput="window.executeSaranaTracking()" placeholder="Cth: OS.8118..." class="block w-full px-3 py-2 bg-white border border-amber-300 rounded-lg text-sm sm:text-xs font-semibold outline-none">
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                    <label class="block text-[11px] font-bold uppercase text-gray-700 mb-1.5">4. Bulan & Status</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <select id="tracker-select-bulan" onchange="window.executeSaranaTracking()" class="py-2 px-2 bg-white border border-gray-300 rounded-lg text-sm sm:text-xs font-medium outline-none"><option value="ALL">Semua Bulan</option></select>
+                                        <select id="tracker-select-status" onchange="window.executeSaranaTracking()" class="py-2 px-2 bg-white border border-gray-300 rounded-lg text-sm sm:text-xs font-medium outline-none">
+                                            <option value="ALL">Semua</option>
+                                            <option value="LULUS">Siap Pakai</option>
+                                            <option value="AFKIR">Afkir</option>
+                                            <option value="P24">P24</option>
+                                            <option value="P48">P48</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tracker-summary-bar" class="mt-3.5 pt-3 border-t border-gray-100 flex flex-wrap justify-between items-center gap-2 text-xs"></div>
+                        </div>
+
+                        <div class="md:hidden px-4 py-1.5 bg-blue-50/70 text-blue-700 text-[11px] font-medium flex items-center justify-between border-b border-blue-100">
+                            <span><i class="fa-solid fa-arrows-left-right mr-1.5"></i>Geser tabel ke kiri/kanan untuk melihat semua kolom</span>
+                        </div>
+
+                        <div class="swipe-scroll-x dark-scrollbar max-h-[460px]">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead class="text-[10px] uppercase bg-slate-100 text-slate-600 font-bold sticky top-0 z-10 border-b border-gray-200">
                                     <tr>
-                                        <th class="px-3.5 py-3 text-center w-12">NO</th>
+                                        <th class="px-3.5 py-3 text-center w-10">NO</th>
                                         <th class="px-3.5 py-3">SARANA</th>
-                                        <th class="px-3.5 py-3">JENIS BOGIE</th>
-                                        <th class="px-3.5 py-3">NO. PEGAS</th>
-                                        <th class="px-3.5 py-3">PERIODE & WAKTU</th>
+                                        <th class="px-3.5 py-3">JENIS BO / BOGIE</th>
+                                        <th class="px-3.5 py-3">NOMOR PEGAS</th>
+                                        <th class="px-3.5 py-3">PERIODE / WAKTU</th>
                                         <th class="px-3.5 py-3 text-center">HASIL UJI (P0 - P4)</th>
                                         <th class="px-3.5 py-3">STATUS</th>
                                         <th class="px-3.5 py-3 text-center">AKSI</th>
@@ -669,7 +378,7 @@
 
                 <!-- VIEW: SET SARANA -->
                 <div id="view-setsarana" class="view-section hidden space-y-5 sm:space-y-6">
-                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" style="background:#0f172a; color:#ffffff; border-radius:1rem; padding:1.25rem;">
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div class="flex items-center gap-3.5">
                             <div class="p-3 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xl sm:text-2xl shrink-0"><i class="fa-solid fa-layer-group"></i></div>
                             <div><h2 class="text-lg sm:text-xl font-bold">Penyimpanan Data Set Sarana</h2><p class="text-xs text-slate-300 mt-0.5">Pasangan <strong>Pegas Luar (OS)</strong> dan <strong>Pegas Dalam (IS)</strong> untuk P24/P48.</p></div>
@@ -680,7 +389,7 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-                        <div class="lg:col-span-5 rs-card overflow-hidden">
+                        <div class="lg:col-span-5 bg-white rounded-2xl shadow-xs border border-gray-200 overflow-hidden">
                             <div class="px-5 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                                 <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-plus-circle text-blue-600 mr-1.5"></i>Buat & Simpan Set Sarana</h3>
                                 <button type="button" onclick="window.resetSetSaranaForm()" class="text-xs text-gray-500 hover:text-red-600 font-semibold">Reset</button>
@@ -717,7 +426,7 @@
                             </form>
                         </div>
                         <div class="lg:col-span-7 space-y-4">
-                            <div class="rs-card p-4 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                            <div class="bg-white p-4 rounded-2xl shadow-xs border border-gray-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                                 <input type="text" id="search-setsarana" oninput="window.renderSetSaranaList()" placeholder="Cari GD 42 TON / OS / IS..." class="block w-full sm:w-64 px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm sm:text-xs outline-none">
                                 <div class="flex items-center gap-2 swipe-scroll-x no-scrollbar">
                                     <button onclick="window.setFilterPerawatan('ALL')" id="btn-flt-all" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white">Semua</button>
@@ -739,13 +448,13 @@
                             <input type="text" id="searchInput" onkeyup="window.handleSearch()" placeholder="Cari Sarana / File..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm bg-white shadow-xs outline-none">
                         </div>
                         <div class="flex items-center gap-2 swipe-scroll-x no-scrollbar pb-0.5">
-                            <button onclick="window.openExcelModal()" class="rs-btn-emerald shrink-0"><i class="fa-solid fa-file-excel"></i>Upload File Baru</button>
-                            <button onclick="window.openLanjutanModal()" class="rs-btn-amber shrink-0"><i class="fa-solid fa-file-import"></i>Upload Lanjutan</button>
-                            <button onclick="window.clearAllArchives()" class="rs-btn-red shrink-0"><i class="fa-solid fa-broom"></i>Reset</button>
+                            <button onclick="window.openExcelModal()" class="swipe-item shrink-0 bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-file-excel mr-1.5"></i>Upload File Baru</button>
+                            <button onclick="window.openLanjutanModal()" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-file-import mr-1.5"></i>Upload Lanjutan</button>
+                            <button onclick="window.clearAllArchives()" class="swipe-item shrink-0 bg-red-600 hover:bg-red-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl font-bold shadow-xs text-xs"><i class="fa-solid fa-broom mr-1"></i>Reset</button>
                         </div>
                     </div>
 
-                    <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 flex-1 overflow-hidden flex flex-col" style="background:#0f172a; border-radius:1rem; overflow:hidden;">
+                    <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 flex-1 overflow-hidden flex flex-col">
                         <div class="md:hidden px-4 py-2 bg-slate-800 text-slate-300 text-[11px] flex items-center gap-1.5 border-b border-slate-700">
                             <i class="fa-solid fa-arrows-left-right text-blue-400"></i> Geser tabel ke samping untuk tombol Detail & Hapus
                         </div>
@@ -773,24 +482,24 @@
 
                 <!-- VIEW: AI ANALISIS -->
                 <div id="view-laporan" class="view-section hidden flex flex-col gap-5">
-                    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-md p-5 sm:p-6 text-white flex items-center justify-between" style="background:linear-gradient(90deg,#1d4ed8,#3730a3); color:#ffffff; border-radius:1rem; padding:1.25rem;">
+                    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl shadow-md p-5 sm:p-6 text-white flex items-center justify-between">
                         <div><h2 class="text-lg sm:text-2xl font-bold mb-1"><i class="fa-solid fa-robot mr-2"></i>RailSpring AI Assistant</h2><p class="text-xs text-blue-100">Analisis otomatis tren kelulusan & afkir pegas per bulan.</p></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 min-h-[450px]">
-                        <div class="rs-card flex flex-col">
+                        <div class="bg-white border border-gray-200 rounded-2xl shadow-xs flex flex-col">
                             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/70 rounded-t-2xl">
                                 <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-file-invoice text-blue-600 mr-1.5"></i>Laporan AI</h3>
-                                <button onclick="window.generateAIReport()" class="rs-btn-primary"><i class="fa-solid fa-bolt"></i>Buat Laporan</button>
+                                <button onclick="window.generateAIReport()" class="bg-blue-600 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl"><i class="fa-solid fa-bolt mr-1"></i>Buat Laporan</button>
                             </div>
                             <div class="p-5 flex-1 overflow-y-auto smooth-scroll ai-markdown text-sm max-h-[400px]" id="ai-report-content"><p class="text-gray-400 italic">Ketuk Buat Laporan untuk menyusun analisis otomatis.</p></div>
                         </div>
-                        <div class="rs-card flex flex-col">
+                        <div class="bg-white border border-gray-200 rounded-2xl shadow-xs flex flex-col">
                             <div class="p-4 border-b border-gray-100 bg-gray-50/70 rounded-t-2xl"><h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-comments text-indigo-600 mr-1.5"></i>Chat AI</h3></div>
                             <div class="p-4 flex-1 overflow-y-auto smooth-scroll bg-slate-50 space-y-3 text-xs min-h-[240px] max-h-[340px]" id="ai-chat-history"></div>
                             <div class="p-3.5 border-t border-gray-100">
                                 <form onsubmit="event.preventDefault(); window.handleAskAI();" class="flex gap-2">
                                     <input type="text" id="ai-chat-input" placeholder="Tanya rekap bulan atau nomor pegas..." class="flex-1 px-3.5 py-2.5 border rounded-xl text-sm sm:text-xs outline-none" required>
-                                    <button type="submit" class="rs-btn-indigo px-4"><i class="fa-solid fa-paper-plane"></i></button>
+                                    <button type="submit" class="bg-indigo-600 active:scale-95 text-white px-4 py-2.5 rounded-xl w-12"><i class="fa-solid fa-paper-plane"></i></button>
                                 </form>
                             </div>
                         </div>
@@ -801,7 +510,7 @@
                 <div id="view-parameter" class="view-section hidden flex flex-col gap-5">
                     <div class="flex flex-wrap justify-between items-center gap-3">
                         <h2 class="text-lg sm:text-xl font-bold text-gray-800">Standar & Dokumen Parameter Pegas</h2>
-                        <button onclick="window.openUploadModal()" class="rs-btn-primary"><i class="fa-solid fa-file-pdf"></i>Unggah PDF</button>
+                        <button onclick="window.openUploadModal()" class="bg-blue-600 active:scale-95 text-white px-4 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-file-pdf mr-1.5"></i>Unggah PDF</button>
                     </div>
                     <div id="pdf-list-container" class="flex-1"></div>
                 </div>
@@ -810,16 +519,15 @@
                 <div id="view-pengaturan" class="view-section hidden flex flex-col gap-5">
                     <h2 class="text-lg sm:text-xl font-bold text-gray-800">Pengaturan & Biodata</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                        <div class="rs-card p-6 flex flex-col items-center text-center">
+                        <div class="bg-white rounded-2xl border p-6 flex flex-col items-center text-center">
                             <div class="cursor-pointer" onclick="document.getElementById('profile-photo-input').click()">
-                                <div id="card-avatar-display"><span id="card-avatar-initial">M</span></div>
+                                <div id="card-avatar-display" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-blue-600 text-white text-3xl sm:text-4xl font-bold flex items-center justify-center shadow-lg overflow-hidden"><span id="card-avatar-initial">M</span></div>
                             </div>
                             <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="window.handlePhotoUpload(event)">
                             <h3 class="mt-4 text-lg sm:text-xl font-bold header-user-name">Mario Putra</h3>
                             <span class="mt-1 px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200" id="card-user-role">Administrator</span>
-                            <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="mt-3 text-xs font-semibold text-blue-600 hover:underline">Ganti Foto Profil</button>
                         </div>
-                        <div class="lg:col-span-2 rs-card p-5 sm:p-6">
+                        <div class="lg:col-span-2 bg-white rounded-2xl border p-5 sm:p-6">
                             <h3 class="text-base font-bold text-gray-800 mb-4">Edit Biodata</h3>
                             <form onsubmit="event.preventDefault(); window.saveBiodata();" class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -829,7 +537,7 @@
                                     <div><label class="block text-xs font-semibold mb-1">Jabatan</label><input type="text" id="input-bio-role" class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
                                 </div>
                                 <div><label class="block text-xs font-semibold mb-1">Unit Kerja</label><input type="text" id="input-bio-unit" class="block w-full py-2.5 px-3 border rounded-xl text-sm"></div>
-                                <div class="flex justify-end"><button type="submit" class="rs-btn-primary py-2.5 px-5">Simpan Perubahan</button></div>
+                                <div class="flex justify-end"><button type="submit" class="w-full sm:w-auto py-2.5 px-5 bg-blue-600 text-white rounded-xl text-xs font-bold">Simpan Perubahan</button></div>
                             </form>
                         </div>
                     </div>
@@ -837,44 +545,45 @@
             </div>
 
             <!-- BOTTOM NAVIGATION BAR (MOBILE) -->
-            <nav id="mobile-bottom-nav" class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-30 flex justify-around items-center px-1 pt-1.5 shadow-lg" style="position:fixed; bottom:0; left:0; right:0; background:#ffffff; border-top:1px solid #e2e8f0; z-index:30; display:flex; justify-content:space-around; align-items:center; padding:0.375rem 0.25rem max(0.4rem, var(--safe-bottom));">
-                <button onclick="window.switchMenu('dashboard')" id="mnav-dashboard" class="mobile-nav-btn active flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition" style="flex:1; display:flex; flex-direction:column; align-items:center; background:transparent; border:none;">
+            <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-30 flex justify-around items-center px-1 pt-1.5 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]" style="padding-bottom: max(0.4rem, var(--safe-bottom));">
+                <button onclick="window.switchMenu('dashboard')" id="mnav-dashboard" class="mobile-nav-btn active flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-chart-pie text-sm"></i></div>
-                    <span class="text-[10px] font-bold mt-0.5" style="font-size:0.65rem; font-weight:700;">Dashboard</span>
+                    <span class="text-[10px] font-bold mt-0.5">Dashboard</span>
                 </button>
-                <button onclick="window.switchMenu('setsarana')" id="mnav-setsarana" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition" style="flex:1; display:flex; flex-direction:column; align-items:center; background:transparent; border:none;">
+                <button onclick="window.switchMenu('setsarana')" id="mnav-setsarana" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-layer-group text-sm"></i></div>
-                    <span class="text-[10px] font-bold mt-0.5" style="font-size:0.65rem; font-weight:700;">Set Sarana</span>
+                    <span class="text-[10px] font-bold mt-0.5">Set Sarana</span>
                 </button>
-                <button onclick="window.switchMenu('data')" id="mnav-data" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition" style="flex:1; display:flex; flex-direction:column; align-items:center; background:transparent; border:none;">
+                <button onclick="window.switchMenu('data')" id="mnav-data" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-database text-sm"></i></div>
-                    <span class="text-[10px] font-bold mt-0.5" style="font-size:0.65rem; font-weight:700;">Data Uji</span>
+                    <span class="text-[10px] font-bold mt-0.5">Data Uji</span>
                 </button>
-                <button onclick="window.switchMenu('laporan')" id="mnav-laporan" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition" style="flex:1; display:flex; flex-direction:column; align-items:center; background:transparent; border:none;">
+                <button onclick="window.switchMenu('laporan')" id="mnav-laporan" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-wand-magic-sparkles text-sm"></i></div>
-                    <span class="text-[10px] font-bold mt-0.5" style="font-size:0.65rem; font-weight:700;">AI Laporan</span>
+                    <span class="text-[10px] font-bold mt-0.5">AI Laporan</span>
                 </button>
-                <button onclick="window.toggleMobileDrawer(true)" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition" style="flex:1; display:flex; flex-direction:column; align-items:center; background:transparent; border:none;">
+                <button onclick="window.toggleMobileDrawer(true)" class="mobile-nav-btn flex-1 flex flex-col items-center justify-center py-1 text-gray-500 transition">
                     <div class="nav-pill px-3.5 py-1 rounded-full transition-all"><i class="fa-solid fa-ellipsis text-sm"></i></div>
-                    <span class="text-[10px] font-bold mt-0.5" style="font-size:0.65rem; font-weight:700;">Lainnya</span>
+                    <span class="text-[10px] font-bold mt-0.5">Lainnya</span>
                 </button>
             </nav>
         </main>
     </div>
 
     <!-- MODAL UPLOAD EXCEL BARU -->
-    <div id="excel-modal" class="hidden rs-modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="background:#ffffff; border-radius:1rem; width:100%; max-width:32rem; max-height:90vh; overflow-y:auto;">
-            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 rounded-t-2xl" style="padding:1rem 1.25rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+    <div id="excel-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
+            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
                 <div>
-                    <h3 class="font-bold text-gray-800 text-sm sm:text-base" style="margin:0;">Upload File Excel Pengujian</h3>
-                    <p class="text-[11px] text-emerald-600 font-semibold" style="margin:0; font-size:0.7rem; color:#059669;">Auto Pemisahan Bulan & Tahun sesuai Kolom Waktu Uji Excel</p>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian</h3>
+                    <p class="text-[11px] text-emerald-600 font-semibold">Auto Pemisahan Bulan & Tahun sesuai Kolom Waktu Uji Excel</p>
                 </div>
                 <button onclick="window.closeExcelModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-5 sm:p-6 space-y-4">
                 <input type="file" id="real-excel-input" accept=".xlsx, .xls, .csv" multiple class="hidden" onchange="window.handleExcelSelection(event, 'new')">
-                <div class="flex justify-center px-5 py-6 border-2 border-dashed border-green-300 bg-green-50/30 rounded-2xl cursor-pointer transition" onclick="document.getElementById('real-excel-input').click()">
+                <div class="flex justify-center px-5 py-6 border-2 border-dashed border-green-300 bg-green-50/30 rounded-2xl cursor-pointer active:scale-[0.99] transition" onclick="document.getElementById('real-excel-input').click()">
                     <div class="text-center">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-green-600 mb-2"></i>
                         <p class="text-sm font-bold text-blue-600">Ketuk untuk pilih 1 atau Banyak File Excel (.xlsx / .xls)</p>
@@ -900,19 +609,20 @@
                 </div>
                 <div class="pt-2 flex justify-end gap-2">
                     <button onclick="window.closeExcelModal()" class="px-4 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button>
-                    <button id="btn-process-excel-new" onclick="window.processExcelNew()" class="rs-btn-emerald px-5 py-2.5">Unggah & Simpan ke Cloud</button>
+                    <button id="btn-process-excel-new" onclick="window.processExcelNew()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl">Unggah & Simpan ke Cloud</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL UPLOAD LANJUTAN -->
-    <div id="excel-lanjutan-modal" class="hidden rs-modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="background:#ffffff; border-radius:1rem; width:100%; max-width:32rem; max-height:90vh; overflow-y:auto;">
-            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 rounded-t-2xl" style="padding:1rem 1.25rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+    <div id="excel-lanjutan-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[90dvh] overflow-y-auto smooth-scroll" style="padding-bottom: max(1rem, var(--safe-bottom));">
+            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 sm:hidden"></div>
+            <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
                 <div>
-                    <h3 class="font-bold text-sm sm:text-base" style="margin:0;">Upload File Excel Lanjutan</h3>
-                    <p class="text-[11px] text-amber-700 font-semibold" style="margin:0; font-size:0.7rem; color:#b45309;">Otomatis membuat tab Bulan & Tahun baru sesuai tanggal uji Excel</p>
+                    <h3 class="font-bold text-sm sm:text-base">Upload File Excel Lanjutan</h3>
+                    <p class="text-[11px] text-amber-700 font-semibold">Otomatis membuat tab Bulan & Tahun baru sesuai tanggal uji Excel</p>
                 </div>
                 <button onclick="window.closeLanjutanModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -931,23 +641,23 @@
                 </div>
                 <div class="pt-2 flex justify-end gap-2">
                     <button onclick="window.closeLanjutanModal()" class="px-4 py-2.5 text-xs bg-gray-100 rounded-xl">Batal</button>
-                    <button id="btn-process-excel-lanjutan" onclick="window.processExcelLanjutan()" class="rs-btn-amber px-5 py-2.5">Sinkronkan</button>
+                    <button id="btn-process-excel-lanjutan" onclick="window.processExcelLanjutan()" class="flex-1 sm:flex-initial px-5 py-2.5 text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl">Sinkronkan</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL EXCEL VIEW -->
-    <div id="excel-view-modal" class="hidden fixed inset-0 z-[65] flex items-center justify-center sm:p-4 bg-slate-900/80" style="position:fixed; inset:0; z-index:65; background:rgba(15,23,42,0.8); display:flex; align-items:center; justify-content:center; padding:1rem;">
-        <div class="bg-white shadow-2xl w-full h-full md:w-[96vw] md:h-[94dvh] sm:rounded-2xl flex flex-col overflow-hidden" style="background:#ffffff; width:96vw; height:94vh; border-radius:1rem; display:flex; flex-direction:column; overflow:hidden;">
-            <div class="px-4 sm:px-6 py-3 border-b flex justify-between items-center gap-2 bg-slate-900 text-white shrink-0" style="background:#0f172a; color:#ffffff; padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
+    <div id="excel-view-modal" class="hidden fixed inset-0 z-[65] flex items-center justify-center sm:p-4 bg-slate-900/80 backdrop-blur-xs">
+        <div class="bg-white shadow-2xl w-full h-full md:w-[96vw] md:h-[94dvh] sm:rounded-2xl flex flex-col overflow-hidden" style="padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);">
+            <div class="px-4 sm:px-6 py-3 border-b flex justify-between items-center gap-2 bg-slate-900 text-white shrink-0">
                 <div class="min-w-0">
-                    <h3 class="text-sm sm:text-lg font-bold truncate" id="excel-view-title" style="margin:0;">Detail Pengujian</h3>
-                    <p class="text-[11px] text-slate-300 truncate" id="excel-view-subtitle" style="margin:0; font-size:0.72rem; color:#cbd5e1;">Sub</p>
+                    <h3 class="text-sm sm:text-lg font-bold truncate" id="excel-view-title">Detail Pengujian</h3>
+                    <p class="text-[11px] text-slate-300 truncate" id="excel-view-subtitle">Sub</p>
                 </div>
                 <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <button onclick="window.exportMonthlyExcel()" class="rs-btn-emerald"><i class="fa-solid fa-file-excel"></i><span>Export</span></button>
-                    <button onclick="window.printMonthlyReport()" class="px-3 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-xl"><i class="fa-solid fa-print"></i><span class="ml-1">PDF</span></button>
+                    <button onclick="window.exportMonthlyExcel()" class="px-2.5 sm:px-3.5 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline ml-1">Export</span></button>
+                    <button onclick="window.printMonthlyReport()" class="px-2.5 sm:px-3.5 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-xl"><i class="fa-solid fa-print"></i><span class="hidden sm:inline ml-1">PDF</span></button>
                     <button onclick="window.closeExcelViewModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -986,25 +696,25 @@
     </div>
 
     <!-- MODAL PDF & KONFIRMASI -->
-    <div id="upload-modal" class="hidden rs-modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6" style="background:#ffffff; border-radius:1rem; width:100%; max-width:28rem; padding:1.5rem;">
-            <div class="flex justify-between items-center mb-4"><h3 class="font-bold" style="margin:0;">Unggah PDF</h3><button onclick="window.closeUploadModal()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="upload-modal" class="hidden fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold">Unggah PDF</h3><button onclick="window.closeUploadModal()"><i class="fa-solid fa-xmark"></i></button></div>
             <form onsubmit="event.preventDefault(); window.handleUpload();" class="space-y-4">
                 <input type="text" id="upload-judul" required placeholder="Judul Dokumen" class="block w-full py-2.5 px-3 border rounded-xl text-sm">
                 <input id="file-upload" type="file" class="hidden" accept=".pdf" onchange="window.handlePdfFileSelect(event)">
                 <div onclick="document.getElementById('file-upload').click()" class="flex justify-center py-6 border-2 border-dashed rounded-xl cursor-pointer"><span id="pdf-selected-name" class="text-sm text-blue-600 font-semibold">Ketuk pilih PDF</span></div>
-                <div class="flex justify-end"><button type="submit" class="rs-btn-primary px-5 py-2.5">Simpan</button></div>
+                <div class="flex justify-end"><button type="submit" class="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl">Simpan</button></div>
             </form>
         </div>
     </div>
-    <div id="confirm-modal" class="hidden rs-modal-backdrop">
-        <div class="bg-white rounded-2xl p-6 text-center max-w-sm w-full shadow-2xl" style="background:#ffffff; border-radius:1rem; padding:1.5rem; text-align:center; max-width:24rem; width:100%;">
-            <h3 class="font-bold text-lg mb-2" style="margin:0 0 0.5rem;">Hapus Data Arsip?</h3><p class="text-xs text-gray-500 mb-6" style="margin:0 0 1.25rem;">Yakin ingin menghapus arsip ini secara permanen?</p>
-            <div class="flex gap-3 justify-center"><button onclick="window.closeConfirmModal()" class="flex-1 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button><button id="btn-confirm-delete" class="rs-btn-red flex-1 py-2.5">Ya, Hapus</button></div>
+    <div id="confirm-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl p-6 text-center max-w-sm w-full shadow-2xl">
+            <h3 class="font-bold text-lg mb-2">Hapus Data Arsip?</h3><p class="text-xs text-gray-500 mb-6">Yakin ingin menghapus arsip ini secara permanen?</p>
+            <div class="flex gap-3 justify-center"><button onclick="window.closeConfirmModal()" class="flex-1 py-2.5 text-xs font-semibold bg-gray-100 rounded-xl">Batal</button><button id="btn-confirm-delete" class="flex-1 py-2.5 text-xs font-bold text-white bg-red-600 rounded-xl">Ya, Hapus</button></div>
         </div>
     </div>
-    <div id="toast" class="hidden fixed top-4 right-4 left-4 sm:left-auto z-[80] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white" style="position:fixed; top:1rem; right:1rem; z-index:80; padding:0.75rem 1rem; border-radius:1rem; color:#ffffff; align-items:center; gap:0.75rem;">
-        <i id="toast-icon" class="fa-solid fa-check-circle text-lg"></i><p id="toast-message" class="text-xs sm:text-sm font-semibold" style="margin:0;"></p>
+    <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto z-[80] transform -translate-y-24 sm:translate-y-0 sm:translate-x-[120%] transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-lg"></i><p id="toast-message" class="text-xs sm:text-sm font-semibold"></p>
     </div>
 
     <script>
@@ -1192,7 +902,7 @@
         }
 
         // =========================================================================
-        // LAZY LOADER SUPABASE STORAGE
+        // LAZY LOADER SUPABASE STORAGE (ANTI CACHE SAFARI)
         // =========================================================================
         window.ensureArchiveFullLoaded = async function(archiveId, forceFresh = false) {
             const idx = window.dbData.findIndex(d => d.id === archiveId);
@@ -1204,12 +914,11 @@
                 const cachedPacked = await idbGet('arc_' + archiveId);
                 if (cachedPacked) {
                     let cachedRows = 0;
-                    Object.values(cachedPacked.months || {}).forEach(arr => { if (Array.isArray(arr)) cachedRows += arr.length; });
+                    Object.values(cachedPacked.months || {}).forEach(a => { if (Array.isArray(a)) cachedRows += a.length; });
                     const expectedTotal = arc.stats?.total;
                     const expectedRev = arc.stats?.rev;
-                    const hasMoreLocal = (expectedTotal !== undefined && cachedRows > expectedTotal);
-                    const validCache = hasMoreLocal || ((expectedTotal === undefined || cachedRows === expectedTotal) &&
-                                       (!expectedRev || cachedPacked.rev === expectedRev));
+                    const validCache = (expectedTotal === undefined || cachedRows === expectedTotal) &&
+                                       (!expectedRev || cachedPacked.rev === expectedRev);
                     if (validCache) {
                         const unpacked = unpackArchiveFromStorage(cachedPacked, arc);
                         if (unpacked && unpacked.excelData) {
@@ -1254,7 +963,9 @@
                             return unpacked;
                         }
                     }
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Fallback cek tabel database untuk arsip:', archiveId, err);
+                }
 
                 try {
                     const { data: rowData } = await supabaseClient
@@ -1344,6 +1055,7 @@
                 await window.checkCloudVsLocalStatus();
                 window.showToast(`Berhasil kirim ${window.dbData.length} file (${pushedUnits.toLocaleString('id-ID')} unit) ke Cloud!`, 'success');
             } catch (err) {
+                console.error('Force push error:', err);
                 window.showToast('Gagal kirim ke Cloud: ' + (err.message || 'Periksa izin Supabase'), 'error');
             }
         };
@@ -1377,6 +1089,7 @@
                 window.dbData.forEach(a => { totalUnit += window.getArchiveSummary(a).total; });
                 window.showToast(`Selesai! Terbaca ${window.dbData.length} file (${totalUnit.toLocaleString('id-ID')} unit) dari Cloud.`, 'success');
             } catch (err) {
+                console.error('Force pull error:', err);
                 window.showToast('Gagal menarik dari Cloud: ' + (err.message || 'Periksa koneksi'), 'error');
             }
         };
@@ -1390,10 +1103,14 @@
             if (!drawer || !backdrop) return;
             if (open) {
                 backdrop.classList.remove('hidden');
-                drawer.classList.add('drawer-open');
+                requestAnimationFrame(() => {
+                    backdrop.classList.remove('opacity-0');
+                    drawer.classList.remove('-translate-x-full');
+                });
             } else {
-                drawer.classList.remove('drawer-open');
-                backdrop.classList.add('hidden');
+                backdrop.classList.add('opacity-0');
+                drawer.classList.add('-translate-x-full');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
             }
         };
 
@@ -1416,7 +1133,7 @@
                     window.toggleMobileDrawer(true);
                 }
                 const drawer = document.getElementById('mobile-sidebar-drawer');
-                if (drawer && drawer.classList.contains('drawer-open') && dx < -65) {
+                if (drawer && !drawer.classList.contains('-translate-x-full') && dx < -65) {
                     window.toggleMobileDrawer(false);
                 }
             }, { passive: true });
@@ -1428,7 +1145,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.2';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.1';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -1463,6 +1180,7 @@
                 });
 
             if (uploadErr) {
+                console.warn('Storage bucket gagal, simpan ke tabel railspring_storage:', uploadErr.message);
                 const { error: fallbackErr } = await supabaseClient
                     .from('railspring_storage')
                     .upsert({ key: EXCEL_STORAGE_KEY + '_item_' + arc.id, payload: packed, updated_at: new Date().toISOString() }, { onConflict: 'key' });
@@ -1511,6 +1229,7 @@
                     }
                     await window.saveArchiveIndexOnly(val);
                 } catch (err) {
+                    console.error('Gagal menyimpan ke Supabase Storage:', err);
                     window.showToast('Error Cloud: ' + (err.message || 'Gagal simpan ke Supabase'), 'error');
                 }
                 return;
@@ -1523,12 +1242,14 @@
                     .from('railspring_storage')
                     .upsert({ key: key, payload: val, updated_at: new Date().toISOString() }, { onConflict: 'key' });
                 if (error) throw error;
-            } catch (err) {}
+            } catch (err) {
+                console.error('Gagal menyimpan ke Supabase:', err);
+            }
         }
 
         async function loadFromPermanentDB(key, ignoreLocalFallback = false) {
             if (key === EXCEL_STORAGE_KEY) {
-                let cloudIndexList = null;
+                let indexList = null;
 
                 if (supabaseClient) {
                     try {
@@ -1541,66 +1262,99 @@
                         if (idxErr) {
                             window.showToast('Peringatan Cloud: ' + idxErr.message, 'error');
                         } else if (idxData && Array.isArray(idxData.payload) && idxData.payload.length > 0) {
-                            cloudIndexList = idxData.payload;
+                            indexList = idxData.payload;
+                        } else {
+                            const { data: oldIdxData } = await supabaseClient
+                                .from('railspring_storage')
+                                .select('payload')
+                                .eq('key', EXCEL_STORAGE_KEY + '_index')
+                                .maybeSingle();
+
+                            if (oldIdxData && Array.isArray(oldIdxData.payload) && oldIdxData.payload.length > 0) {
+                                const migrated = [];
+                                for (const meta of oldIdxData.payload) {
+                                    const { data: itemRow } = await supabaseClient
+                                        .from('railspring_storage')
+                                        .select('payload')
+                                        .eq('key', EXCEL_STORAGE_KEY + '_item_' + meta.id)
+                                        .maybeSingle();
+                                    if (itemRow && itemRow.payload) {
+                                        const unpacked = unpackArchiveFromStorage(itemRow.payload, meta);
+                                        if (unpacked) {
+                                            await window.uploadSingleArchiveToStorage(unpacked);
+                                            migrated.push(unpacked);
+                                        }
+                                    }
+                                }
+                                if (migrated.length > 0) {
+                                    await window.saveArchiveIndexOnly(migrated);
+                                    return migrated;
+                                }
+                            } else {
+                                const { data: legacyData } = await supabaseClient
+                                    .from('railspring_storage')
+                                    .select('payload')
+                                    .eq('key', EXCEL_STORAGE_KEY)
+                                    .maybeSingle();
+                                if (legacyData && Array.isArray(legacyData.payload) && legacyData.payload.length > 0) {
+                                    const migrated = legacyData.payload.map(ensureArchiveMetadata);
+                                    for (const m of migrated) await window.uploadSingleArchiveToStorage(m);
+                                    await window.saveArchiveIndexOnly(migrated);
+                                    return migrated;
+                                }
+                            }
                         }
                     } catch (err) {
+                        console.error('Gagal memuat indeks dari Supabase:', err);
                         window.showToast('Gagal terhubung ke Cloud Supabase!', 'error');
                     }
                 }
 
-                let localIndexList = null;
-                if (!ignoreLocalFallback) {
-                    localIndexList = await idbGet('archives_index');
-                    if (!localIndexList) {
-                        try {
-                            const raw = localStorage.getItem('cache_' + EXCEL_STORAGE_KEY + '_index');
-                            if (raw) localIndexList = JSON.parse(raw);
-                        } catch (e) {}
-                    }
+                if (!indexList && !ignoreLocalFallback) {
+                    indexList = await idbGet('archives_index');
                 }
-
-                const sumStats = (list) => Array.isArray(list) ? list.reduce((acc, m) => acc + (m.stats?.total || 0), 0) : 0;
-                const cloudTotal = sumStats(cloudIndexList);
-                const localTotal = sumStats(localIndexList);
-
-                if (!ignoreLocalFallback && Array.isArray(localIndexList) && localTotal > cloudTotal) {
-                    const localResult = [];
-                    for (const meta of localIndexList) {
-                        const localFull = await idbGet('arc_' + meta.id);
-                        if (localFull) {
-                            localResult.push(unpackArchiveFromStorage(localFull, meta));
-                        } else {
-                            localResult.push({ ...meta, isExcel: true, excelData: null, _isLoaded: false });
-                        }
-                    }
-                    return localResult;
+                if (!indexList && !ignoreLocalFallback) {
+                    try {
+                        const raw = localStorage.getItem('cache_' + EXCEL_STORAGE_KEY + '_index');
+                        if (raw) indexList = JSON.parse(raw);
+                    } catch (e) {}
                 }
-
-                const indexList = (Array.isArray(cloudIndexList) && cloudIndexList.length > 0) ? cloudIndexList : localIndexList;
 
                 if (Array.isArray(indexList) && indexList.length > 0) {
+                    await idbSet('archives_index', indexList);
+                    try { localStorage.setItem('cache_' + EXCEL_STORAGE_KEY + '_index', JSON.stringify(indexList)); } catch(e) {}
+
                     const result = [];
                     for (const meta of indexList) {
                         const localFull = ignoreLocalFallback ? null : await idbGet('arc_' + meta.id);
                         if (localFull) {
                             let localRowCount = 0;
                             Object.values(localFull.months || {}).forEach(arr => {
-                                if (Array.isArray(arr)) localRowCount += arr.length;
+                                if (Array.isArray(arr)) localRowCount += a.length;
                             });
                             const expectedTotal = meta.stats?.total;
                             const expectedRev = meta.stats?.rev;
-                            const hasMoreLocal = (expectedTotal !== undefined && localRowCount > expectedTotal);
-                            const isCacheFresh = hasMoreLocal || ((expectedTotal === undefined || localRowCount === expectedTotal) &&
-                                                 (!expectedRev || localFull.rev === expectedRev));
+                            const isCacheFresh = (expectedTotal === undefined || localRowCount === expectedTotal) &&
+                                                 (!expectedRev || localFull.rev === expectedRev);
 
                             if (isCacheFresh) {
                                 result.push(unpackArchiveFromStorage(localFull, meta));
                             } else {
                                 await idbDel('arc_' + meta.id);
-                                result.push({ ...meta, isExcel: true, excelData: null, _isLoaded: false });
+                                result.push({
+                                    ...meta,
+                                    isExcel: true,
+                                    excelData: null,
+                                    _isLoaded: false
+                                });
                             }
                         } else {
-                            result.push({ ...meta, isExcel: true, excelData: null, _isLoaded: false });
+                            result.push({
+                                ...meta,
+                                isExcel: true,
+                                excelData: null,
+                                _isLoaded: false
+                            });
                         }
                     }
                     return result;
@@ -1627,7 +1381,7 @@
                         try { localStorage.setItem('cache_' + key, JSON.stringify(data.payload)); } catch(e) {}
                         return data.payload;
                     }
-                } catch (err) {}
+                } catch (err) { console.error('Gagal memuat dari Supabase:', err); }
             }
             return localCached;
         }
@@ -1740,7 +1494,9 @@
 
         function isLikelyDateCell(rawVal) {
             if (rawVal === null || rawVal === undefined || rawVal === '') return false;
-            if (typeof rawVal === 'number') return rawVal >= 42005 && rawVal <= 51138;
+            if (typeof rawVal === 'number') {
+                return rawVal >= 42005 && rawVal <= 51138;
+            }
             const s = String(rawVal).trim();
             return /^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})(\s+\d{1,2}:\d{2}(:\d{2})?)?$/.test(s);
         }
@@ -1861,7 +1617,7 @@
         }
 
         window.parseExcelData = function(workbook, fileName = '') {
-            let recordsByMonth = {}, overallJenisPegas = '', metaSarana = '', metaBogie = '', metaOperator = '', metaLokasi = '', detectedSpecs = null, totalExtracted = 0;
+            let recordsByMonth = {}, overallJenisPegas = '', metaSarana = '', metaBogie = '', metaOperator = '', metaLokasi = '', detectedSpecs = null, totalExtracted = 0, typoFixedCount = 0;
 
             const monthlySheets = workbook.SheetNames.filter(sn => !['vals','spc','source','chart','grafik'].includes(sn.trim().toLowerCase()) && detectSheetMonthInfo(sn) !== null);
             const sheetsToProcess = workbook.SheetNames.filter(sn => {
@@ -1929,13 +1685,18 @@
                     const rArr = rows[r] || [];
                     for (let c = 0; c < rArr.length; c++) {
                         if (c === 1 || colIndices.includes(c)) continue;
-                        if (isLikelyDateCell(rArr[c])) dateColScores[c] = (dateColScores[c] || 0) + 1;
+                        if (isLikelyDateCell(rArr[c])) {
+                            dateColScores[c] = (dateColScores[c] || 0) + 1;
+                        }
                     }
                 }
                 let bestScore = 0;
                 Object.keys(dateColScores).forEach(cStr => {
                     const cNum = parseInt(cStr, 10);
-                    if (dateColScores[cStr] > bestScore) { bestScore = dateColScores[cStr]; detectedTimeColIdx = cNum; }
+                    if (dateColScores[cStr] > bestScore) {
+                        bestScore = dateColScores[cStr];
+                        detectedTimeColIdx = cNum;
+                    }
                 });
 
                 if (!detectedSpecs) {
@@ -1965,11 +1726,16 @@
                             }
                         }
                     }
+                    const rawTrimmed = String(rawCode ?? '').trim().toUpperCase();
                     let noUji = normalizeSpringCode(rawCode, defaultPrefix);
-                    if (!noUji && lastSequentialNum > 0) noUji = `${defaultPrefix}.${lastSequentialNum + 1}`;
+                    if (!noUji && lastSequentialNum > 0) {
+                        noUji = `${defaultPrefix}.${lastSequentialNum + 1}`;
+                    }
                     if (!noUji) continue;
                     const mSeq = noUji.match(/\.(\d+)$/);
                     if (mSeq) lastSequentialNum = parseInt(mSeq[1], 10);
+
+                    if (rawTrimmed !== noUji && !/^\d+\.0$/.test(rawTrimmed)) typoFixedCount++;
 
                     let rawWaktu = null;
                     if (detectedTimeColIdx !== -1 && row[detectedTimeColIdx] !== null && row[detectedTimeColIdx] !== undefined && String(row[detectedTimeColIdx]).trim() !== '') {
@@ -2017,7 +1783,7 @@
             return {
                 recordsByMonth: healedRecordsByMonth, overallJenisPegas: overallJenisPegas || 'PEGAS-LUAR',
                 sarana: autoMeta.sarana, bogie: autoMeta.bogie, operator: metaOperator || 'MARIO', lokasi: metaLokasi || 'BYTG',
-                paramSpecs: detectedSpecs || DEFAULT_GD42T_SPECS, totalExtracted, monthCount: sortedKeys.length, monthList: sortedKeys
+                paramSpecs: detectedSpecs || DEFAULT_GD42T_SPECS, totalExtracted, typoFixedCount, monthCount: sortedKeys.length, monthList: sortedKeys
             };
         };
 
@@ -2025,7 +1791,7 @@
             const c = document.getElementById('pdf-list-container'); if (!c) return;
             const cards = (window.dbData || []).map(arc => {
                 const specs = arc.paramSpecs || DEFAULT_GD42T_SPECS;
-                return `<div class="rs-card p-4 sm:p-6 mb-4">
+                return `<div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 mb-4 shadow-xs">
                     <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
                         <div><h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-sliders text-blue-600 mr-2"></i>Parameter Otomatis: ${arc.sarana} — ${arc.bogie}</h3><p class="text-[11px] text-gray-500">Sumber: <span class="font-mono text-blue-600">${arc.nomor}</span></p></div>
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Sesuai Jenis Pegas File</span>
@@ -2038,7 +1804,7 @@
                     </div>
                 </div>`;
             }).join('');
-            c.innerHTML = cards || `<div class="rs-card p-6 text-xs text-gray-500">Silakan upload file Excel pengujian pegas untuk menampilkan tabel standar parameter otomatis sesuai jenis pegasnya.</div>`;
+            c.innerHTML = cards || `<div class="bg-white rounded-2xl border p-6 text-xs text-gray-500">Silakan upload file Excel pengujian pegas untuk menampilkan tabel standar parameter otomatis sesuai jenis pegasnya.</div>`;
         };
 
         async function loadAllSavedData(ignoreLocalFallback = false) {
@@ -2197,7 +1963,7 @@
             const kw = (document.getElementById('search-setsarana')?.value || '').toLowerCase().trim();
             const filtered = window.saranaSets.filter(s => (window.activeFilterPerawatan === 'ALL' || s.perawatan === window.activeFilterPerawatan) && (!kw || `${s.sarana} ${s.noSarana} ${s.bogie}`.toLowerCase().includes(kw)));
             container.innerHTML = filtered.map(item => `
-                <div class="rs-card p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="bg-white rounded-2xl border p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
                     <div class="space-y-1">
                         <div class="flex flex-wrap items-center gap-2"><span class="font-bold text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">${item.sarana}</span> <span class="text-xs font-extrabold">${item.noSarana}</span> <span class="text-[11px] font-bold px-2 py-0.5 rounded ${item.perawatan==='P24'?'bg-cyan-100 text-cyan-800':'bg-amber-100 text-amber-800'}">${item.perawatan}</span></div>
                         <p class="text-[11px] text-gray-500">${item.bogie} • OS: <span class="font-mono text-gray-700">${(item.pegasLuar||[]).join(', ')}</span> | IS: <span class="font-mono text-gray-700">${(item.pegasDalam||[]).join(', ')}</span></p>
@@ -2206,7 +1972,7 @@
                         <button onclick="window.editSetSaranaRecord(${item.id})" class="flex-1 sm:flex-initial text-xs font-semibold bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-xl">Edit</button>
                         <button onclick="window.deleteSetSaranaRecord(${item.id})" class="flex-1 sm:flex-initial text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-600 px-3.5 py-2 rounded-xl">Hapus</button>
                     </div>
-                </div>`).join('') || `<div class="rs-card p-6 text-center text-gray-400 text-xs">Belum ada Set Sarana.</div>`;
+                </div>`).join('') || `<div class="bg-white rounded-2xl border p-6 text-center text-gray-400 text-xs">Belum ada Set Sarana.</div>`;
         };
 
         window.editSetSaranaRecord = function(id) {
@@ -2329,7 +2095,7 @@
 
             tbody.innerHTML = matched.slice(0, 120).map((m, i) => {
                 const badges = (m.params || []).map((p, idx) => `<span class="px-1.5 py-0.5 rounded font-mono text-[10px] border ${p.lulus ? 'bg-slate-50 text-slate-700' : 'bg-red-100 text-red-700 font-bold'}">P${idx}:${p.val ?? '-'}</span>`).join(' ');
-                return `<tr class="hover:bg-blue-50/40"><td class="px-3.5 py-3 text-center">${i+1}</td><td class="px-3.5 py-3 font-bold">${m.sarana}</td><td class="px-3.5 py-3 text-xs">${m.bogie}</td><td class="px-3.5 py-3 font-mono font-bold text-blue-600">${m.nomor}</td><td class="px-3.5 py-3 text-xs"><strong>${m.bulan}</strong> (${m.waktu})</td><td class="px-3.5 py-3 text-center">${badges}</td><td class="px-3.5 py-3 font-bold ${m.isLulus?'text-emerald-600':'text-red-600'}">${m.isLulus?'Siap Pakai':'Afkir'}</td><td class="px-3.5 py-3 text-center"><button class="rs-btn-primary" onclick="window.openExcelViewModal(${m.archiveId}, '${m.bulan}', '${m.nomor}')">Detail</button></td></tr>`;
+                return `<tr class="hover:bg-blue-50/40"><td class="px-3.5 py-3 text-center">${i+1}</td><td class="px-3.5 py-3 font-bold">${m.sarana}</td><td class="px-3.5 py-3 text-xs">${m.bogie}</td><td class="px-3.5 py-3 font-mono font-bold text-blue-600">${m.nomor}</td><td class="px-3.5 py-3 text-xs"><strong>${m.bulan}</strong> (${m.waktu})</td><td class="px-3.5 py-3 text-center">${badges}</td><td class="px-3.5 py-3 font-bold ${m.isLulus?'text-emerald-600':'text-red-600'}">${m.isLulus?'Siap Pakai':'Afkir'}</td><td class="px-3.5 py-3 text-center"><button class="bg-blue-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold" onclick="window.openExcelViewModal(${m.archiveId}, '${m.bulan}', '${m.nomor}')">Detail</button></td></tr>`;
             }).join('');
         };
 
@@ -2371,7 +2137,6 @@
             document.getElementById('is-val-reject').textContent = dIS.reject.toLocaleString('id-ID');
             document.getElementById('is-val-persentase').textContent = pct(dIS.accept, dIS.total);
 
-            if (typeof Chart === 'undefined') return;
             if (chartInstanceOsPie) chartInstanceOsPie.destroy(); if (chartInstanceOsBar) chartInstanceOsBar.destroy();
             if (chartInstanceIsPie) chartInstanceIsPie.destroy(); if (chartInstanceIsBar) chartInstanceIsBar.destroy();
 
@@ -2487,7 +2252,7 @@
             try {
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
-                    const pct = Math.round((i / files.length) * 100);
+                    const pct = Math.round(((i) / files.length) * 100);
                     if (progBar) progBar.style.width = `${Math.max(8, pct)}%`;
                     if (progText) progText.textContent = `(${i + 1}/${files.length}) Membaca & memisahkan bulan/tahun ${file.name}...`;
 
@@ -2498,7 +2263,10 @@
                         parsed = window.parseExcelData(wb, file.name);
                     }
 
-                    if (!parsed || parsed.totalExtracted === 0) continue;
+                    if (!parsed || parsed.totalExtracted === 0) {
+                        console.warn('File dilewati (tidak ada baris uji):', file.name);
+                        continue;
+                    }
 
                     const customSarana = files.length === 1 ? document.getElementById('input-excel-sarana').value.trim().toUpperCase() : '';
                     const customBogie = files.length === 1 ? document.getElementById('input-excel-bogie').value.trim() : '';
@@ -2524,8 +2292,11 @@
                     if (progText) progText.textContent = `(${i + 1}/${files.length}) Mengunggah ${file.name} ke Supabase Storage...`;
                     await window.uploadSingleArchiveToStorage(rec);
 
-                    if (existIdx !== -1) window.dbData[existIdx] = rec;
-                    else window.dbData.unshift(rec);
+                    if (existIdx !== -1) {
+                        window.dbData[existIdx] = rec;
+                    } else {
+                        window.dbData.unshift(rec);
+                    }
 
                     successCount++;
                     totalRowsSaved += parsed.totalExtracted;
@@ -2544,11 +2315,14 @@
                     window.renderPdfCatalog();
                     await window.checkCloudVsLocalStatus();
                     window.showToast(`Berhasil mengunggah ${successCount} file (${totalRowsSaved.toLocaleString('id-ID')} pengujian) ke Cloud!`, 'success');
-                    if (files.length === 1 && lastSavedId) window.openExcelViewModal(lastSavedId, 'ALL');
+                    if (files.length === 1 && lastSavedId) {
+                        window.openExcelViewModal(lastSavedId, 'ALL');
+                    }
                 } else {
                     window.showToast('Tidak ada data pengujian valid yang ditemukan pada file terpilih.', 'error');
                 }
             } catch (err) {
+                console.error('Batch upload error:', err);
                 window.showToast('Gagal upload: ' + (err.message || 'Periksa koneksi / bucket Supabase Storage'), 'error');
             } finally {
                 if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
@@ -2558,7 +2332,7 @@
         window.processExcelLanjutan = async function() {
             if (!window.selectedExcelFile_lanjutan) return window.showToast('Pilih file Excel lanjutan terlebih dahulu!', 'error');
             const targetId = parseInt(document.getElementById('target-draft-select').value, 10);
-            const target = await window.ensureArchiveFullLoaded(targetId, false);
+            const target = await window.ensureArchiveFullLoaded(targetId, true);
             if (!target) return window.showToast('Pilih arsip target!', 'error');
 
             const btn = document.getElementById('btn-process-excel-lanjutan');
@@ -2590,8 +2364,11 @@
 
                     parsed.recordsByMonth[m].forEach(r => {
                         const key = `${r.nomor}|${r.waktu}`;
-                        if (existingMap.has(key)) target.excelData[m][existingMap.get(key)] = r;
-                        else target.excelData[m].push(r);
+                        if (existingMap.has(key)) {
+                            target.excelData[m][existingMap.get(key)] = r;
+                        } else {
+                            target.excelData[m].push(r);
+                        }
                     });
                 });
 
@@ -2621,6 +2398,7 @@
 
                 window.openExcelViewModal(target.id, newestMonth);
             } catch (err) {
+                console.error('Upload lanjutan error:', err);
                 window.showToast('Gagal sinkronisasi: ' + (err.message || 'Periksa koneksi Cloud'), 'error');
             } finally {
                 if (btn) { btn.disabled = false; btn.classList.remove('opacity-60'); }
@@ -2689,9 +2467,9 @@
             window.lastModalFilteredRows = rows;
             const total = rows.length;
             document.getElementById('excel-view-rekap').innerHTML = `
-                <div class="p-2.5 sm:p-3 rounded-xl bg-blue-50 border border-blue-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-blue-800" style="margin:0;">Total Diuji</p><p class="text-sm sm:text-xl font-extrabold text-blue-950" style="margin:0;">${total.toLocaleString('id-ID')}</p></div>
-                <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-emerald-800" style="margin:0;">Siap Pakai</p><p class="text-sm sm:text-xl font-extrabold text-emerald-700" style="margin:0;">${tLulus.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tLulus/total)*100).toFixed(0):0}%)</span></p></div>
-                <div class="p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-red-800" style="margin:0;">Afkir</p><p class="text-sm sm:text-xl font-extrabold text-red-600" style="margin:0;">${tAfkir.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tAfkir/total)*100).toFixed(0):0}%)</span></p></div>`;
+                <div class="p-2.5 sm:p-3 rounded-xl bg-blue-50 border border-blue-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-blue-800">Total Diuji</p><p class="text-sm sm:text-xl font-extrabold text-blue-950">${total.toLocaleString('id-ID')}</p></div>
+                <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-emerald-800">Siap Pakai</p><p class="text-sm sm:text-xl font-extrabold text-emerald-700">${tLulus.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tLulus/total)*100).toFixed(0):0}%)</span></p></div>
+                <div class="p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200"><p class="text-[9px] sm:text-[10px] font-bold uppercase text-red-800">Afkir</p><p class="text-sm sm:text-xl font-extrabold text-red-600">${tAfkir.toLocaleString('id-ID')} <span class="text-[10px] font-normal">(${total>0?((tAfkir/total)*100).toFixed(0):0}%)</span></p></div>`;
 
             const pageSize = parseInt(document.getElementById('modal-page-size')?.value || '200', 10);
             const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -2749,7 +2527,7 @@
             document.getElementById('table-info').textContent = `Menampilkan ${dataToRender.length} arsip`;
             tbody.innerHTML = dataToRender.map((item, idx) => {
                 const sum = window.getArchiveSummary(item);
-                return `<tr class="border-b border-slate-800"><td class="px-4 py-3.5 text-center">${idx+1}</td><td class="px-4 py-3.5 font-bold text-white">${item.sarana}</td><td class="px-4 py-3.5 text-xs">${item.bogie}</td><td class="px-4 py-3.5 text-xs font-mono text-blue-400">${item.nomor} (${sum.months.length} Bulan: ${sum.months.join(', ')})</td><td class="px-4 py-3.5 font-bold text-white">${sum.total.toLocaleString('id-ID')} Uji (${sum.lulus.toLocaleString('id-ID')} Lulus / ${sum.afkir.toLocaleString('id-ID')} Afkir)</td><td class="px-4 py-3.5 text-center"><button onclick="window.openExcelViewModal(${item.id}, 'ALL')" class="rs-btn-primary mr-1.5">Buka</button><button onclick="window.confirmDelete(${item.id})" class="rs-btn-red">Hapus</button></td></tr>`;
+                return `<tr class="border-b border-slate-800"><td class="px-4 py-3.5 text-center">${idx+1}</td><td class="px-4 py-3.5 font-bold text-white">${item.sarana}</td><td class="px-4 py-3.5 text-xs">${item.bogie}</td><td class="px-4 py-3.5 text-xs font-mono text-blue-400">${item.nomor} (${sum.months.length} Bulan: ${sum.months.join(', ')})</td><td class="px-4 py-3.5 font-bold text-white">${sum.total.toLocaleString('id-ID')} Uji (${sum.lulus.toLocaleString('id-ID')} Lulus / ${sum.afkir.toLocaleString('id-ID')} Afkir)</td><td class="px-4 py-3.5 text-center"><button onclick="window.openExcelViewModal(${item.id}, 'ALL')" class="bg-blue-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs mr-1.5 font-bold">Buka</button><button onclick="window.confirmDelete(${item.id})" class="bg-red-600 active:scale-95 px-3 py-1.5 rounded-lg text-white text-xs font-bold">Hapus</button></td></tr>`;
             }).join('') || `<tr><td colspan="6" class="text-center py-8 text-slate-400">Belum ada file Excel diunggah.</td></tr>`;
         };
 
@@ -2806,15 +2584,11 @@
             document.querySelectorAll('.nav-item').forEach(n => {
                 n.classList.remove('bg-blue-600', 'text-white');
                 n.classList.add('text-slate-300');
-                n.style.backgroundColor = 'transparent';
-                n.style.color = '#cbd5e1';
             });
             const activeDesk = document.getElementById('nav-' + viewName);
             if (activeDesk) {
                 activeDesk.classList.remove('text-slate-300');
                 activeDesk.classList.add('bg-blue-600', 'text-white');
-                activeDesk.style.backgroundColor = '#2563eb';
-                activeDesk.style.color = '#ffffff';
             }
 
             document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
@@ -2850,9 +2624,9 @@
         window.handleAskAI = function() {
             const inp = document.getElementById('ai-chat-input'), hist = document.getElementById('ai-chat-history'), q = inp.value.trim();
             if (!q) return; inp.value = '';
-            hist.innerHTML += `<div class="bg-blue-600 text-white p-3 rounded-2xl ml-8 text-right" style="background:#2563eb; color:#fff; padding:0.75rem; border-radius:1rem; margin-left:2rem; text-align:right;">${q}</div>`;
+            hist.innerHTML += `<div class="bg-blue-600 text-white p-3 rounded-2xl ml-8 text-right">${q}</div>`;
             const s = window.dbData[0] ? window.getArchiveSummary(window.dbData[0]) : { total: 0, lulus: 0, afkir: 0 };
-            hist.innerHTML += `<div class="bg-white p-3 rounded-2xl border mr-8" style="background:#fff; padding:0.75rem; border-radius:1rem; border:1px solid #e2e8f0; margin-right:2rem;">Total data aktif: <strong>${s.total.toLocaleString('id-ID')} unit</strong> (Siap Pakai: ${s.lulus.toLocaleString('id-ID')}, Afkir: ${s.afkir.toLocaleString('id-ID')}).</div>`;
+            hist.innerHTML += `<div class="bg-white p-3 rounded-2xl border mr-8">Total data aktif: <strong>${s.total.toLocaleString('id-ID')} unit</strong> (Siap Pakai: ${s.lulus.toLocaleString('id-ID')}, Afkir: ${s.afkir.toLocaleString('id-ID')}).</div>`;
         };
 
         window.openUploadModal = function() { document.getElementById('upload-modal').classList.remove('hidden'); };
@@ -2870,8 +2644,8 @@
             const headerAvatar = document.getElementById('header-avatar-container');
             const cardAvatar = document.getElementById('card-avatar-display');
             if (window.userProfile.photoUrl) {
-                if (headerAvatar) headerAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil">`;
-                if (cardAvatar) cardAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil">`;
+                if (headerAvatar) headerAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
+                if (cardAvatar) cardAvatar.innerHTML = `<img src="${window.userProfile.photoUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
             } else {
                 if (headerAvatar) headerAvatar.innerHTML = `<span id="header-avatar-initial">${initial}</span>`;
                 if (cardAvatar) cardAvatar.innerHTML = `<span id="card-avatar-initial">${initial}</span>`;
@@ -2951,11 +2725,9 @@
             const icon = document.getElementById('toast-icon');
             document.getElementById('toast-message').textContent = msg;
             if (icon) icon.className = type === 'success' ? 'fa-solid fa-check-circle text-lg' : 'fa-solid fa-circle-exclamation text-lg';
-            t.style.backgroundColor = type === 'success' ? '#059669' : '#dc2626';
-            t.style.display = 'flex';
-            t.classList.remove('hidden');
+            t.className = `fixed top-4 right-4 left-4 sm:left-auto z-[80] transition-transform duration-300 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white ${type==='success'?'bg-emerald-600':'bg-red-600'}`;
             setTimeout(() => {
-                t.classList.add('hidden');
+                t.classList.add('-translate-y-24', 'sm:translate-y-0', 'sm:translate-x-[120%]');
             }, 3500);
         };
 
