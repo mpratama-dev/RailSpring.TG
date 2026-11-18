@@ -183,7 +183,7 @@
                         </div>
                     </div>
                     <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Auto Bulan/Tahun Aktif
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Waktu Uji Akurat Aktif
                     </span>
                 </div>
 
@@ -237,7 +237,7 @@
                     <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
                         <div>
                             <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
-                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Otomatis membuat folder <strong>Bulan & Tahun</strong> sesuai tanggal uji Excel & mempertahankan nomor seri asli (`OS` / `IS`).</p>
+                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & mempertahankan nomor seri asli (`OS` / `IS`).</p>
                         </div>
                         <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
                             <button onclick="window.syncFromCloudManual()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Segarkan Cloud</button>
@@ -567,7 +567,7 @@
             <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
                 <div>
                     <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload File Excel Pengujian</h3>
-                    <p class="text-[11px] text-emerald-600 font-semibold">Auto Pemisahan Bulan & Tahun sesuai Tanggal Uji Excel</p>
+                    <p class="text-[11px] text-emerald-600 font-semibold">Auto Pemisahan Bulan & Tahun sesuai Kolom Waktu Uji Excel</p>
                 </div>
                 <button onclick="window.closeExcelModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -612,7 +612,7 @@
             <div class="px-5 sm:px-6 py-4 border-b flex justify-between items-center bg-gray-50/80 sm:rounded-t-2xl">
                 <div>
                     <h3 class="font-bold text-sm sm:text-base">Upload File Excel Lanjutan</h3>
-                    <p class="text-[11px] text-amber-700 font-semibold">Otomatis membuat tab Bulan & Tahun baru saat tanggal berganti bulan/tahun</p>
+                    <p class="text-[11px] text-amber-700 font-semibold">Otomatis membuat tab Bulan & Tahun baru sesuai tanggal uji Excel</p>
                 </div>
                 <button onclick="window.closeLanjutanModal()" class="w-8 h-8 rounded-full bg-gray-200/70 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -815,7 +815,7 @@
                 excelData[m] = (rawMonths[m] || []).map(arr => {
                     const nomor = arr[0] || '';
                     const isLulus = arr[1] === 1;
-                    const waktu = arr[2] || '-';
+                    const waktu = normalizeFutureMonthSwap(arr[2] || '-');
                     const vals = Array.isArray(arr[3]) ? arr[3] : [];
                     const params = specs.map((sp, idx) => {
                         const val = (vals[idx] !== undefined && vals[idx] !== null) ? vals[idx] : null;
@@ -992,7 +992,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Auto Bulan/Tahun Aktif';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Waktu Uji Akurat Aktif';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -1272,6 +1272,31 @@
             return null;
         }
 
+        // Mengoreksi tanggal US MM/DD/YY yang terbalik menjadi DD/MM/YY jika bulan belum terjadi di tahun berjalan
+        function fixSwappedDayMonth(d, m, y) {
+            const now = new Date();
+            const curYear = now.getFullYear();
+            const curMonth = now.getMonth() + 1;
+            if (y === curYear && m > curMonth && d >= 1 && d <= 12) {
+                return { d: m, m: d, y };
+            }
+            return { d, m, y };
+        }
+
+        function normalizeFutureMonthSwap(waktuStr) {
+            if (!waktuStr || waktuStr === '-') return '-';
+            const s = String(waktuStr).trim();
+            const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(.*)$/);
+            if (dmy) {
+                let d = parseInt(dmy[1], 10), m = parseInt(dmy[2], 10), y = parseInt(dmy[3], 10);
+                const fullY = y < 100 ? y + 2000 : y;
+                const fixed = fixSwappedDayMonth(d, m, fullY);
+                const yy = String(fixed.y % 100).padStart(2, '0');
+                return `${String(fixed.d).padStart(2, '0')}/${String(fixed.m).padStart(2, '0')}/${yy}${dmy[4] || ''}`;
+            }
+            return s;
+        }
+
         function detectMonthFromTimestampStr(waktuStr) {
             if (!waktuStr || waktuStr === '-') return null;
             const s = String(waktuStr).trim();
@@ -1279,14 +1304,29 @@
             if (dmy) {
                 let d = parseInt(dmy[1], 10), m = parseInt(dmy[2], 10), y = parseInt(dmy[3], 10);
                 if (y < 100) y += 2000;
-                if (m >= 1 && m <= 12) return { day: d, monthIndex: m - 1, monthNumber: m, year: y, label: `${MONTH_NAMES[m - 1]} ${y}` };
+                const fixed = fixSwappedDayMonth(d, m, y);
+                if (fixed.m >= 1 && fixed.m <= 12) {
+                    return { day: fixed.d, monthIndex: fixed.m - 1, monthNumber: fixed.m, year: fixed.y, label: `${MONTH_NAMES[fixed.m - 1]} ${fixed.y}` };
+                }
             }
             const ymd = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
             if (ymd) {
                 let y = parseInt(ymd[1], 10), m = parseInt(ymd[2], 10), d = parseInt(ymd[3], 10);
-                if (m >= 1 && m <= 12) return { day: d, monthIndex: m - 1, monthNumber: m, year: y, label: `${MONTH_NAMES[m - 1]} ${y}` };
+                const fixed = fixSwappedDayMonth(d, m, y);
+                if (fixed.m >= 1 && fixed.m <= 12) {
+                    return { day: fixed.d, monthIndex: fixed.m - 1, monthNumber: fixed.m, year: fixed.y, label: `${MONTH_NAMES[fixed.m - 1]} ${fixed.y}` };
+                }
             }
             return null;
+        }
+
+        function isLikelyDateCell(rawVal) {
+            if (rawVal === null || rawVal === undefined || rawVal === '') return false;
+            if (typeof rawVal === 'number') {
+                return rawVal >= 42005 && rawVal <= 51138;
+            }
+            const s = String(rawVal).trim();
+            return /^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})(\s+\d{1,2}:\d{2}(:\d{2})?)?$/.test(s);
         }
 
         function normalizeSpringCode(rawCode, defaultPrefix = 'OS') {
@@ -1309,21 +1349,23 @@
 
         function formatExcelTimestamp(rawVal) {
             if (rawVal === null || rawVal === undefined || String(rawVal).trim() === '') return '-';
-            if (typeof rawVal === 'number' && rawVal > 30000 && rawVal < 70000) {
+            if (typeof rawVal === 'number' && rawVal >= 42005 && rawVal <= 51138) {
                 const utcDays = Math.floor(rawVal - 25569);
                 const dateInfo = new Date(utcDays * 86400 * 1000);
                 let totalSeconds = Math.floor(86400 * (rawVal - Math.floor(rawVal) + 0.0000001));
                 const hours = Math.floor(totalSeconds / 3600), minutes = Math.floor((totalSeconds % 3600) / 60);
-                const d = dateInfo.getUTCDate(), m = dateInfo.getUTCMonth() + 1, y = dateInfo.getUTCFullYear() % 100;
-                return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${String(y).padStart(2,'0')} ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
+                const fixed = fixSwappedDayMonth(dateInfo.getUTCDate(), dateInfo.getUTCMonth() + 1, dateInfo.getUTCFullYear());
+                const y = fixed.y % 100;
+                return `${String(fixed.d).padStart(2,'0')}/${String(fixed.m).padStart(2,'0')}/${String(y).padStart(2,'0')} ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
             }
             const s = String(rawVal).trim();
             const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2})/);
             if (iso) {
-                const yr = parseInt(iso[1], 10) % 100, mo = parseInt(iso[2], 10), da = parseInt(iso[3], 10);
-                return `${String(da).padStart(2,'0')}/${String(mo).padStart(2,'0')}/${String(yr).padStart(2,'0')} ${iso[4]}`;
+                const fixed = fixSwappedDayMonth(parseInt(iso[3], 10), parseInt(iso[2], 10), parseInt(iso[1], 10));
+                const yr = fixed.y % 100;
+                return `${String(fixed.d).padStart(2,'0')}/${String(fixed.m).padStart(2,'0')}/${String(yr).padStart(2,'0')} ${iso[4]}`;
             }
-            return s;
+            return normalizeFutureMonthSwap(s);
         }
 
         function extractSaranaAndBogie(fileName, rawJenisPegas, rawSaranaMeta, rawBogieMeta) {
@@ -1360,6 +1402,7 @@
                     if (!r) return;
                     const normalized = normalizeSpringCode(r.nomor, defaultPrefix);
                     if (normalized) r.nomor = normalized;
+                    if (r.waktu && r.waktu !== '-') r.waktu = normalizeFutureMonthSwap(r.waktu);
 
                     const rowM = detectMonthFromTimestampStr(r.waktu);
                     const destMonth = rowM ? rowM.label : mLabel;
@@ -1465,6 +1508,28 @@
                 }
                 if (colIndices.length === 0) return;
 
+                // Deteksi otomatis indeks kolom Tanggal/Waktu Uji (seperti kolom di sebelah Process Sec)
+                let detectedTimeColIdx = -1;
+                const dateColScores = {};
+                const startScanRow = Math.max(tmRowIdx + 1, 10);
+                for (let r = startScanRow; r < Math.min(rows.length, startScanRow + 80); r++) {
+                    const rArr = rows[r] || [];
+                    for (let c = 0; c < rArr.length; c++) {
+                        if (c === 1 || colIndices.includes(c)) continue;
+                        if (isLikelyDateCell(rArr[c])) {
+                            dateColScores[c] = (dateColScores[c] || 0) + 1;
+                        }
+                    }
+                }
+                let bestScore = 0;
+                Object.keys(dateColScores).forEach(cStr => {
+                    const cNum = parseInt(cStr, 10);
+                    if (dateColScores[cStr] > bestScore) {
+                        bestScore = dateColScores[cStr];
+                        detectedTimeColIdx = cNum;
+                    }
+                });
+
                 if (!detectedSpecs) {
                     detectedSpecs = colIndices.map((cIdx, idx) => ({
                         name: (descRow && descRow[cIdx]) ? String(descRow[cIdx]).trim() : `Parameter P${idx}`,
@@ -1478,7 +1543,7 @@
                 let lastRowMonthLabel = sheetMonthInfo ? sheetMonthInfo.label : null;
                 let lastSequentialNum = 0;
 
-                for (let i = Math.max(tmRowIdx + 1, 10); i < rows.length; i++) {
+                for (let i = startScanRow; i < rows.length; i++) {
                     const row = rows[i]; if (!row || !Array.isArray(row)) continue;
                     let validMeas = 0;
                     colIndices.forEach(cIdx => { const v = parseFloat(row[cIdx]); if (!isNaN(v) && v > 10) validMeas++; });
@@ -1504,13 +1569,15 @@
                     if (rawTrimmed !== noUji && !/^\d+\.0$/.test(rawTrimmed)) typoFixedCount++;
 
                     let rawWaktu = null;
-                    for (let wIdx = colIndices[colIndices.length - 1] + 1; wIdx < Math.min(row.length, colIndices[colIndices.length - 1] + 6); wIdx++) {
-                        if (row[wIdx] !== null && row[wIdx] !== undefined && String(row[wIdx]).trim() !== '') { rawWaktu = row[wIdx]; break; }
+                    if (detectedTimeColIdx !== -1 && row[detectedTimeColIdx] !== null && row[detectedTimeColIdx] !== undefined && String(row[detectedTimeColIdx]).trim() !== '') {
+                        rawWaktu = row[detectedTimeColIdx];
+                    } else {
+                        for (let wIdx = colIndices[colIndices.length - 1] + 1; wIdx < row.length; wIdx++) {
+                            if (isLikelyDateCell(row[wIdx])) { rawWaktu = row[wIdx]; break; }
+                        }
                     }
-                    if (!rawWaktu && row[3] && colIndices[0] > 4) rawWaktu = row[3];
                     const waktuFormatted = formatExcelTimestamp(rawWaktu);
 
-                    // Prioritaskan Bulan & Tahun dari tanggal baris WAKTU UJI agar otomatis bikin bulan/tahun baru saat ganti bulan/tahun
                     const rowM = detectMonthFromTimestampStr(waktuFormatted);
                     let targetMonthLabel = null;
                     if (rowM) {
@@ -2116,7 +2183,6 @@
                         target.excelData[m] = [];
                         createdNewMonths.push(m);
                     }
-                    // Hindari duplikasi baris jika file lanjutan masih menyertakan sebagian data bulan lama
                     const existingMap = new Map();
                     target.excelData[m].forEach((row, idx) => {
                         existingMap.set(`${row.nomor}|${row.waktu}`, idx);
