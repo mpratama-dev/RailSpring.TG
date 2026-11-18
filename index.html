@@ -2,9 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -182,16 +179,16 @@
                         <h1 id="header-title" class="text-base sm:text-xl font-bold text-gray-800 truncate">Dashboard & Pelacakan</h1>
                         <div class="flex items-center gap-1.5 md:hidden">
                             <span id="mobile-cloud-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span id="mobile-cloud-text" class="text-[10px] text-gray-500 font-medium truncate">Cloud Sync v3.1</span>
+                            <span class="text-[10px] text-gray-500 font-medium truncate">Cloud Sync Aktif • Geser layar</span>
                         </div>
                     </div>
                     <span id="cloud-sync-badge" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.1
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Smart Cache Sync Aktif
                     </span>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <button onclick="window.forcePullCloudToDevice()" title="Reset Cache & Ambil Paksa dari Cloud" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition">
+                    <button onclick="window.syncFromCloudManual()" title="Segarkan Data Cloud" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-1.5 rounded-full sm:rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center gap-1.5 text-xs font-bold active:scale-95 transition">
                         <i class="fa-solid fa-arrows-rotate"></i>
                         <span class="hidden sm:inline">Sync</span>
                     </button>
@@ -236,23 +233,16 @@
                         </div>
                     </div>
 
-                    <!-- WELCOME, DIAGNOSTIK CLOUD & QUICK ACTION BAR -->
-                    <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 space-y-3">
-                        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
-                            <div>
-                                <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
-                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & sinkron lintas HP dan PC.</p>
-                            </div>
-                            <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
-                                <button onclick="window.forcePullCloudToDevice()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Ambil Paksa Cloud (HP)</button>
-                                <button onclick="window.forcePushLocalToCloud()" class="swipe-item shrink-0 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Kirim Lokal ke Cloud (PC)</button>
-                                <button onclick="window.switchMenu('setsarana')" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-layer-group"></i> Set Sarana</button>
-                                <button onclick="window.switchMenu('data'); window.openExcelModal();" class="swipe-item shrink-0 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-file-excel"></i> Upload Excel</button>
-                            </div>
+                    <!-- WELCOME & QUICK ACTION BAR -->
+                    <div class="bg-white p-4 sm:px-6 sm:py-4 rounded-2xl shadow-xs border border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5">
+                        <div>
+                            <h2 id="welcome-message" class="text-sm sm:text-base font-bold text-gray-800">Selamat Datang di RailSpring, Mario Putra</h2>
+                            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">Acuan tanggal otomatis membaca kolom <strong>Waktu Uji Excel (`DD/MM/YY`)</strong> & sinkron otomatis lintas HP dan PC.</p>
                         </div>
-                        <div id="sync-diagnostic-banner" class="p-2.5 sm:px-4 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 flex flex-wrap items-center justify-between gap-2">
-                            <span id="sync-diagnostic-text"><i class="fa-solid fa-circle-notch fa-spin text-blue-600 mr-1.5"></i>Memeriksa status Cloud Supabase vs Perangkat ini...</span>
-                            <button onclick="window.checkCloudVsLocalStatus()" class="text-blue-600 hover:underline font-bold">Cek Ulang</button>
+                        <div class="flex items-center gap-2 w-full lg:w-auto swipe-scroll-x no-scrollbar pb-0.5 shrink-0">
+                            <button onclick="window.syncFromCloudManual()" class="swipe-item shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-cloud-arrow-down"></i> Segarkan Cloud</button>
+                            <button onclick="window.switchMenu('setsarana')" class="swipe-item shrink-0 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-layer-group"></i> Buat Set Sarana</button>
+                            <button onclick="window.switchMenu('data'); window.openExcelModal();" class="swipe-item shrink-0 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs inline-flex items-center gap-2 transition"><i class="fa-solid fa-file-excel"></i> Upload Excel</button>
                         </div>
                     </div>
 
@@ -786,18 +776,6 @@
                 });
             } catch (e) {}
         }
-        async function idbClearAll() {
-            try {
-                const db = await openLocalIDB();
-                if (!db) return;
-                return new Promise((resolve) => {
-                    const tx = db.transaction(IDB_STORE, 'readwrite');
-                    tx.objectStore(IDB_STORE).clear();
-                    tx.oncomplete = () => resolve(true);
-                    tx.onerror = () => resolve(false);
-                });
-            } catch (e) {}
-        }
 
         // =========================================================================
         // KOMPRESI RINGKAS DATA EXCEL (DENGAN REVISION STAMP)
@@ -902,7 +880,7 @@
         }
 
         // =========================================================================
-        // LAZY LOADER SUPABASE STORAGE (ANTI CACHE SAFARI)
+        // LAZY LOADER SUPABASE STORAGE
         // =========================================================================
         window.ensureArchiveFullLoaded = async function(archiveId, forceFresh = false) {
             const idx = window.dbData.findIndex(d => d.id === archiveId);
@@ -933,22 +911,6 @@
 
             if (supabaseClient) {
                 const path = arc.storagePath || `archives/arc_${archiveId}.json`;
-                try {
-                    const { data: pub } = supabaseClient.storage.from(STORAGE_BUCKET_NAME).getPublicUrl(path);
-                    if (pub && pub.publicUrl) {
-                        const res = await fetch(`${pub.publicUrl}?t=${Date.now()}`, { cache: 'no-store' });
-                        if (res.ok) {
-                            const parsedJson = await res.json();
-                            await idbSet('arc_' + archiveId, parsedJson);
-                            const unpacked = unpackArchiveFromStorage(parsedJson, arc);
-                            if (unpacked) {
-                                window.dbData[idx] = unpacked;
-                                return unpacked;
-                            }
-                        }
-                    }
-                } catch (e) {}
-
                 try {
                     const { data: blobData, error } = await supabaseClient.storage
                         .from(STORAGE_BUCKET_NAME)
@@ -986,111 +948,12 @@
             return arc;
         };
 
-        // =========================================================================
-        // DIAGNOSTIK & PAKSA SINKRONISASI DUA ARAH
-        // =========================================================================
-        window.checkCloudVsLocalStatus = async function() {
-            const diagEl = document.getElementById('sync-diagnostic-text');
-            if (!diagEl) return;
-
-            let localTotal = 0;
-            (window.dbData || []).forEach(a => { localTotal += window.getArchiveSummary(a).total; });
-
-            if (!supabaseClient) {
-                diagEl.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Supabase belum terhubung!</span> Perangkat ini: <strong>${localTotal.toLocaleString('id-ID')} unit</strong>.`;
-                return;
-            }
-
-            try {
-                const { data: idxData, error } = await supabaseClient
-                    .from('railspring_storage')
-                    .select('payload, updated_at')
-                    .eq('key', EXCEL_STORAGE_KEY + '_storage_index')
-                    .maybeSingle();
-
-                if (error) {
-                    diagEl.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>Error Supabase (${error.message})</span> • Lokal perangkat ini: <strong>${localTotal.toLocaleString('id-ID')} unit</strong>`;
-                    return;
-                }
-
-                const cloudList = (idxData && Array.isArray(idxData.payload)) ? idxData.payload : [];
-                let cloudTotal = 0;
-                cloudList.forEach(m => { cloudTotal += (m.stats?.total || 0); });
-
-                const isMatch = (cloudTotal === localTotal) && (cloudList.length === window.dbData.length);
-                if (isMatch) {
-                    diagEl.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Sinkron!</span> Cloud Supabase: <strong>${cloudTotal.toLocaleString('id-ID')} unit</strong> (${cloudList.length} file) = Perangkat Ini: <strong>${localTotal.toLocaleString('id-ID')} unit</strong>`;
-                } else {
-                    diagEl.innerHTML = `<span class="text-amber-700 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Selisih Terdeteksi:</span> Cloud Supabase = <strong class="text-blue-700">${cloudTotal.toLocaleString('id-ID')} unit</strong> (${cloudList.length} file) vs Perangkat Ini = <strong class="text-red-600">${localTotal.toLocaleString('id-ID')} unit</strong> (${window.dbData.length} file)`;
-                }
-            } catch (err) {
-                diagEl.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-wifi mr-1"></i>Gagal koneksi ke Supabase:</span> ${err.message || 'Periksa internet'} • Lokal: <strong>${localTotal.toLocaleString('id-ID')} unit</strong>`;
-            }
-        };
-
-        window.forcePushLocalToCloud = async function() {
-            if (!supabaseClient) return window.showToast('Supabase tidak terhubung!', 'error');
-            if (!window.dbData || window.dbData.length === 0) return window.showToast('Tidak ada data lokal untuk dikirim!', 'error');
-
-            window.showToast('Mengirim seluruh data lokal perangkat ini ke Cloud Supabase...', 'success');
-            try {
-                let pushedUnits = 0;
-                for (let i = 0; i < window.dbData.length; i++) {
-                    let arc = window.dbData[i];
-                    if (!arc._isLoaded || !arc.excelData) {
-                        const cached = await idbGet('arc_' + arc.id);
-                        if (cached) arc = unpackArchiveFromStorage(cached, arc);
-                    }
-                    if (arc && arc.excelData) {
-                        arc.rev = Date.now() + i;
-                        arc._isLoaded = true;
-                        window.dbData[i] = arc;
-                        await window.uploadSingleArchiveToStorage(arc);
-                    }
-                    pushedUnits += window.getArchiveSummary(window.dbData[i]).total;
-                }
-                await window.saveArchiveIndexOnly(window.dbData);
-                window.updateDashboardStats();
-                window.handleSearch();
-                await window.checkCloudVsLocalStatus();
-                window.showToast(`Berhasil kirim ${window.dbData.length} file (${pushedUnits.toLocaleString('id-ID')} unit) ke Cloud!`, 'success');
-            } catch (err) {
-                console.error('Force push error:', err);
-                window.showToast('Gagal kirim ke Cloud: ' + (err.message || 'Periksa izin Supabase'), 'error');
-            }
-        };
-
-        window.forcePullCloudToDevice = async function() {
-            window.showToast('Menghapus cache perangkat & menarik paksa dari Cloud...', 'success');
-            try {
-                await idbClearAll();
-                Object.keys(localStorage).forEach(k => {
-                    if (k.startsWith('cache_')) localStorage.removeItem(k);
-                });
-                if ('caches' in window) {
-                    const keys = await caches.keys();
-                    await Promise.all(keys.map(k => caches.delete(k)));
-                }
-
-                await loadAllSavedData(true);
-
-                for (let i = 0; i < window.dbData.length; i++) {
-                    await window.ensureArchiveFullLoaded(window.dbData[i].id, true);
-                }
-
-                window.updateDashboardStats();
-                window.handleSearch();
-                window.refreshDashboardTracker();
-                window.populateSpringPickers();
-                window.renderPdfCatalog();
-                await window.checkCloudVsLocalStatus();
-
-                let totalUnit = 0;
-                window.dbData.forEach(a => { totalUnit += window.getArchiveSummary(a).total; });
-                window.showToast(`Selesai! Terbaca ${window.dbData.length} file (${totalUnit.toLocaleString('id-ID')} unit) dari Cloud.`, 'success');
-            } catch (err) {
-                console.error('Force pull error:', err);
-                window.showToast('Gagal menarik dari Cloud: ' + (err.message || 'Periksa koneksi'), 'error');
+        window.ensureAllArchivesLoaded = async function(onProgress) {
+            const unloaded = window.dbData.filter(d => !d._isLoaded);
+            if (unloaded.length === 0) return;
+            for (let i = 0; i < unloaded.length; i++) {
+                if (typeof onProgress === 'function') onProgress(i + 1, unloaded.length, unloaded[i]);
+                await window.ensureArchiveFullLoaded(unloaded[i].id);
             }
         };
 
@@ -1145,7 +1008,7 @@
             if (supabaseClient) {
                 if (badge) {
                     badge.className = 'hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0';
-                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Direct Sync v3.1';
+                    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Supabase Storage + Smart Cache Sync Aktif';
                 }
                 if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
             } else {
@@ -1180,12 +1043,12 @@
                 });
 
             if (uploadErr) {
-                console.warn('Storage bucket gagal, simpan ke tabel railspring_storage:', uploadErr.message);
+                console.error('Supabase Storage upload error:', uploadErr);
                 const { error: fallbackErr } = await supabaseClient
                     .from('railspring_storage')
                     .upsert({ key: EXCEL_STORAGE_KEY + '_item_' + arc.id, payload: packed, updated_at: new Date().toISOString() }, { onConflict: 'key' });
                 if (fallbackErr) {
-                    throw new Error(`Storage: ${uploadErr.message} | DB: ${fallbackErr.message}`);
+                    throw new Error(uploadErr.message || 'Gagal unggah ke Supabase Storage');
                 }
             }
             return { ok: true, sizeKB: Math.round(blob.size / 1024) };
@@ -1230,7 +1093,7 @@
                     await window.saveArchiveIndexOnly(val);
                 } catch (err) {
                     console.error('Gagal menyimpan ke Supabase Storage:', err);
-                    window.showToast('Error Cloud: ' + (err.message || 'Gagal simpan ke Supabase'), 'error');
+                    window.showToast('Error Storage: ' + (err.message || 'Periksa bucket railspring-files'), 'error');
                 }
                 return;
             }
@@ -1247,21 +1110,19 @@
             }
         }
 
-        async function loadFromPermanentDB(key, ignoreLocalFallback = false) {
+        async function loadFromPermanentDB(key) {
             if (key === EXCEL_STORAGE_KEY) {
                 let indexList = null;
 
                 if (supabaseClient) {
                     try {
-                        const { data: idxData, error: idxErr } = await supabaseClient
+                        const { data: idxData } = await supabaseClient
                             .from('railspring_storage')
                             .select('payload')
                             .eq('key', EXCEL_STORAGE_KEY + '_storage_index')
                             .maybeSingle();
 
-                        if (idxErr) {
-                            window.showToast('Peringatan Cloud: ' + idxErr.message, 'error');
-                        } else if (idxData && Array.isArray(idxData.payload) && idxData.payload.length > 0) {
+                        if (idxData && Array.isArray(idxData.payload) && idxData.payload.length > 0) {
                             indexList = idxData.payload;
                         } else {
                             const { data: oldIdxData } = await supabaseClient
@@ -1306,14 +1167,13 @@
                         }
                     } catch (err) {
                         console.error('Gagal memuat indeks dari Supabase:', err);
-                        window.showToast('Gagal terhubung ke Cloud Supabase!', 'error');
                     }
                 }
 
-                if (!indexList && !ignoreLocalFallback) {
+                if (!indexList) {
                     indexList = await idbGet('archives_index');
                 }
-                if (!indexList && !ignoreLocalFallback) {
+                if (!indexList) {
                     try {
                         const raw = localStorage.getItem('cache_' + EXCEL_STORAGE_KEY + '_index');
                         if (raw) indexList = JSON.parse(raw);
@@ -1326,11 +1186,11 @@
 
                     const result = [];
                     for (const meta of indexList) {
-                        const localFull = ignoreLocalFallback ? null : await idbGet('arc_' + meta.id);
+                        const localFull = await idbGet('arc_' + meta.id);
                         if (localFull) {
                             let localRowCount = 0;
                             Object.values(localFull.months || {}).forEach(arr => {
-                                if (Array.isArray(arr)) localRowCount += a.length;
+                                if (Array.isArray(arr)) localRowCount += arr.length;
                             });
                             const expectedTotal = meta.stats?.total;
                             const expectedRev = meta.stats?.rev;
@@ -1363,12 +1223,10 @@
             }
 
             let localCached = null;
-            if (!ignoreLocalFallback) {
-                try {
-                    const local = localStorage.getItem('cache_' + key);
-                    if (local) localCached = JSON.parse(local);
-                } catch (e) {}
-            }
+            try {
+                const local = localStorage.getItem('cache_' + key);
+                if (local) localCached = JSON.parse(local);
+            } catch (e) {}
 
             if (supabaseClient) {
                 try {
@@ -1385,6 +1243,14 @@
             }
             return localCached;
         }
+
+        window.syncFromCloudManual = async function() {
+            window.showToast('Menyegarkan data dari Cloud...', 'success');
+            await loadAllSavedData();
+            let totalUnit = 0;
+            window.dbData.forEach(a => { totalUnit += window.getArchiveSummary(a).total; });
+            window.showToast(`Sinkron: ${window.dbData.length} file (${totalUnit.toLocaleString('id-ID')} unit)!`, 'success');
+        };
 
         window.userProfile = { name: "Mario Putra", email: "mario.putra@kai.id", phone: "0812-3456-7890", role: "Administrator", unit: "Balai Yasa Tegal - Logam Jaya Teknik", photoUrl: "" };
         try { const sp = localStorage.getItem('railspring_user_profile'); if(sp) window.userProfile = JSON.parse(sp); } catch(e){}
@@ -1807,14 +1673,14 @@
             c.innerHTML = cards || `<div class="bg-white rounded-2xl border p-6 text-xs text-gray-500">Silakan upload file Excel pengujian pegas untuk menampilkan tabel standar parameter otomatis sesuai jenis pegasnya.</div>`;
         };
 
-        async function loadAllSavedData(ignoreLocalFallback = false) {
+        async function loadAllSavedData() {
             updateCloudStatusBadge();
-            const savedExcel = await loadFromPermanentDB(EXCEL_STORAGE_KEY, ignoreLocalFallback);
+            const savedExcel = await loadFromPermanentDB(EXCEL_STORAGE_KEY);
             window.dbData = Array.isArray(savedExcel)
                 ? savedExcel.map(item => item.excelData ? ensureArchiveMetadata(item) : item)
                 : [];
 
-            const savedSets = await loadFromPermanentDB(SETSARANA_STORAGE_KEY, ignoreLocalFallback);
+            const savedSets = await loadFromPermanentDB(SETSARANA_STORAGE_KEY);
             window.saranaSets = Array.isArray(savedSets) ? savedSets : [];
 
             window.updateDashboardStats();
@@ -1823,7 +1689,6 @@
             window.refreshDashboardTracker();
             window.populateSpringPickers();
             window.renderSetSaranaList();
-            await window.checkCloudVsLocalStatus();
         }
 
         window.clearAllArchives = async function() {
@@ -1835,7 +1700,6 @@
             window.dbData = [];
             await window.saveArchiveIndexOnly([]);
             window.updateDashboardStats(); window.handleSearch(); window.refreshDashboardTracker(); window.populateSpringPickers(); window.renderPdfCatalog();
-            await window.checkCloudVsLocalStatus();
             window.showToast('Semua arsip berhasil dikosongkan!', 'success');
         };
 
@@ -2313,8 +2177,7 @@
                     window.refreshDashboardTracker();
                     window.populateSpringPickers();
                     window.renderPdfCatalog();
-                    await window.checkCloudVsLocalStatus();
-                    window.showToast(`Berhasil mengunggah ${successCount} file (${totalRowsSaved.toLocaleString('id-ID')} pengujian) ke Cloud!`, 'success');
+                    window.showToast(`Berhasil mengunggah ${successCount} file (${totalRowsSaved.toLocaleString('id-ID')} pengujian) ke Cloud Storage!`, 'success');
                     if (files.length === 1 && lastSavedId) {
                         window.openExcelViewModal(lastSavedId, 'ALL');
                     }
@@ -2384,7 +2247,6 @@
                 window.updateDashboardStats();
                 window.refreshDashboardTracker();
                 window.populateSpringPickers();
-                await window.checkCloudVsLocalStatus();
 
                 const sortedAllMonths = window.sortMonthLabels(Object.keys(target.excelData));
                 const newestMonth = createdNewMonths.length > 0
@@ -2548,7 +2410,6 @@
             window.dbData = window.dbData.filter(d => d.id !== window.deleteIdTarget);
             await window.saveArchiveIndexOnly(window.dbData);
             window.closeConfirmModal(); window.handleSearch(); window.updateDashboardStats(); window.refreshDashboardTracker();
-            await window.checkCloudVsLocalStatus();
             window.showToast('Arsip & file Cloud Storage dihapus!', 'success');
         });
 
@@ -2598,7 +2459,7 @@
             window.toggleMobileDrawer(false);
             document.getElementById('main-scroll-container')?.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (viewName === 'dashboard') { window.updateDashboardStats(); window.refreshDashboardTracker(); window.checkCloudVsLocalStatus(); }
+            if (viewName === 'dashboard') { window.updateDashboardStats(); window.refreshDashboardTracker(); }
             if (viewName === 'parameter') window.renderPdfCatalog();
         };
 
